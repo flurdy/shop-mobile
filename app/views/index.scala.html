@@ -1,0 +1,36 @@
+@(shoppingList: List[ShoppingItem])
+
+@deck() = {
+
+
+}
+
+
+@main("Shopping list")(deck) {
+
+    <style type="text/css">
+    </style>
+
+    <h3>Current shopping list</h3>
+
+
+    <ol id="shoppingList">
+    @shoppingList.map { item =>
+         <li>
+             <div class="itemNumber">1</div>
+             <div class="itemName">@item.name</div>
+             <div class="itemDescription">@item.description</div>
+             <button>bought</button>
+             <button>edit</button>
+         </li>
+    }
+    </ol>
+
+    <div>
+        <input type="text" name="name" />
+        <button>add item</button>
+    </div>
+
+
+    
+}
