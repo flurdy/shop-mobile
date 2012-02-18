@@ -1,20 +1,7 @@
-@(title: String)(content: Html)
-
-<!DOCTYPE html>
-
-<html>
-    <head>
-        <title>@title</title>
-        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
-        <script src="@routes.Assets.at("javascripts/jquery-1.7.1.min.js")" type="text/javascript"></script>
-    </head>
-    <body>
-        @content
-    </body>
-</html>
 @(title: String)(cargo: Html)
+
 <!DOCTYPE html>
+
 <html>
 <head>
     <title>@title</title>
@@ -24,7 +11,7 @@
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/ship.css")">
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/cargo.css")">
     <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
-    <script src="@routes.Assets.at("javascripts/jquery-1.6.4.min.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.at("javascripts/jquery-1.7.1.min.js")" type="text/javascript"></script>
 </head>
 <body>
 <div id="ocean" class="structure">
@@ -34,7 +21,7 @@
                 <div id="vaka" class="structure">
                     <div id="bow" class="structure">
                         <a href="http://github.com/flurdy/shopgrid"><img alt="Fork me on github"
-                                                                         title="Fork me on github" src="@routes.Assets.at("images/ForkMe_Blk.png")" /></a>
+                                title="Fork me on github" src="@routes.Assets.at("images/ForkMe_Blk.png")" /></a>
                         <h2>Shop Grid</h2>
                     </div>
                     <div id="keel" class="structure">
@@ -52,8 +39,9 @@
                         </div>
                     </div>
                     <div id="stern" class="compartment">
-                        <div id="flurdy"><a href="http://flurdy.com"><img alt="flurdy" title="made by flurdy" border="0"
-                                                                          src="@routes.Assets.at("images/flurdy_warped_dual_small.png")" /></a></div>
+                        <div id="flurdy"><a href="http://flurdy.com"><img
+                                alt="flurdy" title="made by flurdy" border="0"
+                                src="@routes.Assets.at("images/flurdy_warped_dual_small.png")" /></a></div>
                     </div>
                 </div>
             </div>
