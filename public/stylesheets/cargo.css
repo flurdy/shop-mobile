@@ -30,14 +30,59 @@ a,a:visited{ color: black; }
 	height: 1em;
 }
 
-#cargo #shoppingList  { margin: 0.1em; padding: 0.2em }
-#cargo #shoppingList li {  list-style: none; border: 1px dashed silver; margin: 0 0.1em; padding: 0.2em 1em; }
-#cargo #shoppingList li.bought { text-decoration: strike-through; }
-#cargo #shoppingList li input { padding: 0 1em;  }
-#cargo #shoppingList li .itemName { padding: 0 1em; }
-#cargo #shoppingList li .itemDescription { padding: 0 2em; font-size: 0.8em;  }
-#cargo #shoppingList li input { }
-#cargo #shoppingList li div { display: inline; }
+#cargo #shoppingList  {
+margin: 0.1em; padding: 0.2em;
+    display: table;
+}
+#cargo #shoppingList li {
+    list-style: none;
+    border: 1px dashed silver;
+    margin: 0 0.1em;
+    padding: 0.2em;
+    display: table-row;
+}
+#cargo #shoppingList li > div {
+    border-top: 1px dashed silver;
+    border-bottom: 1px dashed silver;
+}
+#cargo #shoppingList li .itemNumber {
+    max-width: 2em;
+    display: table-cell;
+    padding: 0 0.2em;
+    margin: 0;
+    font-size: 0.6em;
+	text-align: center;
+    border-left: 1px dashed silver;
+}
+#cargo #shoppingList li .itemName {
+    max-width: 15em;
+    overflow: hidden;
+    word-wrap: break-word;
+    padding: 0 1em;
+    margin: 0;
+    display: table-cell;
+    font-size: 1.1em;
+    font-weight: bold;
+}
+#cargo #shoppingList li .itemDescription {
+    max-width: 10em;
+    word-wrap: break-word;
+    padding: 0 2em;
+    margin: 0;
+    font-size: 0.7em;
+    display: table-cell;
+}
+#cargo #shoppingList li .buttons {
+    padding: 0 2em;
+    margin: 0;
+    font-size: 0.9em;
+    display: table-cell;
+    border-right: 1px dashed silver;
+    white-space: nowrap;
+}
+#cargo #shoppingList li .buttons button{
+    font-size: 0.7em;
+}
 
 /*
 #cargo h1{ font-size: 22pt; font-weight: bold; }

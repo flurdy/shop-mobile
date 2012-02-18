@@ -90,5 +90,5 @@ body {  }
 #cargo { }
 
 
-#starboard, #lookout, #tug, #net, #ama, #hatch, #port,
+#starboard, #lookout, #tug, #net, #ama, #deck, #hatch, #port,
 #foremast, #lighthouse, #buoy { display: none; }
