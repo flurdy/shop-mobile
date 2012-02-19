@@ -1,5 +1,6 @@
-@(shoppingList: List[models.ShoppingItem])
+@(shoppingList: List[models.ShoppingItem], addItemForm: Form[ShoppingItem])
 
+@import helper._
 
 @main("Shopping list") {
 
@@ -16,13 +17,7 @@
         <div class="itemName">@item.name</div>
         <div class="itemDescription">@item.description</div>
         <div class="buttons">
-            @helper.form(action = routes.Application.buyItem) {
-
-            @helper.inputText(buyItemForm("itemId"))
-
-            <button type="submit">Bought</button>
-            }
-            <button type="submit">Edit</button>
+            <button type="submit">Got it</button>
             <button type="submit">Remove</button>
         </div>
     </li>
@@ -30,8 +25,12 @@
 </ol>
 
 <div>
-    <input type="text" name="name" />
-    <button>add item</button>
+    @form(action = routes.Application.addItemToList) {
+    @inputText(addItemForm("name"))
+    @inputText(addItemForm("description"))
+    @** <input type="text" name="name" maxlength="100" size="12" />   **@
+    <button type="submit">add item</button>
+    }
 </div>
 
 
