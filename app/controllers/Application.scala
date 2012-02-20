@@ -16,18 +16,22 @@ object Application extends Controller {
     new ShoppingItem("Cookie",""))
 
   def index = Action {
-    Ok(views.html.index(shoppingList,addItemForm))
+    Ok(views.html.index(shoppingList,itemForm))
   }
 
-  val addItemForm: Form[ShoppingItem] = Form(
+  def redirectToIndex = Action {
+    Redirect(routes.Application.index())
+  }
+
+  val itemForm: Form[ShoppingItem] = Form(
     mapping(
-      "name" -> text(minLength = 1),
-      "description" -> text
+      "name" -> text(minLength = 1,maxLength = 128),
+      "description" -> text(maxLength = 500)
    )(ShoppingItem.apply)(ShoppingItem.unapply)
   )
 
-  def addItemToList = Action { implicit request =>
-    addItemForm.bindFromRequest.fold(
+  def addItem = Action { implicit request =>
+    itemForm.bindFromRequest.fold(
       errors => {
         Logger.warn("Adding failed: "+errors)
         BadRequest(html.index(shoppingList,errors))
@@ -39,20 +43,25 @@ object Application extends Controller {
     )
   }
 
-  def removeItemFromList = TODO
+  def showItem(name: String) = Action {
+    var shoppingItemOption = shoppingList find { item => item.name == name }
+    Ok(views.html.item(shoppingItemOption.get))
+  }
 
-  def putItemInBasket = TODO
-
-  /*
-  val buyItemForm = Form {
-    mapping(
-      "itemId" -> text
+  def updateItem(name: String) = Action { implicit request =>
+    itemForm.bindFromRequest.fold(
+      errors => {
+        Logger.warn("Updating failed: "+errors)
+        BadRequest(html.index(shoppingList,errors))
+      },
+      shoppingItem => {
+        shoppingList = shoppingList.map { case i => if (i.name == name) shoppingItem else i }
+        Redirect(routes.Application.index())
+      }
     )
   }
 
-  def buyItem(id: Long) = Action {
-    ShoppingItem.findById(id)
-  }
-  */
+  def removeItem(name: String) = TODO
+
 
 }

@@ -11,7 +11,9 @@
     @shoppingList.map { item =>
     <li>
         <!-- <div class="itemNumber">1</div> -->
-        <div class="itemName">@item.name</div>
+        <div class="itemName">
+            <a href="@routes.Application.showItem(item.name)">@item.name</a>
+        </div>
         <div class="itemDescription">@item.description</div>
         <div class="buttons">
             <!--
@@ -25,7 +27,7 @@
 </ol>
 
 <div>
-    @form(action = routes.Application.addItemToList) {
+    @form(action = routes.Application.addItem) {
     <input type="text" name="name" maxlength="124" size="32"/>
     <input type="hidden" name="description" value=""/>
     <button type="submit">add item</button>

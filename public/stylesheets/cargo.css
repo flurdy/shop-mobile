@@ -10,6 +10,7 @@ a,a:visited{ color: black; }
 	margin: 0;
 	padding: 0;
 }
+#bow a{ text-decoration: none; }
 #bow img { float: left; width: 4em; margin-left: -0em; margin-top: -0em; }
 
 #bow h2 { margin: 0 3em 0 0; padding: 0.6em 1em; }

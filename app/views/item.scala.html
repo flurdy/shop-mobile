@@ -1,0 +1,32 @@
+@(shoppingItem: models.ShoppingItem)
+
+@import helper._
+
+@main("Shopping item") {
+
+<style type="text/css">
+</style>
+
+
+<div>
+    @form(action = routes.Application.updateItem(shoppingItem.name)) {
+    <fieldset>
+        <legend>Name</legend>
+        <input type="text" name="name" maxlength="124" size="32" value="@shoppingItem.name"/>
+    </fieldset>
+    <fieldset>
+        <legend>Description</legend>
+        <textarea name="description" cols="40" rows="6">@shoppingItem.description</textarea>
+    </fieldset>
+
+    <button type="submit">update item</button>
+    }
+    <!--
+    @form(action = routes.Application.removeItem(shoppingItem.name)) {
+    <button type="submit">remove item</button>
+    }
+    -->
+</div>
+
+
+}

@@ -5,7 +5,13 @@
 # Home page
 GET     /                           controllers.Application.index
 
-POST    /item                   controllers.Application.addItemToList
+GET    /item                   controllers.Application.redirectToIndex
+POST    /item                  controllers.Application.addItem
+GET    /item/:name             controllers.Application.showItem(name: String)
+POST    /item/:name/update     controllers.Application.updateItem(name: String)
+PUT    /item/:name             controllers.Application.updateItem(name: String)
+POST    /item/:name/delete     controllers.Application.removeItem(name: String)
+DELETE    /item/:name          controllers.Application.removeItem(name: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
