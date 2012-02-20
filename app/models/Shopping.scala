@@ -23,7 +23,7 @@ case class ShoppingList(){
   def this(newList:List[ShoppingItem])  {
     this()
     this.list = newList
-    reorderListByPurcased
+    reorderListByPurchased
   }
   def addItem(shoppingItem:ShoppingItem) {
     val itemFind = list.find{ item => item.name == shoppingItem.name }
@@ -56,7 +56,7 @@ case class ShoppingList(){
   def purchaseItem(name: String){
     val shoppingItem: ShoppingItem = findItem(name)
     shoppingItem.markAsPurchased
-    reorderListByPurcased
+    reorderListByPurchased
   }
   def reorderListByPurchased {
     list = list.filter { item => !item.isPurchased } ++ list.filter { item => item.isPurchased }
