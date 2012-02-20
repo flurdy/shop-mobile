@@ -9,11 +9,11 @@ import play.Logger
 
 object Application extends Controller {
 
-  var shoppingList : List[ShoppingItem] = List(
+  var shoppingList : ShoppingList = new ShoppingList( List(
     new ShoppingItem("Bread","Brown,sliced"),
     new ShoppingItem("Milk","2l Skimmed",true),
     new ShoppingItem("Wholemeal rice"," jasminjasmin jasmin jasmin  jasminjasminjasminjasminjasminjasmin jasmin jasmin jasminjasmin jasmin"),
-    new ShoppingItem("Cookie",""))
+    new ShoppingItem("Cookie","")))
 
   def index = Action {
     Ok(views.html.index(shoppingList,itemForm))
@@ -38,14 +38,14 @@ object Application extends Controller {
         BadRequest(html.index(shoppingList,errors))
       },
       shoppingItem => {
-        shoppingList ::= shoppingItem
+        shoppingList.addItem(shoppingItem)
         Redirect(routes.Application.index())
       }
     )
   }
 
   def showItem(name: String) = Action {
-    val shoppingItem: ShoppingItem = findShoppingItem(name)
+    val shoppingItem: ShoppingItem = shoppingList.findItem(name)
     Ok(views.html.item(shoppingItem))
   }
 
@@ -56,30 +56,22 @@ object Application extends Controller {
         BadRequest(html.index(shoppingList,errors))
       },
       shoppingItem => {
-        shoppingList = shoppingList.map { case i => if (i.name == name) shoppingItem else i }
+        shoppingList.updateItem(shoppingItem)
         Redirect(routes.Application.index())
       }
     )
   }
 
   def removeItem(name: String) = Action {
-    shoppingList = shoppingList.filter { item => item.name != name }
+    shoppingList.removeItem(name)
     Redirect(routes.Application.index())
   }
 
   def purchaseItem(name: String) = Action {
-    val shoppingItem: ShoppingItem = findShoppingItem(name)
-    shoppingItem.markAsPurchased
+    shoppingList.purchaseItem(name)
     Redirect(routes.Application.index())
   }
 
-  def findShoppingItem(name: String): ShoppingItem = {
-    val itemFind = shoppingList.find{ item => item.name == name }
-    itemFind match {
-      case None =>  error("No item found")
-      case Some(item) => item
-    }
-  }
 
 
 }

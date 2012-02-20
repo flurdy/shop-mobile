@@ -1,4 +1,4 @@
-@(shoppingList: List[models.ShoppingItem], addItemForm: Form[ShoppingItem])
+@(shoppingList: models.ShoppingList, itemForm: Form[ShoppingItem])
 
 @import helper._
 
@@ -7,8 +7,9 @@
 <style type="text/css">
 </style>
 
+
 <ol id="shoppingList">
-    @shoppingList.map { item =>
+    @shoppingList.list.map { item =>
     <li @if(item.isPurchased) { class="purchased" }>
         <!-- <div class="itemNumber">1</div> -->
         <div class="itemName">

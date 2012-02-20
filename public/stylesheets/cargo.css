@@ -92,4 +92,7 @@ a,a:visited{ color: black; }
     text-decoration: line-through;
 
 }
+#cargo #shoppingList li.purchased .itemName a {
+    color: gray;
+}
 #cargo form { display: inline; }
