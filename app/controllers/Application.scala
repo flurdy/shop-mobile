@@ -21,7 +21,7 @@ object Application extends Controller {
 
   val addItemForm: Form[ShoppingItem] = Form(
     mapping(
-      "name" -> text(minLength = 2),
+      "name" -> text(minLength = 1),
       "description" -> text
    )(ShoppingItem.apply)(ShoppingItem.unapply)
   )
@@ -29,16 +29,12 @@ object Application extends Controller {
   def addItemToList = Action { implicit request =>
     addItemForm.bindFromRequest.fold(
       errors => {
-        Logger.warn("!!!"+errors)
-        Logger.debug("####1#"+shoppingList)
+        Logger.warn("Adding failed: "+errors)
         BadRequest(html.index(shoppingList,errors))
       },
       shoppingItem => {
-        Logger.debug("####0#"+shoppingItem)
-        Logger.debug("####1#"+shoppingList)
         shoppingList ::= shoppingItem
-        Logger.debug("####2#"+shoppingList)
-        Ok(html.index(shoppingList,addItemForm))
+        Redirect(routes.Application.index())
       }
     )
   }

@@ -7,18 +7,18 @@
 <style type="text/css">
 </style>
 
-<h3>Current shopping list</h3>
-
-
 <ol id="shoppingList">
     @shoppingList.map { item =>
     <li>
-        <div class="itemNumber">1</div>
+        <!-- <div class="itemNumber">1</div> -->
         <div class="itemName">@item.name</div>
         <div class="itemDescription">@item.description</div>
         <div class="buttons">
+            <!--
             <button type="submit">Got it</button>
+
             <button type="submit">Remove</button>
+            -->
         </div>
     </li>
     }
@@ -26,9 +26,8 @@
 
 <div>
     @form(action = routes.Application.addItemToList) {
-    @inputText(addItemForm("name"))
-    @inputText(addItemForm("description"))
-    @** <input type="text" name="name" maxlength="100" size="12" />   **@
+    <input type="text" name="name" maxlength="124" size="32"/>
+    <input type="hidden" name="description" value=""/>
     <button type="submit">add item</button>
     }
 </div>
