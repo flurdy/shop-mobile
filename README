@@ -1,4 +1,4 @@
-This is your new Play 2.0 application
-=====================================
-
-This file will be packaged with your application, when using `play dist`.
+A simple shopping list app.
+Designed to be usable on desktop and mobile.
+Uses Play 2.0 and Scala.
+This is still a very early version 0.0.1alpha.
