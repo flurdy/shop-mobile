@@ -61,7 +61,10 @@ object Application extends Controller {
     )
   }
 
-  def removeItem(name: String) = TODO
+  def removeItem(name: String) = Action {
+      shoppingList = shoppingList.filter { item => item.name != name }
+      Redirect(routes.Application.index())
+  }
 
 
 }
