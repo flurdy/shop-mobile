@@ -58,7 +58,7 @@ case class ShoppingList(){
     shoppingItem.markAsPurchased
     reorderListByPurcased
   }
-  def reorderListByPurcased {
+  def reorderListByPurchased {
     list = list.filter { item => !item.isPurchased } ++ list.filter { item => item.isPurchased }
   }
 }
