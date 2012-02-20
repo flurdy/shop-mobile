@@ -32,25 +32,24 @@ a,a:visited{ color: black; }
 }
 
 #cargo #shoppingList  {
-margin: 0.1em; padding: 0.2em;
+    margin: 0.1em 0.1em 1em 0.1em;
+    padding: 0.2em;
     display: table;
 }
 #cargo #shoppingList li {
     list-style: none;
     border: 1px dashed silver;
-    margin: 0 0.1em;
-    padding: 0.2em;
     display: table-row;
 }
 #cargo #shoppingList li > div {
     border-top: 1px dashed silver;
     border-bottom: 1px dashed silver;
+    padding: 0.7em 0.5em;
+    margin: 0;
 }
 #cargo #shoppingList li .itemNumber {
     max-width: 2em;
     display: table-cell;
-    padding: 0 0.2em;
-    margin: 0;
     font-size: 0.6em;
 	text-align: center;
     border-left: 1px dashed silver;
@@ -59,8 +58,6 @@ margin: 0.1em; padding: 0.2em;
     max-width: 15em;
     overflow: hidden;
     word-wrap: break-word;
-    padding: 0 1em;
-    margin: 0;
     display: table-cell;
     font-size: 1.1em;
     font-weight: bold;
@@ -69,21 +66,30 @@ margin: 0.1em; padding: 0.2em;
 #cargo #shoppingList li .itemDescription {
     max-width: 10em;
     word-wrap: break-word;
-    padding: 0 2em;
-    margin: 0;
     font-size: 0.7em;
     display: table-cell;
 }
 #cargo #shoppingList li .buttons {
-    padding: 0 0 0 1em;
-    margin: 0;
     font-size: 0.9em;
     display: table-cell;
     border-right: 1px dashed silver;
     white-space: nowrap;
+    text-align: right;
 }
-#cargo #shoppingList li .buttons button{
+#cargo button{
     font-size: 0.7em;
     width: 6em;
     margin: 0em 1em;
 }
+#cargo #add-line{
+    font-size: 1em;
+    margin: 1em 1em;
+}
+#cargo #shoppingList li.purchased .itemNumber,
+#cargo #shoppingList li.purchased .itemName,
+#cargo #shoppingList li.purchased .itemDescription {
+    color: gray;
+    text-decoration: line-through;
+
+}
+#cargo form { display: inline; }

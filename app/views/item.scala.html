@@ -5,6 +5,8 @@
 @main("Shopping item") {
 
 <style type="text/css">
+    #cargo fieldset { margin: 1em 0; }
+    #cargo #remove-button { float: right; }
 </style>
 
 
@@ -18,13 +20,29 @@
         <legend>Description</legend>
         <textarea name="description" cols="40" rows="6">@shoppingItem.description</textarea>
     </fieldset>
+    <fieldset>
+        <legend>Is purchased</legend>
+        @if(shoppingItem.isPurchased){
+        <input type="radio" name="isPurchased" id="isPurchased" value="true" checked="checked" />
+        <label for="isPurchased">Is purchased</label>
+        <input type="radio" name="isPurchased" id="isNotPurchased" value="false" />
+        <label for="isNotPurchased">Is not purchased</label>
+        } else {
+        <input type="radio" name="isPurchased" id="isPurchased" value="true" />
+        <label for="isPurchased">Is purchased</label>
+        <input type="radio" name="isPurchased" id="isNotPurchased" value="false" checked="checked" />
+        <label for="isNotPurchased">Is not purchased</label>
+        }
+    </fieldset>
 
-    <button type="submit">update item</button>
+    <button type="submit">update</button>
     }
 
+    <div id="remove-button">
     @form(action = routes.Application.removeItem(shoppingItem.name)) {
-    <button type="submit">remove item</button>
+    <button type="submit">remove</button>
     }
+    </div>
 </div>
 
 

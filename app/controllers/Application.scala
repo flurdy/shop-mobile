@@ -9,9 +9,9 @@ import play.Logger
 
 object Application extends Controller {
 
-  var shoppingList = List(
+  var shoppingList : List[ShoppingItem] = List(
     new ShoppingItem("Bread","Brown,sliced"),
-    new ShoppingItem("Milk","2l Skimmed"),
+    new ShoppingItem("Milk","2l Skimmed",true),
     new ShoppingItem("Wholemeal rice"," jasminjasmin jasmin jasmin  jasminjasminjasminjasminjasminjasmin jasmin jasmin jasminjasmin jasmin"),
     new ShoppingItem("Cookie",""))
 
@@ -26,8 +26,9 @@ object Application extends Controller {
   val itemForm: Form[ShoppingItem] = Form(
     mapping(
       "name" -> text(minLength = 1,maxLength = 128),
-      "description" -> text(maxLength = 500)
-   )(ShoppingItem.apply)(ShoppingItem.unapply)
+      "description" -> text(maxLength = 500),
+      "isPurchased" -> boolean
+    )(ShoppingItem.apply)(ShoppingItem.unapply)
   )
 
   def addItem = Action { implicit request =>
@@ -44,8 +45,8 @@ object Application extends Controller {
   }
 
   def showItem(name: String) = Action {
-    var shoppingItemOption = shoppingList find { item => item.name == name }
-    Ok(views.html.item(shoppingItemOption.get))
+    val shoppingItem: ShoppingItem = findShoppingItem(name)
+    Ok(views.html.item(shoppingItem))
   }
 
   def updateItem(name: String) = Action { implicit request =>
@@ -62,8 +63,22 @@ object Application extends Controller {
   }
 
   def removeItem(name: String) = Action {
-      shoppingList = shoppingList.filter { item => item.name != name }
-      Redirect(routes.Application.index())
+    shoppingList = shoppingList.filter { item => item.name != name }
+    Redirect(routes.Application.index())
+  }
+
+  def purchaseItem(name: String) = Action {
+    val shoppingItem: ShoppingItem = findShoppingItem(name)
+    shoppingItem.markAsPurchased
+    Redirect(routes.Application.index())
+  }
+
+  def findShoppingItem(name: String): ShoppingItem = {
+    val itemFind = shoppingList.find{ item => item.name == name }
+    itemFind match {
+      case None =>  error("No item found")
+      case Some(item) => item
+    }
   }
 
 
