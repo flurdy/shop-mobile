@@ -6,7 +6,9 @@
 
 <style type="text/css">
     #cargo fieldset { margin: 1em 0; }
-    #cargo #remove-button { float: right; }
+    #cargo form button { text-align: center; }
+    #cargo #remove-button{ float: right; margin: 0 0 0 6em; }
+    #cargo #cancel-button { float: left; margin: 0 0 0 0; }
 </style>
 
 
@@ -18,7 +20,7 @@
     </fieldset>
     <fieldset>
         <legend>Description</legend>
-        <textarea name="description" cols="40" rows="6">@shoppingItem.description</textarea>
+        <textarea name="description" cols="60" rows="6">@shoppingItem.description</textarea>
     </fieldset>
     <fieldset>
         <legend>Is purchased</legend>
@@ -39,9 +41,14 @@
     }
 
     <div id="remove-button">
-    @form(action = routes.Application.removeItem(shoppingItem.name)) {
-    <button type="submit">remove</button>
-    }
+        @form(action = routes.Application.removeItem(shoppingItem.name)) {
+        <button type="submit">remove</button>
+        }
+    </div>
+    <div id="cancel-button">
+        @form(action = routes.Application.index()) {
+        <button type="submit">cancel</button>
+        }
     </div>
 </div>
 

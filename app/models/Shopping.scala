@@ -8,7 +8,7 @@ case class ShoppingItem(name: String, description: String, var isPurchased: Bool
     this(name,"",false)
   }
   def this(name: String, description: String){
-    this(name,"",false)
+    this(name,description,false)
   }
   def markAsPurchased {
     isPurchased = true
@@ -44,6 +44,7 @@ case class ShoppingList(){
   }
   def updateItem(shoppingItem:ShoppingItem) {
     list = list.map { case i => if (i.name == shoppingItem.name) shoppingItem else i }
+    reorderListByPurchased
   }
 
   def findItem(name: String): ShoppingItem = {

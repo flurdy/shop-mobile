@@ -13,7 +13,7 @@ a,a:visited{ color: black; }
 #bow a{ text-decoration: none; }
 #bow img { float: left; width: 4em; margin-left: -0em; margin-top: -0em; }
 
-#bow h2 { margin: 0 3em 0 0; padding: 0.6em 1em; }
+#bow h2 { margin: 0 1em 0 0; padding: 0.6em 1em; font-size: 3em; }
 
 #stern { padding: 0.2em 1.5em; margin: 0px; overflow: hidden; }
 #stern #flurdy{
@@ -55,31 +55,31 @@ a,a:visited{ color: black; }
     border-left: 1px dashed silver;
 }
 #cargo #shoppingList li .itemName {
-    max-width: 15em;
+    max-width: 25em;
     overflow: hidden;
     word-wrap: break-word;
     display: table-cell;
-    font-size: 1.1em;
+    font-size: 1.6em;
     font-weight: bold;
     border-left: 1px dashed silver;
 }
 #cargo #shoppingList li .itemDescription {
-    max-width: 10em;
+    max-width: 20em;
     word-wrap: break-word;
-    font-size: 0.7em;
+    font-size: 1.2em;
     display: table-cell;
 }
 #cargo #shoppingList li .buttons {
-    font-size: 0.9em;
+    font-size: 1.4em;
     display: table-cell;
     border-right: 1px dashed silver;
     white-space: nowrap;
     text-align: right;
 }
 #cargo button{
-    font-size: 0.7em;
+    font-size: 1.0em;
     width: 6em;
-    margin: 0em 1em;
+    margin: 0em 0.5em;
 }
 #cargo #add-line{
     font-size: 1em;
@@ -96,3 +96,7 @@ a,a:visited{ color: black; }
     color: gray;
 }
 #cargo form { display: inline; }
+#cargo fieldset legend { font-size: 1.5em; }
+#cargo fieldset label { font-size: 1.2em; }
+#cargo fieldset textarea { font-size: 1.2em; }
+#cargo fieldset input { font-size: 1.2em; }
