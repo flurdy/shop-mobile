@@ -1,5 +1,5 @@
 @(title: String)(cargo: Html)
-
+@import helper._
 <!DOCTYPE html>
 
 <html>
@@ -36,6 +36,16 @@
 
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    <div id="aft" class="compartment">
+                        <div id="">
+                            @form(action = routes.Application.showMultipleItemsForm()) {
+                            <button type="submit">add multiple items</button>
+                            }
+                            @form(action = routes.Application.showPopularItemsForm()) {
+                            <button type="submit">add popular items</button>
+                            }
                         </div>
                     </div>
                     <div id="stern" class="compartment">

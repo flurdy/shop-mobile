@@ -1,0 +1,37 @@
+@(popularItems: List[ShoppingItem])
+
+@import helper._
+
+@main("Add popular Shopping items") {
+
+<style type="text/css">
+</style>
+
+
+<div id="popular">
+    <table>
+        <tbody>
+    @for(item <- popularItems) {
+        <tr>
+            <td class="name">@item.name</td>
+            <td>
+                @form(action = routes.Application.addItem) {
+                <input type="hidden" name="name" value="@item.name"/>
+                <input type="hidden" name="description" value=""/>
+                <button type="submit">add</button>
+                }
+            </td>
+        </tr>
+    }
+        </tbody>
+    </table>
+
+</div>
+
+<div id="cancel-button">
+    @form(action = routes.Application.index()) {
+    <button type="submit">back to list</button>
+    }
+</div>
+
+}

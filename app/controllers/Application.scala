@@ -8,7 +8,15 @@ import views._
 import play.Logger
 
 object Application extends Controller {
-
+  val popularItems = List(
+    new ShoppingItem("Bread","Brown,sliced"),
+    new ShoppingItem("Milk","2l Skimmed"),
+    new ShoppingItem("Peppers"),
+    new ShoppingItem("Tomatoes"),
+    new ShoppingItem("Orange Juice"),
+    new ShoppingItem("Rice"),
+    new ShoppingItem("Dinners"),
+    new ShoppingItem("Spaghetti") )
   var shoppingList : ShoppingList = new ShoppingList( List(
     new ShoppingItem("Bread","Brown,sliced"),
     new ShoppingItem("Milk","2l Skimmed",true),
@@ -70,6 +78,40 @@ object Application extends Controller {
   def purchaseItem(name: String) = Action {
     shoppingList.purchaseItem(name)
     Redirect(routes.Application.index())
+  }
+
+  def showMultipleItemsForm = Action {
+    Ok(views.html.multiple())
+  }
+
+  def showPopularItemsForm = Action {
+    val namesOnTheList = shoppingList.list.map { item => item.name }
+    val popularItemsLeft = popularItems.filter { item => {
+      ! namesOnTheList.exists( name => item.name == name )
+    } }
+    Ok(views.html.popular(popularItemsLeft))
+  }
+
+  val multipleItemForm: Form[String] = Form(
+      "items" -> text(maxLength = 1500)
+  )
+  def addMultipleItems = Action { implicit request =>
+    multipleItemForm.bindFromRequest.fold(
+      errors => {
+        Logger.warn("Adding multiplefailed: "+errors)
+        BadRequest(html.multiple())
+      },
+      multipleItems => {
+        var items = multipleItems.split("\\r?\\n+")
+         items.foreach { name:String =>
+          if( name.trim != ""){
+            val item = new ShoppingItem(name.trim)
+            shoppingList.addItem(item)
+         }
+        }
+        Redirect(routes.Application.showPopularItemsForm())
+      }
+    )
   }
 
 

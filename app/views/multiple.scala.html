@@ -1,0 +1,32 @@
+@()
+
+@import helper._
+
+@main("Add multiple Shopping items") {
+
+<style type="text/css">
+</style>
+
+
+<div>
+    @form(action = routes.Application.addMultipleItems()) {
+    <fieldset>
+        <legend>New items</legend>
+        <p>
+            Paste one item name per line please.
+        </p>
+        <textarea name="items" cols="60" rows="12"></textarea>
+    </fieldset>
+
+    <button type="submit">add all</button>
+    }
+
+    <div id="cancel-button">
+        @form(action = routes.Application.index()) {
+        <button type="submit">cancel</button>
+        }
+    </div>
+</div>
+
+
+}

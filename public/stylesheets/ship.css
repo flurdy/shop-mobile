@@ -32,7 +32,7 @@ body{ font-family: sans-serif; }
 }
 
 /* internal */
-#stern { border-top: 2px ridge silver; }
+#stern, #aft { border-top: 2px ridge silver; }
 #bow, #lookout { border-bottom: 2px ridge silver;  }
 #deck { border-left: 2px ridge silver;  }
 /* #cargo { border: 2px solid #8ad;  } */
@@ -49,7 +49,7 @@ body {  background-color: #446;  }
 body {  }
 #ocean { margin-left: 1em; }
 #fleet { padding: 0.8em 0em; }
-#ballast { min-width: 30em; max-width: 70em; padding: 0.3em 0.5em 0.5em 0.5em; min-height: 14em;  }
+#ballast { min-width: 50em; max-width: 70em; padding: 0.3em 0.5em 0.5em 0.5em; min-height: 14em;  }
 #bow {  }
 #lookout { height: 32px;  padding: 0; margin: 0; }
 #stern { height: 1em; }
