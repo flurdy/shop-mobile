@@ -1,11 +1,14 @@
 package controllers
 
-import play.api.data._
+import play.api._
 import play.api.mvc._
+import play.api.data._
 import play.api.data.Forms._
 import models._
 import views._
 import play.Logger
+import anorm._
+import collection.mutable.HashMap
 
 object Application extends Controller {
   val popularItems = List(
@@ -17,11 +20,12 @@ object Application extends Controller {
     new ShoppingItem("Rice"),
     new ShoppingItem("Dinners"),
     new ShoppingItem("Spaghetti") )
-  var shoppingList : ShoppingList = new ShoppingList( List(
-    new ShoppingItem("Bread","Brown,sliced"),
-    new ShoppingItem("Milk","2l Skimmed",true),
-    new ShoppingItem("Wholemeal rice"," jasminjasmin jasmin jasmin  jasminjasminjasminjasminjasminjasmin jasmin jasmin jasminjasmin jasmin"),
-    new ShoppingItem("Cookie","")))
+  var shoppingList : ShoppingList = new ShoppingList(ShoppingList.findItems);
+  // List(
+//    new ShoppingItem("Bread","Brown,sliced"),
+//    new ShoppingItem("Milk","2l Skimmed",true),
+//    new ShoppingItem("Wholemeal rice"," jasminjasmin jasmin jasmin  jasminjasminjasminjasminjasminjasmin jasmin jasmin jasminjasmin jasmin"),
+//    new ShoppingItem("Cookie","")))
 
   def index = Action {
     Ok(views.html.index(shoppingList,itemForm))
@@ -33,9 +37,10 @@ object Application extends Controller {
 
   val itemForm: Form[ShoppingItem] = Form(
     mapping(
-      "name" -> text(minLength = 1,maxLength = 128),
+      "name" -> nonEmptyText(maxLength = 128),
       "description" -> text(maxLength = 500),
-      "isPurchased" -> boolean
+      "isPurchased" -> boolean,
+      "listId" -> ignored(NotAssigned:Pk[Long])
     )(ShoppingItem.apply)(ShoppingItem.unapply)
   )
 
@@ -53,8 +58,11 @@ object Application extends Controller {
   }
 
   def showItem(name: String) = Action {
-    val shoppingItem: ShoppingItem = shoppingList.findItem(name)
-    Ok(views.html.item(shoppingItem))
+    val shoppingItem = ShoppingList.findItem(name)
+    shoppingItem match {
+      case None =>  NotFound
+      case Some(item) =>  Ok(views.html.item(item))
+    }
   }
 
   def updateItem(name: String) = Action { implicit request =>
@@ -64,7 +72,7 @@ object Application extends Controller {
         BadRequest(html.index(shoppingList,errors))
       },
       shoppingItem => {
-        shoppingList.updateItem(shoppingItem)
+        shoppingList.updateItem(name,shoppingItem)
         Redirect(routes.Application.index())
       }
     )
@@ -81,7 +89,7 @@ object Application extends Controller {
   }
 
   def showMultipleItemsForm = Action {
-    Ok(views.html.multiple())
+    Ok(views.html.multiple(multipleItemForm))
   }
 
   def showPopularItemsForm = Action {
@@ -93,23 +101,38 @@ object Application extends Controller {
   }
 
   val multipleItemForm: Form[String] = Form(
-      "items" -> text(maxLength = 1500)
+      "items" -> nonEmptyText(maxLength = 1500)
   )
   def addMultipleItems = Action { implicit request =>
     multipleItemForm.bindFromRequest.fold(
       errors => {
         Logger.warn("Adding multiplefailed: "+errors)
-        BadRequest(html.multiple())
+        BadRequest(html.multiple(errors))
       },
       multipleItems => {
+        val potentialItems = new HashMap[String,ShoppingItem]
         var items = multipleItems.split("\\r?\\n+")
          items.foreach { name:String =>
-          if( name.trim != ""){
-            val item = new ShoppingItem(name.trim)
-            shoppingList.addItem(item)
+          if( name.trim != "" && !potentialItems.contains(name.trim)){
+            potentialItems += name -> new ShoppingItem(name.trim)
          }
         }
-        Redirect(routes.Application.showPopularItemsForm())
+        if(items.size > potentialItems.size ){
+          BadRequest(html.multiple(multipleItemForm.fill(multipleItems)))
+        } else {
+          for ( (name,potentialItem) <- potentialItems){
+            val itemFound = ShoppingList.findItem(name)
+            itemFound match {
+              case None =>  shoppingList.addItem(potentialItem)
+              case Some(item) => {
+                Logger.warn("Item already exists")
+                item.markAsNotPurchased
+                shoppingList.updateItem(name,item)
+              }
+            }
+          }
+          Redirect(routes.Application.index())
+        }
       }
     )
   }

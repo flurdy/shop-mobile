@@ -1,4 +1,4 @@
-@()
+@(formdata: play.api.data.Form[String])
 
 @import helper._
 
@@ -15,7 +15,7 @@
         <p>
             Paste one item name per line please.
         </p>
-        <textarea name="items" cols="60" rows="12"></textarea>
+        <textarea name="items" cols="60" rows="12">@formdata("items").value</textarea>
     </fieldset>
 
     <button type="submit">add all</button>
