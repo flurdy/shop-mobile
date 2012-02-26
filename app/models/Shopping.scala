@@ -29,41 +29,41 @@ object ShoppingItem {
   val simple = {
     get [String]("name") ~
     get [String]("description") ~
-    get [Boolean]("isPurchased") map {
+    get [Boolean]("ispurchased") map {
     // get [Pk[Long]]("listId")
 
-      case name~description~isPurchased => ShoppingItem(name,description,isPurchased)
+      case name~description~ispurchased => ShoppingItem(name,description,ispurchased)
     }
   }
   def create(item: ShoppingItem): Unit = {
     DB.withConnection { implicit connection =>
-      SQL("insert into ShoppingItem(name,description,isPurchased)" +
-        " values ({name},{description},{isPurchased})").on(
+      SQL("insert into shoppingItem(name,description,ispurchased)" +
+        " values ({name},{description},{ispurchased})").on(
         'name -> item.name,
         'description -> item.description,
-        'isPurchased -> item.isPurchased
+        'ispurchased -> item.isPurchased
       ).executeInsert()
 //      // 'listId -> item.listId
     }
   }
   def update(formerName: String,item: ShoppingItem): Unit = {
     DB.withConnection { implicit connection =>
-      SQL("update ShoppingItem " +
+      SQL("update shoppingitem " +
         "set name={name}," +
         "description={description}," +
-        "isPurchased={isPurchased}" +
+        "ispurchased={ispurchased}" +
         " where name = {formerName}").on(
         'name -> item.name,
         'description -> item.description,
-        'isPurchased -> item.isPurchased,
+        'ispurchased -> item.isPurchased,
         'formerName -> formerName
       ).executeUpdate()
     }
   }
   def storeAsPurchased(formerName: String): Unit = {
     DB.withConnection { implicit connection =>
-      SQL("update ShoppingItem " +
-        "set isPurchased=true" +
+      SQL("update shoppingitem " +
+        "set ispurchased=true" +
         " where name = {formerName}").on(
         'formerName -> formerName
       ).executeUpdate()
@@ -71,7 +71,7 @@ object ShoppingItem {
   }
   def delete(name: String): Unit = {
     DB.withConnection { implicit connection =>
-      SQL("delete from ShoppingItem " +
+      SQL("delete from shoppingitem " +
         " where name = {name}").on(
         'name -> name
       ).execute()
@@ -137,7 +137,7 @@ object ShoppingList {
   def findItem(name: String): Option[ShoppingItem] = {
     // val itemFind = list.find{ item => item.name == name }
     val itemsFound = DB.withConnection { implicit connection =>
-      SQL("select * from ShoppingItem where name = {name}").on(
+      SQL("select * from shoppingitem where name = {name}").on(
         'name -> name
       ).as(ShoppingItem.simple *)
     }
@@ -149,7 +149,7 @@ object ShoppingList {
   }
   def findItems(): Seq[ShoppingItem] = {
     DB.withConnection { implicit connection =>
-      SQL("select * from ShoppingItem order by isPurchased,name").as(ShoppingItem.simple *)
+      SQL("select * from shoppingitem order by ispurchased,name").as(ShoppingItem.simple *)
     }
   }
 }

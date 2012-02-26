@@ -2,13 +2,13 @@
  
 # --- !Ups
 
-CREATE TABLE ShoppingList (
+CREATE TABLE shoppinglist (
   id                   SERIAL PRIMARY KEY,
 );
-CREATE TABLE ShoppingItem (
+CREATE TABLE shoppingitem (
   name                VARCHAR(255) NOT NULL PRIMARY KEY,
   description          text,
-  isPurchased          boolean NOT NULL
+  ispurchased          boolean NOT NULL
 );
 
 -- ##  listId            bigint(20) NOT NULL,
@@ -16,5 +16,5 @@ CREATE TABLE ShoppingItem (
 
 # --- !Downs
  
-DROP TABLE IF EXISTS ShoppingItem;
-DROP TABLE IF EXISTS ShoppingList;
+DROP TABLE IF EXISTS shoppingitem;
+DROP TABLE IF EXISTS shoppinglist;
