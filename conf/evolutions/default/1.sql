@@ -3,7 +3,7 @@
 # --- !Ups
 
 CREATE TABLE shoppinglist (
-  id                   SERIAL PRIMARY KEY,
+  id                   SERIAL PRIMARY KEY
 );
 
 CREATE TABLE shoppingitem (
