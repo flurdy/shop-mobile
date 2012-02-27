@@ -12,7 +12,6 @@
 <ol id="shoppingList">
     @shoppingList.list.map { item =>
     <li @if(item.isPurchased) { class="purchased" }>
-        <!-- <div class="itemNumber">1</div> -->
         <div class="itemName">
             <a href="@routes.ShoppingItemController.showItem(item.name)">@item.name</a>
         </div>
