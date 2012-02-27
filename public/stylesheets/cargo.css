@@ -39,6 +39,7 @@ a,a:visited{ color: black; }
     margin: 0.1em 0.3em 1em 0.1em;
     padding: 0.2em;
     display: table;
+    width: 35em;
 }
 #cargo #shoppingList li {
     list-style: none;
@@ -52,7 +53,6 @@ a,a:visited{ color: black; }
 }
 #cargo #shoppingList li .itemName {
     min-width: 6em;
-    width: 100%;
     max-width: 20em;
     overflow: hidden;
     word-wrap: break-word;

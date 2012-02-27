@@ -18,9 +18,13 @@
         <div class="itemDescription">@item.description</div>
         <div class="buttons">
 
-            @if(!item.isPurchased){
+            @if(item.isPurchased){
+                @form(action = routes.ShoppingItemController.removeItem(item.name)) {
+                <button type="submit">remove</button>
+                }
+            } else {
                 @form(action = routes.ShoppingItemController.purchaseItem(item.name)) {
-                    <button type="submit">purchase</button>
+                <button type="submit">purchase</button>
                 }
             }
 
