@@ -32,7 +32,7 @@ body{ font-family: sans-serif; }
 }
 
 /* internal */
-#stern, #aft { border-top: 2px ridge silver; }
+#stern, #aft, #bridge { border-top: 2px ridge silver; }
 #bow, #lookout { border-bottom: 2px ridge silver;  }
 #deck { border-left: 2px ridge silver;  }
 /* #cargo { border: 2px solid #8ad;  } */
@@ -90,5 +90,5 @@ body {  }
 #cargo { }
 
 
-#starboard, #lookout, #tug, #net, #ama, #deck, #hatch, #port,
+#starboard, #lookout, #tug, #net, #ama, #deck, #bridge, #hatch, #port, #aft,
 #foremast, #lighthouse, #buoy { display: none; }

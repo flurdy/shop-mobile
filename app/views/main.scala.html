@@ -7,6 +7,7 @@
     <title>@title</title>
     <meta name="keywords" content="shop,grid,shopping,list" />
     <meta name="description" content="Shop Grid - a shopping list" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=yes" />
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/grid.css")">
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/ship.css")">
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/cargo.css")">
@@ -32,18 +33,24 @@
                                         @cargo
                                     </div>
                                 </div>
-                                <div id="deck" class="compartment">
-
+                            </div>
+                            <div id="bridge" class="compartment">
+                                <div id="add-line">
+                                    @form(action = routes.ShoppingItemController.addItem) {
+                                    <input type="text" name="name" maxlength="124" size="32"/>
+                                    <input type="hidden" name="description" value=""/>
+                                    <button type="submit">add</button>
+                                    }
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div id="aft" class="compartment">
                         <div id="">
-                            @form(action = routes.Application.showMultipleItemsForm()) {
+                            @form(action = routes.ShoppingListController.showMultipleItemsForm()) {
                             <button type="submit">add multiple items</button>
                             }
-                            @form(action = routes.Application.showPopularItemsForm()) {
+                            @form(action = routes.ShoppingListController.showPopularItemsForm()) {
                             <button type="submit">add popular items</button>
                             }
                         </div>

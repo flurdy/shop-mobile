@@ -40,6 +40,7 @@ a,a:visited{ color: black; }
     list-style: none;
     border: 1px dashed silver;
     display: table-row;
+    width: 100%;
 }
 #cargo #shoppingList li > div {
     border-top: 1px dashed silver;
@@ -56,7 +57,8 @@ a,a:visited{ color: black; }
 }
 #cargo #shoppingList li .itemName {
     min-width: 10em;
-    max-width: 15em;
+    width: 100%;
+    max-width: 25em;
     overflow: hidden;
     word-wrap: break-word;
     display: table-cell;
@@ -65,6 +67,7 @@ a,a:visited{ color: black; }
     border-left: 1px dashed silver;
 }
 #cargo #shoppingList li .itemDescription {
+    min-width: 10em;
     max-width: 15em;
     word-wrap: break-word;
     font-size: 1.2em;
@@ -77,19 +80,18 @@ a,a:visited{ color: black; }
     text-align: right;
 }
 #cargo button,
+#bridge button,
 #aft button {
     font-size: 1.4em;
     margin: 0em 0.5em;
+    padding: 0.6em 1em;
 }
+#bridge button,
 #cargo button{
-    width: 6em;
+    width: 8em;
 }
 #aft button {
     width: 12em;
-}
-#cargo #add-line{
-    font-size: 1em;
-    margin: 1em 1em;
 }
 #cargo #shoppingList li.purchased .itemNumber,
 #cargo #shoppingList li.purchased .itemName,
@@ -101,24 +103,31 @@ a,a:visited{ color: black; }
 #cargo #shoppingList li.purchased .itemName a {
     color: gray;
 }
-#cargo #add-line input { font-size: 1.4em; }
+#bridge input,
+#cargo input {   font-size: 1.4em; }
+#cargo input[type="radio"] { margin-left: 3em; }
 
 #cargo form,
 #aft form { display: inline; }
+#cargo fieldset { padding: 1.5em; }
 #cargo fieldset legend { font-size: 1.5em; }
 #cargo fieldset label { font-size: 1.2em; }
 #cargo fieldset textarea { font-size: 1.2em; }
-#cargo fieldset input { font-size: 1.2em; }
 
 
 #cargo fieldset { margin: 1em 0; }
 #cargo form button { text-align: center; }
-#cargo #remove-button{ float: right; margin: 0 0 0 6em; }
-#cargo #cancel-button { float: left; margin: 0 0 1em 0; }
+#cargo #update-button{ float: left; margin: 0 0 0 6em; }
+#cargo #remove-button{ float: left; margin: 0 0 0 6em; }
+#cargo #cancel-button { float: right; margin: 0 0 1em 0; }
 
-#aft {text-align: center; }
+#aft { padding: 1em; text-align: center; }
 #aft form {text-align: center;  }
 #aft button {text-align: center; }
+
+#bridge { padding: 1em; text-align: center; }
+#bridge form {text-align: center;  }
+#bridge button {text-align: center; }
 
 #cargo #popular td { padding: 1em 1em; border: 1px dashed silver; }
 #cargo #popular td.name { padding: 1em 4em; }

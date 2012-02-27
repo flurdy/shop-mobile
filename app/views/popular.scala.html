@@ -15,7 +15,7 @@
         <tr>
             <td class="name">@item.name</td>
             <td>
-                @form(action = routes.Application.addItem) {
+                @form(action = routes.ShoppingItemController.addItem) {
                 <input type="hidden" name="name" value="@item.name"/>
                 <input type="hidden" name="description" value=""/>
                 <button type="submit">add</button>
@@ -30,7 +30,7 @@
 
 <div id="cancel-button">
     @form(action = routes.Application.index()) {
-    <button type="submit">back to list</button>
+    <button type="submit">back&nbsp;to&nbsp;list</button>
     }
 </div>
 

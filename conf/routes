@@ -6,20 +6,20 @@
 GET     /                      controllers.Application.index
 GET     /index.html            controllers.Application.index
 
-GET    /item                   controllers.Application.redirectToIndex
-POST    /item                  controllers.Application.addItem
-GET    /item/:name             controllers.Application.showItem(name: String)
-GET    /item/:name/index.html             controllers.Application.showItem(name: String)
-POST    /item/:name/update     controllers.Application.updateItem(name: String)
-PUT    /item/:name             controllers.Application.updateItem(name: String)
-POST    /item/:name/delete     controllers.Application.removeItem(name: String)
-DELETE    /item/:name          controllers.Application.removeItem(name: String)
-POST    /item/:name/purchase   controllers.Application.purchaseItem(name: String)
-PUT    /item/:name/purchase    controllers.Application.purchaseItem(name: String)
+GET    /items                   controllers.Application.redirectToIndex
+POST    /items                  controllers.ShoppingItemController.addItem
+GET    /items/:name/            controllers.ShoppingItemController.showItem(name: String)
+GET    /items/:name/index.html  controllers.ShoppingItemController.showItem(name: String)
+POST    /items/:name/update     controllers.ShoppingItemController.updateItem(name: String)
+PUT    /items/:name/             controllers.ShoppingItemController.updateItem(name: String)
+POST    /items/:name/delete     controllers.ShoppingItemController.removeItem(name: String)
+DELETE    /items/:name/          controllers.ShoppingItemController.removeItem(name: String)
+POST    /items/:name/purchase   controllers.ShoppingItemController.purchaseItem(name: String)
+PUT    /items/:name/purchase    controllers.ShoppingItemController.purchaseItem(name: String)
 
-GET    /items/multiple.html     controllers.Application.showMultipleItemsForm
-POST    /items/multiple     controllers.Application.addMultipleItems
-GET    /items/popular.html     controllers.Application.showPopularItemsForm
+GET    /items/multiple.html     controllers.ShoppingListController.showMultipleItemsForm
+POST    /items/multiple/     controllers.ShoppingListController.addMultipleItems
+GET    /items/popular.html     controllers.ShoppingListController.showPopularItemsForm
 
 
 # Map static resources from the /public folder to the /assets URL path

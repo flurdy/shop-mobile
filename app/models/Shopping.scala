@@ -31,7 +31,6 @@ object ShoppingItem {
     get [String]("description") ~
     get [Boolean]("ispurchased") map {
     // get [Pk[Long]]("listId")
-
       case name~description~ispurchased => ShoppingItem(name,description,ispurchased)
     }
   }

@@ -1,19 +1,15 @@
-@(shoppingItem: models.ShoppingItem)
+@(shoppingItem: models.ShoppingItem, itemForm: Form[ShoppingItem])
 
 @import helper._
 
 @main("Shopping item") {
 
 <style type="text/css">
-    #cargo fieldset { margin: 1em 0; }
-    #cargo form button { text-align: center; }
-    #cargo #remove-button{ float: right; margin: 0 0 0 6em; }
-    #cargo #cancel-button { float: left; margin: 0 0 0 0; }
 </style>
 
 
 <div>
-    @form(action = routes.Application.updateItem(shoppingItem.name)) {
+    @form(action = routes.ShoppingItemController.updateItem(shoppingItem.name)) {
     <fieldset>
         <legend>Name</legend>
         <input type="text" name="name" maxlength="124" size="32" value="@shoppingItem.name"/>
@@ -37,19 +33,23 @@
         }
     </fieldset>
 
-    <button type="submit">update</button>
+    <div id="update-button"><button type="submit">update</button></div>
     }
 
+
     <div id="remove-button">
-        @form(action = routes.Application.removeItem(shoppingItem.name)) {
+        @form(action = routes.ShoppingItemController.removeItem(shoppingItem.name)) {
         <button type="submit">remove</button>
         }
     </div>
     <div id="cancel-button">
         @form(action = routes.Application.index()) {
-        <button type="submit">cancel</button>
+        <button type="submit">back&nbsp;to&nbsp;list</button>
         }
     </div>
+
+
+
 </div>
 
 
