@@ -16,7 +16,12 @@ a,a:visited{ color: black; }
 #bow h2 { margin: 0 1em 0 0; padding: 0.6em 1em; font-size: 3em; }
 
 #stern { padding: 0.2em 1.5em; margin: 0px; overflow: hidden; }
+#stern div {
+    float: right;
+    font-size: 0.8em;
+}
 #stern #flurdy{
+    font-size: 1em;
 	float: left;
 	margin: 0;
 	padding: 0;
