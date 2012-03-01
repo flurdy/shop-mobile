@@ -152,3 +152,63 @@ object ShoppingList {
     }
   }
 }
+
+
+
+case class Shopper(username: String, password: String)
+
+object Shopper {
+
+  val simple = {
+    get[String]("shopper.username") ~
+    get[String]("shopper.password") map {
+      case username~password => Shopper(username, password)
+    }
+  }
+
+  def findByUsername(username: String): Option[Shopper] = {
+    DB.withConnection { implicit connection =>
+      SQL("select * from shopper where username = {username}").on(
+        'username -> username
+      ).as(Shopper.simple.singleOpt)
+    }
+  }
+
+  def findAll: Seq[Shopper] = {
+    DB.withConnection { implicit connection =>
+      SQL("select * from shopper order by username").as(Shopper.simple *)
+    }
+  }
+
+  def authenticate(username: String, password: String): Option[Shopper] = {
+    DB.withConnection { implicit connection =>
+      SQL(
+        """
+         select * from shopper where
+         username = {username} and password = {password}
+        """
+      ).on(
+        'username -> username,
+        'password -> password
+      ).as(Shopper.simple.singleOpt)
+    }
+  }
+
+  def create(shopper: Shopper): Shopper = {
+    DB.withConnection { implicit connection =>
+      SQL(
+        """
+          insert into shopper values (
+            {username}, {password}
+          )
+        """
+      ).on(
+        'username -> shopper.username,
+        'password -> shopper.password
+      ).executeUpdate()
+
+      shopper
+    }
+  }
+
+}

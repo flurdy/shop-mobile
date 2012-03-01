@@ -2,6 +2,9 @@
  
 # --- !Ups
 
+
+delete from shoppingitem;
+
 INSERT INTO shoppingitem (name,description,ispurchased)
             values ('Tea','Red label',false);
 INSERT INTO shoppingitem (name,description,ispurchased)

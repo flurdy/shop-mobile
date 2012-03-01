@@ -12,7 +12,7 @@ import anorm._
 import views.html
 import collection.mutable.HashMap
 
-object ShoppingItemController extends Controller {
+object ShoppingItemController extends Controller with SecureShopper {
 
   val itemForm: Form[ShoppingItem] = Form(
     mapping(
@@ -29,11 +29,11 @@ object ShoppingItemController extends Controller {
     itemForm.bindFromRequest.fold(
       errors => {
         Logger.warn("Adding failed: "+errors)
-        BadRequest(html.index(ShoppingListController.shoppingList,errors))
+        BadRequest(html.shopping.index(ShoppingListController.shoppingList,errors))
       },
       shoppingItem => {
         ShoppingListController.shoppingList.addItem(shoppingItem)
-        Redirect(routes.Application.index())
+        Redirect(routes.ShoppingListController.index())
       }
     )
   }
@@ -44,7 +44,7 @@ object ShoppingItemController extends Controller {
     val shoppingItem = ShoppingList.findItem(name)
     shoppingItem match {
       case None =>  NotFound
-      case Some(item) =>  Ok(views.html.item(item,itemForm))
+      case Some(item) =>  Ok(views.html.shopping.item(item,itemForm))
     }
   }
 
@@ -55,13 +55,13 @@ object ShoppingItemController extends Controller {
         Logger.warn("Updating failed: "+errors)
         val shoppingItem = ShoppingList.findItem(name)
         shoppingItem match {
-          case None =>  BadRequest(html.item(null,errors))
-          case Some(item) => BadRequest(html.item(item,errors))
+          case None =>  BadRequest(html.shopping.item(null,errors))
+          case Some(item) => BadRequest(html.shopping.item(item,errors))
         }
       },
       shoppingItem => {
         ShoppingListController.shoppingList.updateItem(name,shoppingItem)
-        Redirect(routes.Application.index())
+        Redirect(routes.ShoppingListController.index())
       }
     )
   }
@@ -69,19 +69,19 @@ object ShoppingItemController extends Controller {
 
   def removeItem(name: String) = Action {
     ShoppingListController.shoppingList.removeItem(name)
-    Redirect(routes.Application.index())
+    Redirect(routes.ShoppingListController.index())
   }
 
 
   def purchaseItem(name: String) = Action {
     ShoppingListController.shoppingList.purchaseItem(name)
-    Redirect(routes.Application.index())
+    Redirect(routes.ShoppingListController.index())
   }
 
 }
 
 
-object ShoppingListController extends Controller {
+object ShoppingListController extends Controller with SecureShopper {
 
   var shoppingList : ShoppingList = new ShoppingList(ShoppingList.findItems);
 
@@ -99,16 +99,25 @@ object ShoppingListController extends Controller {
     "items" -> nonEmptyText(maxLength = 1500)
   )
 
+
+  def index = IsAuthenticated {  username => _ =>
+    Shopper.findByUsername(username).map { shopper =>
+      Ok(views.html.shopping.index(ShoppingListController.shoppingList,ShoppingItemController.itemForm))
+    }.getOrElse(Forbidden)
+  }
+
+
+
   def showMultipleItemsForm = Action {
     Logger.info("View multiple")
-    Ok(views.html.multiple(multipleItemForm))
+    Ok(views.html.shopping.multiple(multipleItemForm))
   }
 
   def addMultipleItems = Action { implicit request =>
     multipleItemForm.bindFromRequest.fold(
       errors => {
         Logger.warn("Adding multiplefailed: "+errors)
-        BadRequest(html.multiple(errors))
+        BadRequest(html.shopping.multiple(errors))
       },
       multipleItems => {
         Logger.info("post multiple")
@@ -120,7 +129,7 @@ object ShoppingListController extends Controller {
           }
         }
         if(items.size > potentialItems.size ){
-          BadRequest(html.multiple(multipleItemForm.fill(multipleItems)))
+          BadRequest(html.shopping.multiple(multipleItemForm.fill(multipleItems)))
         } else {
           for ( (name,potentialItem) <- potentialItems){
             val itemFound = ShoppingList.findItem(name)
@@ -133,7 +142,7 @@ object ShoppingListController extends Controller {
               }
             }
           }
-          Redirect(routes.Application.index())
+          Redirect(routes.ShoppingListController.index())
         }
       }
     )
@@ -144,7 +153,7 @@ object ShoppingListController extends Controller {
     val popularItemsLeft = popularItems.filter { item => {
       ! namesOnTheList.exists( name => item.name == name )
     } }
-    Ok(views.html.popular(popularItemsLeft))
+    Ok(views.html.shopping.popular(popularItemsLeft))
   }
 
 

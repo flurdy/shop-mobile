@@ -3,8 +3,15 @@
 # ~~~~
 
 # Home page
-GET     /                      controllers.Application.index
-GET     /index.html            controllers.Application.index
+GET     /                      controllers.ShoppingListController.index
+GET     /index.html            controllers.ShoppingListController.index
+
+GET     /login.html            controllers.Application.showLogin
+GET     /login            controllers.Application.redirectToIndex
+POST    /login                 controllers.Application.authenticate
+POST    /register              controllers.Application.register
+GET     /register            controllers.Application.redirectToIndex
+GET     /logout                controllers.Application.logout
 
 GET    /items                   controllers.Application.redirectToIndex
 POST    /items                  controllers.ShoppingItemController.addItem

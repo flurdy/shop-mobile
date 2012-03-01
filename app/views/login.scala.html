@@ -1,0 +1,50 @@
+@(loginForm: Form[(String,String)],registerForm: Form[(Shopper)])(implicit flash: Flash)
+
+@import helper._
+
+@main("Shopping list login") {
+
+<style type="text/css">
+    #aft, #bridge { display: none; }
+</style>
+
+@loginForm.globalError.map { error =>
+<p class="error">
+    @error.message
+</p>
+}
+@registerForm.globalError.map { error =>
+<p class="error">
+    @error.message
+</p>
+}
+
+
+<div>
+            @form(routes.Application.authenticate) {
+               <h3>Log in</h3>
+            <fieldset>
+                <legend>Username</legend>
+                <input type="text" name="username" maxlength="120"/>
+                <input type="hidden" name="password" value=""/>
+            </fieldset>
+            <button type="submit">log in</button>
+            }
+        </div>
+
+
+
+        <div>
+            @form(routes.Application.register) {
+            <h3>Register</h3>
+            <fieldset>
+                <legend>Username</legend>
+                <input type="text" name="username" maxlength="120"/>
+                <input type="hidden" name="password" value=""/>
+            </fieldset>
+            <button type="submit">register</button>
+            }
+        </div>
+
+
+}

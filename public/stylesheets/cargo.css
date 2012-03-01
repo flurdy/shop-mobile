@@ -127,3 +127,5 @@ a,a:visited{ color: black; }
 #cargo #popular td { padding: 1em 1em; border: 1px dashed silver; }
 #cargo #popular td.name { padding: 1em 4em; }
 #cargo #popular { padding: 0.5em 0.5em 1em 1em; }
+
+#cargo .error { color: red; }
