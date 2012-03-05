@@ -25,23 +25,23 @@ object ShoppingItemController extends Controller with SecureShopper {
 
 
 
-  def addItem = Action { implicit request =>
+  def addItem =  IsAuthenticated { username => implicit request =>
     itemForm.bindFromRequest.fold(
       errors => {
         Logger.warn("Adding failed: "+errors)
-        BadRequest(html.shopping.index(ShoppingListController.shoppingList,errors))
+        BadRequest(html.shopping.index(ShoppingList.findList(username),errors))
       },
       shoppingItem => {
-        ShoppingListController.shoppingList.addItem(shoppingItem)
+        ShoppingList.addItem(username,shoppingItem)
         Redirect(routes.ShoppingListController.index())
       }
     )
   }
 
 
-  def showItem(name: String) = Action {
+  def showItem(name: String) = IsAuthenticated { username => implicit request =>
     Logger.info("View show item")
-    val shoppingItem = ShoppingList.findItem(name)
+    val shoppingItem = ShoppingList.findItem(username, name)
     shoppingItem match {
       case None =>  NotFound
       case Some(item) =>  Ok(views.html.shopping.item(item,itemForm))
@@ -49,32 +49,32 @@ object ShoppingItemController extends Controller with SecureShopper {
   }
 
 
-  def updateItem(name: String) = Action { implicit request =>
+  def updateItem(itemName: String) = IsAuthenticated { username => implicit request =>
     itemForm.bindFromRequest.fold(
       errors => {
         Logger.warn("Updating failed: "+errors)
-        val shoppingItem = ShoppingList.findItem(name)
+        val shoppingItem = ShoppingList.findItem(username, itemName)
         shoppingItem match {
           case None =>  BadRequest(html.shopping.item(null,errors))
           case Some(item) => BadRequest(html.shopping.item(item,errors))
         }
       },
       shoppingItem => {
-        ShoppingListController.shoppingList.updateItem(name,shoppingItem)
+        ShoppingList.updateItem(username,itemName,shoppingItem)
         Redirect(routes.ShoppingListController.index())
       }
     )
   }
 
 
-  def removeItem(name: String) = Action {
-    ShoppingListController.shoppingList.removeItem(name)
+  def removeItem(itemname: String) =  IsAuthenticated { username => implicit request =>
+    ShoppingList.removeItem(username,itemname)
     Redirect(routes.ShoppingListController.index())
   }
 
 
-  def purchaseItem(name: String) = Action {
-    ShoppingListController.shoppingList.purchaseItem(name)
+  def purchaseItem(itemName: String) = IsAuthenticated { username => implicit request =>
+    ShoppingList.purchaseItem(username,itemName)
     Redirect(routes.ShoppingListController.index())
   }
 
@@ -83,7 +83,7 @@ object ShoppingItemController extends Controller with SecureShopper {
 
 object ShoppingListController extends Controller with SecureShopper {
 
-  var shoppingList : ShoppingList = new ShoppingList(ShoppingList.findItems);
+  //var shoppingList : ShoppingList = new ShoppingList(ShoppingList.findItems);
 
   val popularItems = List(
     new ShoppingItem("Bread","Brown,sliced"),
@@ -101,19 +101,19 @@ object ShoppingListController extends Controller with SecureShopper {
 
 
   def index = IsAuthenticated {  username => _ =>
-    Shopper.findByUsername(username).map { shopper =>
-      Ok(views.html.shopping.index(ShoppingListController.shoppingList,ShoppingItemController.itemForm))
-    }.getOrElse(Forbidden)
+    //Shopper.findByUsername(username).map { shopper =>
+      Ok(views.html.shopping.index(ShoppingList.findList(username),ShoppingItemController.itemForm))
+    //}.getOrElse(Forbidden)
   }
 
 
 
-  def showMultipleItemsForm = Action {
+  def showMultipleItemsForm = IsAuthenticated {  username => implicit request =>
     Logger.info("View multiple")
     Ok(views.html.shopping.multiple(multipleItemForm))
   }
 
-  def addMultipleItems = Action { implicit request =>
+  def addMultipleItems = IsAuthenticated {  username => implicit request =>
     multipleItemForm.bindFromRequest.fold(
       errors => {
         Logger.warn("Adding multiplefailed: "+errors)
@@ -122,23 +122,23 @@ object ShoppingListController extends Controller with SecureShopper {
       multipleItems => {
         Logger.info("post multiple")
         val potentialItems = new HashMap[String,ShoppingItem]
-        var items = multipleItems.split("\\r?\\n+")
-        items.foreach { name:String =>
-          if( name.trim != "" && !potentialItems.contains(name.trim)){
-            potentialItems += name -> new ShoppingItem(name.trim)
+        val items = multipleItems.split("\\r?\\n+")
+        items.foreach { itemName:String =>
+          if( itemName.trim != "" && !potentialItems.contains(itemName.trim)){
+            potentialItems += itemName -> new ShoppingItem(itemName.trim)
           }
         }
         if(items.size > potentialItems.size ){
           BadRequest(html.shopping.multiple(multipleItemForm.fill(multipleItems)))
         } else {
-          for ( (name,potentialItem) <- potentialItems){
-            val itemFound = ShoppingList.findItem(name)
+          for ( (potentialName,potentialItem) <- potentialItems){
+            val itemFound = ShoppingList.findItem(username,potentialName)
             itemFound match {
-              case None =>  shoppingList.addItem(potentialItem)
+              case None =>  ShoppingList.addItem(username,potentialItem)
               case Some(item) => {
                 Logger.warn("Item already exists")
                 item.markAsNotPurchased
-                shoppingList.updateItem(name,item)
+                ShoppingList.updateItem(username,item.name,item)
               }
             }
           }
@@ -148,8 +148,8 @@ object ShoppingListController extends Controller with SecureShopper {
     )
   }
 
-  def showPopularItemsForm = Action {
-    val namesOnTheList = shoppingList.list.map { item => item.name }
+  def showPopularItemsForm = IsAuthenticated {  username => _ =>
+    val namesOnTheList = ShoppingList.findItemsByUsername(username).map { item => item.name }
     val popularItemsLeft = popularItems.filter { item => {
       ! namesOnTheList.exists( name => item.name == name )
     } }

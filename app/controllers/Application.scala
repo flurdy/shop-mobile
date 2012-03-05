@@ -80,8 +80,10 @@ trait SecureShopper {
 
   private def onUnauthorized(request: RequestHeader) = Results.Redirect(routes.Application.showLogin)
 
-  def IsAuthenticated(f: => String => Request[AnyContent] => Result) = Security.Authenticated(username, onUnauthorized) { user =>
-    Action(request => f(user)(request))
+  def IsAuthenticated(f: => String => Request[AnyContent] => Result) = {
+    Security.Authenticated(username, onUnauthorized) { shopper =>
+      Action(request => f(shopper)(request))
+    }
   }
 
 }

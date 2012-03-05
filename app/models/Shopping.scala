@@ -59,7 +59,7 @@ object ShoppingItem {
       ).executeUpdate()
     }
   }
-  def storeAsPurchased(formerName: String): Unit = {
+  def storeAsPurchased(username:String, formerName: String): Unit = {
     DB.withConnection { implicit connection =>
       SQL("update shoppingitem " +
         "set ispurchased=true" +
@@ -84,56 +84,16 @@ case class ShoppingList(){
   def this(newList:Seq[ShoppingItem])  {
     this()
     this.list = newList
-    reorderListByPurchased
+    //reorderListByPurchased
   }
-  def addItem(shoppingItem:ShoppingItem) {
-    // val itemFind = list.find{ item => item.name == shoppingItem.name }
-    val itemFind = ShoppingList.findItem(shoppingItem.name)
-    itemFind match {
-      case None =>  ShoppingItem.create(shoppingItem)
-      case Some(item) => {
-        Logger.warn("Unique name required")
-        //val existingItem = removeItem(shoppingItem.name)
-        item.markAsNotPurchased
-        ShoppingItem.update(item.name,item)
-      }
-    }
-    list = ShoppingList.findItems()
-  }
-  def removeItem(name:String):ShoppingItem = {
-    val itemFound = ShoppingList.findItem(name)
-    itemFound match {
-      case None =>  sys.error("Item not on list")
-      case Some(item) => {
-        ShoppingItem.delete(name)
-        list = ShoppingList.findItems()
-        item
-      }
-    }
-  }
-  def updateItem(name:String, shoppingItem:ShoppingItem) {
-    // list = list.map { case i => if (i.name == shoppingItem.name) shoppingItem else i }
-    ShoppingItem.update(name,shoppingItem)
-    reorderListByPurchased
-  }
-  def purchaseItem(name: String){
-    val itemFound = ShoppingList.findItem(name)
-    itemFound match {
-      case None =>  sys.error("Item not on list")
-      case Some(item) => {
-        ShoppingItem.storeAsPurchased(name)
-      }
-    }
-    reorderListByPurchased
-  }
-  def reorderListByPurchased {
+  //def reorderListByPurchased {
     // list.filter { item => !item.isPurchased } ++ list.filter { item => item.isPurchased }
-    list = ShoppingList.findItems()
-  }
+ //   list = ShoppingList.findItems(username)
+  //}
 }
 
 object ShoppingList {
-  def findItem(name: String): Option[ShoppingItem] = {
+  def findItem(username: String, name: String): Option[ShoppingItem] = {
     // val itemFind = list.find{ item => item.name == name }
     val itemsFound = DB.withConnection { implicit connection =>
       SQL("select * from shoppingitem where name = {name}").on(
@@ -146,9 +106,54 @@ object ShoppingList {
     } else
       Some(itemsFound.head)
   }
-  def findItems(): Seq[ShoppingItem] = {
+  def findItemsByUsername(username: String): Seq[ShoppingItem] = {
     DB.withConnection { implicit connection =>
-      SQL("select * from shoppingitem order by ispurchased,name").as(ShoppingItem.simple *)
+      SQL(
+        """
+          select * from shoppingitem order by ispurchased,name
+        """
+      ).as(ShoppingItem.simple *)
+    }
+  }
+  def findList(username: String): ShoppingList = {
+    new ShoppingList( findItemsByUsername(username) )
+  }
+  def addItem(username: String, shoppingItem:ShoppingItem) {
+    // val itemFind = list.find{ item => item.name == shoppingItem.name }
+    val itemFind = ShoppingList.findItem(username,shoppingItem.name)
+    itemFind match {
+      case None =>  ShoppingItem.create(shoppingItem)
+      case Some(item) => {
+        Logger.warn("Unique name required")
+        //val existingItem = removeItem(shoppingItem.name)
+        item.markAsNotPurchased
+        ShoppingItem.update(item.name,item)
+      }
+    }
+    //list = ShoppingList.findItems(username)
+  }
+  def updateItem(username: String,itemName:String,shoppingItem:ShoppingItem) {
+    // list = list.map { case i => if (i.name == shoppingItem.name) shoppingItem else i }
+    ShoppingItem.update(itemName,shoppingItem)
+  }
+  def removeItem(username: String, itemName: String):ShoppingItem = {
+    val itemFound = ShoppingList.findItem(username,itemName)
+    itemFound match {
+      case None =>  sys.error("Item not on list")
+      case Some(item) => {
+        ShoppingItem.delete(itemName)
+        //list = ShoppingList.findItems(username)
+        item
+      }
+    }
+  }
+  def purchaseItem(username: String,itemName: String) {
+    val itemFound = ShoppingList.findItem(username,itemName)
+    itemFound match {
+      case None =>  sys.error("Item not on list")
+      case Some(item) => {
+        ShoppingItem.storeAsPurchased(username,itemName)
+      }
     }
   }
 }
