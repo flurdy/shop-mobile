@@ -16,20 +16,26 @@
     </fieldset>
     <fieldset>
         <legend>Description</legend>
-        <textarea name="description" cols="60" rows="6">@shoppingItem.description</textarea>
+        <textarea name="description" cols="30" rows="12">@shoppingItem.description</textarea>
     </fieldset>
     <fieldset>
         <legend>Is purchased</legend>
         @if(shoppingItem.isPurchased){
+        <div class="radio-button">
         <input type="radio" name="isPurchased" id="isPurchased" value="true" checked="checked" />
         <label for="isPurchased">Is purchased</label>
+        </div><div class="radio-button">
         <input type="radio" name="isPurchased" id="isNotPurchased" value="false" />
         <label for="isNotPurchased">Is not purchased</label>
+        </div>
         } else {
+        <div class="radio-button">
         <input type="radio" name="isPurchased" id="isPurchased" value="true" />
         <label for="isPurchased">Is purchased</label>
+        </div><div class="radio-button">
         <input type="radio" name="isPurchased" id="isNotPurchased" value="false" checked="checked" />
         <label for="isNotPurchased">Is not purchased</label>
+        </div>
         }
     </fieldset>
 

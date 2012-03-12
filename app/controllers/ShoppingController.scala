@@ -16,12 +16,14 @@ object ShoppingItemController extends Controller with SecureShopper {
 
   val itemForm: Form[ShoppingItem] = Form(
     mapping(
-      "name" -> nonEmptyText(maxLength = 128),
-      "description" -> text(maxLength = 500),
-      "isPurchased" -> boolean,
-      "listId" -> ignored(NotAssigned:Pk[Long])
-    )(ShoppingItem.apply)(ShoppingItem.unapply)
-  )
+       "id" -> ignored(NotAssigned:Pk[Long]),
+        "name" -> nonEmptyText(minLength=1,maxLength = 128),
+        "description" -> text(maxLength = 500),
+        "isPurchased" -> boolean,
+        "listId" -> ignored(NotAssigned:Pk[Long])
+      )(ShoppingItem.apply)(ShoppingItem.unapply)
+    )
+
 
 
 
@@ -29,7 +31,7 @@ object ShoppingItemController extends Controller with SecureShopper {
     itemForm.bindFromRequest.fold(
       errors => {
         Logger.warn("Adding failed: "+errors)
-        BadRequest(html.shopping.index(ShoppingList.findList(username),errors))
+        BadRequest(html.shopping.index(ShoppingList.findListByUsername(username).get,errors))
       },
       shoppingItem => {
         ShoppingList.addItem(username,shoppingItem)
@@ -60,7 +62,7 @@ object ShoppingItemController extends Controller with SecureShopper {
         }
       },
       shoppingItem => {
-        ShoppingList.updateItem(username,itemName,shoppingItem)
+        ShoppingList.updateItem(username,shoppingItem)
         Redirect(routes.ShoppingListController.index())
       }
     )
@@ -102,7 +104,7 @@ object ShoppingListController extends Controller with SecureShopper {
 
   def index = IsAuthenticated {  username => _ =>
     //Shopper.findByUsername(username).map { shopper =>
-      Ok(views.html.shopping.index(ShoppingList.findList(username),ShoppingItemController.itemForm))
+      Ok(views.html.shopping.index(ShoppingList.findListByUsername(username).get,ShoppingItemController.itemForm))
     //}.getOrElse(Forbidden)
   }
 
@@ -138,7 +140,7 @@ object ShoppingListController extends Controller with SecureShopper {
               case Some(item) => {
                 Logger.warn("Item already exists")
                 item.markAsNotPurchased
-                ShoppingList.updateItem(username,item.name,item)
+                ShoppingList.updateItem(username,item)
               }
             }
           }
