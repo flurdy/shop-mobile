@@ -18,12 +18,13 @@ body{ font-family: sans-serif; }
 }
 
 /* rounding & shadows */
+/*
 #hull {
 	border-radius: 20px;
 	-webkit-border-radius: 20px;
 	-moz-border-radius: 20px;
 }
-
+*/
 
 #hull {
 	box-shadow: 10px 10px 15px -5px #333333;
@@ -39,7 +40,7 @@ body{ font-family: sans-serif; }
 
 
 /* colours */
-body {  background-color: #446;  }
+body {  background-color: #ccc;  }
 #hull { background-color: #fff;  }
 #innerhull { background-color: #fff;  }
 
@@ -47,11 +48,12 @@ body {  background-color: #446;  }
 .structure {  }
 .compartment { padding: 0.2em 0.5em; }
 body {  }
-#ocean { margin-left: 1em; }
-#fleet { padding: 0.8em 0em; }
-#ballast { min-width: 30em; max-width: 50em; padding: 0.3em 0.5em 0.5em 0.5em; min-height: 14em;  }
+#ocean { margin-left: 0em; }
+#fleet { padding: 0 0 0.8em 0; }
+#ship { min-width: 10em; max-width: 10em; }
+#ballast { padding: 0.3em 0.5em 0.5em 0.5em; min-height: 14em;  }
 #bow {  }
-#lookout { height: 32px;  padding: 0; margin: 0; }
+#lookout { padding: 0; margin: 0; }
 #stern { height: 1em; }
 
 #innerhull { padding: 0; margin: 0; }

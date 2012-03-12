@@ -39,15 +39,16 @@ a,a:visited{ color: black; }
     margin: 0.1em 0.3em 1em 0.1em;
     padding: 0.2em;
     display: table;
-    width: 35em;
+    width: 25em;
 }
 #cargo #shoppingList li {
     list-style: none;
-    display: table-row;
+    border-top: 1px dashed silver;
+}
+#cargo #shoppingList li:first-child {
+    border-top: 0;
 }
 #cargo #shoppingList li > div {
-    border-top: 1px dashed silver;
-    border-bottom: 1px dashed silver;
     padding: 0.7em 0.5em;
     margin: 0;
 }
@@ -56,23 +57,20 @@ a,a:visited{ color: black; }
     max-width: 20em;
     overflow: hidden;
     word-wrap: break-word;
-    display: table-cell;
     font-size: 1.2em;
     font-weight: bold;
-    border-left: 1px dashed silver;
 }
 #cargo #shoppingList li .itemDescription {
     min-width: 10em;
     max-width: 20em;
     word-wrap: break-word;
     font-size: 0.8em;
-    display: table-cell;
+    clear: left;
 }
 #cargo #shoppingList li .buttons {
-    display: table-cell;
-    border-right: 1px dashed silver;
     white-space: nowrap;
     text-align: right;
+    float: right;
 }
 #cargo button,
 #bridge button,
@@ -88,7 +86,6 @@ a,a:visited{ color: black; }
 #aft button {
     width: 12em;
 }
-#cargo #shoppingList li.purchased .itemNumber,
 #cargo #shoppingList li.purchased .itemName,
 #cargo #shoppingList li.purchased .itemDescription {
     color: gray;
@@ -100,7 +97,9 @@ a,a:visited{ color: black; }
 }
 #bridge input,
 #cargo input {   font-size: 1.2em; margin: 0 2em; }
-#cargo input[type="radio"] { margin-left: 3em; }
+#bridge input[type="text"],
+#cargo input[type="text"] { width: 10em; }
+#cargo input[type="radio"] { clear: left; margin: 1em 3em; }
 
 #cargo form,
 #aft form { display: inline; }
@@ -112,17 +111,20 @@ a,a:visited{ color: black; }
 
 #cargo fieldset { margin: 1em 0; }
 #cargo form button { text-align: center; }
-#cargo #update-button{ float: left; margin: 0 0 0 0; }
-#cargo #remove-button{ float: left; margin: 0 0 0 2em; }
-#cargo #cancel-button { float: right; margin: 0 0 1em 0; }
+#cargo #update-button,
+#cargo #remove-button,
+#cargo #cancel-button {float: left;  margin: 0 0 1em 0; }
+#cargo #update-button button,
+#cargo #remove-button button,
+#cargo #cancel-button button { padding: 0.6em 0; }
+#cargo #update-button button,
+#cargo #remove-button button { width: 5em; }
+#cargo #cancel-button button { width: 8em; }
 
-#aft { padding: 1em; text-align: center; }
-#aft form {text-align: center;  }
-#aft button {text-align: center; }
+#bridge, #aft { padding: 1em; text-align: center; }
+#aft form, #aft bridge form {text-align: center;  }
+#aft button, #bridge button {text-align: center; margin: 1em; }
 
-#bridge { padding: 1em; text-align: center; }
-#bridge form {text-align: center;  }
-#bridge button {text-align: center; }
 
 #cargo #popular td { padding: 1em 1em; border: 1px dashed silver; }
 #cargo #popular td.name { padding: 1em 4em; }
