@@ -28,6 +28,8 @@ class ShopperSpec extends Specification {
   }
 }
 
+
+
 class ShoppingListSpec extends Specification {
   "The Shopping list " should {
     "display 4 items for testuser" in {
@@ -47,16 +49,28 @@ class ShoppingListSpec extends Specification {
     }
     "bananas is on testusers list" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-        ShoppingList.findItem("testuser","Bananas") must beSome
+        ShoppingList.findItemByName("testuser","Bananas").get.name must beEqualTo("Bananas")
       }
     }
     "Apples is not on testusers list" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-        ShoppingList.findItem("testuser","Apples") must beNone
+        ShoppingList.findItemByName("testuser","Apples") must beNone
+      }
+    }
+    "be able to remove an item" in {
+      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
+        val shoppingList = ShoppingList.findListByUsername("testuser").get
+        val item = shoppingList.addItem(new ShoppingItem("Burgers"))
+        shoppingList.findItemByName("Burgers") must beSome
+        shoppingList.removeItem("Burgers")
+        shoppingList.findItemByName("Burgers") must beNone
       }
     }
   }
 }
+
+
+
 
 class ShoppingItemSpec extends Specification {
   "A shopping item" should {
@@ -72,7 +86,50 @@ class ShoppingItemSpec extends Specification {
         otherusersList.id.get must beGreaterThan(1L)
         val otheritem:ShoppingItem = otherusersList.addItem(new ShoppingItem("Burgers"))
         otheritem must beAnInstanceOf[ShoppingItem]
-        otheritem.id must beEqualTo(testitem.id)
+        otheritem.id must not be equalTo(testitem.id)
+      }
+    }
+
+    "mark as purchased" in {
+      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
+        val testusersList = ShoppingList.findListByUsername("testuser").get
+        val apples = testusersList.addItem(new ShoppingItem("Apples"))
+        testusersList.findItemByName("Apples").get.isPurchased must beFalse
+        apples.storeAsPurchased
+        testusersList.findItemByName("Apples").get.isPurchased must beTrue
+      }
+    }
+    "if added by the same name, will mark as not purchased if purchased" in {
+      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
+        val testusersList = ShoppingList.findListByUsername("testuser").get
+        val apples = testusersList.addItem(new ShoppingItem("Apples"))
+        apples.id.get must beGreaterThan(4L)
+        testusersList.findItemByName("Apples").get.isPurchased must beFalse
+        apples.storeAsPurchased
+        testusersList.findItemByName("Apples").get.isPurchased must beTrue
+        val apples2 = testusersList.addItem(new ShoppingItem("Apples"))
+        testusersList.findItemByName("Apples").get.isPurchased must beFalse
+      }
+    }
+    "if added by the same name, will still be not purchased if not purchased" in {
+      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
+        val testusersList = ShoppingList.findListByUsername("testuser").get
+        val apples = testusersList.addItem(new ShoppingItem("Apples"))
+        apples.id.get must beGreaterThan(4L)
+        testusersList.findItemByName("Apples").get.isPurchased must beFalse
+        val apples2 = testusersList.addItem(new ShoppingItem("Apples"))
+        testusersList.findItemByName("Apples").get.isPurchased must beFalse
+      }
+    }
+    "be able update name" in {
+      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
+        val shoppingList = ShoppingList.findListByUsername("testuser").get
+        val item = shoppingList.addItem(new ShoppingItem("Burgers"))
+        shoppingList.findItemByName("Burgers") must beSome
+        val burgers = shoppingList.findItemByName("Burgers").get
+        ShoppingItem.update(new ShoppingItem(burgers.id,"Hamburgers",burgers.description,burgers.isPurchased,burgers.listId))
+        shoppingList.findItemByName("Burgers") must beNone
+        shoppingList.findItemByName("Hamburgers") must beSome
       }
     }
   }

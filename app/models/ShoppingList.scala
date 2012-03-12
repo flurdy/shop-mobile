@@ -9,24 +9,13 @@ import play.Logger
 
 case class ShoppingList(id:Pk[Long]){
   var list:Seq[ShoppingItem] = List()
-  //  def this(){
-  //    this(NotAssigned)
-  //  }
   def this(id:Pk[Long],newList:Seq[ShoppingItem])  {
     this(id)
     this.list = newList
-    //reorderListByPurchased
   }
-  //def reorderListByPurchased {
-  // list.filter { item => !item.isPurchased } ++ list.filter { item => item.isPurchased }
-  //   list = ShoppingList.findItems(username)
-  //}
 
-  def addItem(shoppingItem:ShoppingItem) = {
-    //Logger.error("List id is " + id.getOrElse( throw new IllegalArgumentException("List ID NULL:"+id) ))
-//    Logger.error("Item List id is " + shoppingItem.listId.getOrElse( throw new IllegalArgumentException("Item list ID NULL:"+shoppingItem.listId) ))
-    val itemFind = findItem(shoppingItem.name)
-    itemFind match {
+  def addItem(shoppingItem:ShoppingItem):ShoppingItem = {
+    findItemByName(shoppingItem.name) match {
       case None =>  {
         ShoppingItem.create(
           new ShoppingItem(
@@ -42,20 +31,45 @@ case class ShoppingList(id:Pk[Long]){
       }
     }
   }
-  def findItem(name: String): Option[ShoppingItem] = {
-    val itemsFound = DB.withConnection { implicit connection =>
+
+  def findItemByName(itemName: String): Option[ShoppingItem] = {
+    DB.withConnection { implicit connection =>
       SQL("select * from shoppingitem " +
         "where itemname = {name}" +
         " and listid = {listid}").on(
-        'name -> name,
+        'name -> itemName,
         'listid -> id
-      ).as(ShoppingItem.simple *)
+      ).as(ShoppingItem.simple.singleOpt)
     }
-    if( itemsFound.isEmpty )  {
-      Logger.info("No item found")
-      None
-    } else
-      Some(itemsFound.head)
+  }
+
+  def findItemById(itemId:Pk[Long]): Option[ShoppingItem] = {
+    DB.withConnection { implicit connection =>
+      SQL("select * from shoppingitem " +
+        "where itemname = {name}" +
+        " and listid = {listid}").on(
+        'id -> itemId.get,
+        'listid -> id
+      ).as(ShoppingItem.simple.singleOpt)
+    }
+  }
+
+  def purchaseItem(itemName: String) {
+    findItemByName(itemName) match {
+      case None =>  throw new IllegalArgumentException("Item not on list")
+      case Some(item) => {
+        item.storeAsPurchased
+      }
+    }
+  }
+  def removeItem(itemName: String):ShoppingItem = {
+    findItemByName(itemName) match {
+      case None => throw new IllegalArgumentException("Item not found")
+      case Some(item) => {
+        ShoppingItem.delete(item.id)
+        item
+      }
+    }
   }
 }
 
@@ -67,19 +81,10 @@ object ShoppingList {
     }
   }
 
-  def findItem(username: String, name: String): Option[ShoppingItem] = {
-    // val itemFind = list.find{ item => item.name == name }
-    val itemsFound = DB.withConnection { implicit connection =>
-      SQL("select * from shoppingitem where itemname = {name}").on(
-        'name -> name
-      ).as(ShoppingItem.simple *)
-    }
-    if( itemsFound.isEmpty )  {
-      Logger.info("No item found")
-      None
-    } else
-      Some(itemsFound.head)
+  def findItemByName(username: String, itemName: String): Option[ShoppingItem] = {
+    findListByUsername(username).get.findItemByName(itemName)
   }
+
   def findItemsByUsername(username: String): Seq[ShoppingItem] = {
     // TODO: check if username exists
     DB.withConnection { implicit connection =>
@@ -110,8 +115,7 @@ object ShoppingList {
 
   def addItem(username: String, shoppingItem:ShoppingItem) {
     val list = findListByUsername(username).get
-    val itemFind = list.findItem(shoppingItem.name)
-    itemFind match {
+    list.findItemByName(shoppingItem.name) match {
       case None =>  list.addItem(shoppingItem)
       case Some(item) => {
         Logger.warn("Unique name required")
@@ -123,29 +127,26 @@ object ShoppingList {
     //list = ShoppingList.findItems(username)
   }
   def updateItem(username: String,shoppingItem:ShoppingItem) {
-    // list = list.map { case i => if (i.name == shoppingItem.name) shoppingItem else i }
-    ShoppingItem.update(shoppingItem)
+    val list = findListByUsername(username).get
+    list.findItemById(shoppingItem.id) match {
+      case None => throw new IllegalStateException("Item not on list")
+      case Some(item) => ShoppingItem.update(shoppingItem)
+    }
   }
+
   def removeItem(username: String, itemName: String):ShoppingItem = {
-    val itemFound = ShoppingList.findItem(username,itemName)
-    itemFound match {
-      case None =>  sys.error("Item not on list")
-      case Some(item) => {
-        ShoppingItem.delete(itemName)
-        //list = ShoppingList.findItems(username)
-        item
-      }
-    }
+    val list = findListByUsername(username).get
+    list.removeItem(itemName)
   }
+
   def purchaseItem(username: String,itemName: String) {
-    val itemFound = ShoppingList.findItem(username,itemName)
-    itemFound match {
-      case None =>  sys.error("Item not on list")
-      case Some(item) => {
-        ShoppingItem.storeAsPurchased(username,itemName)
-      }
+    val list = findListByUsername(username).get
+    list.findItemByName(itemName) match {
+      case None =>  throw new IllegalArgumentException("Item not on list")
+      case Some(item) => item.storeAsPurchased
     }
   }
+
   def createList(username:String) = {
 
 

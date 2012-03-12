@@ -28,10 +28,18 @@ case class ShoppingItem(
   }
   def markAsPurchased {
     isPurchased = true
-//    ShoppingItem.storeAsPurchased(name)
   }
   def markAsNotPurchased {
     isPurchased = false
+  }
+  def storeAsPurchased {
+    DB.withConnection { implicit connection =>
+      SQL("update shoppingitem " +
+        "set ispurchased=true" +
+        " where id = {id}").on(
+        'id -> id
+      ).executeUpdate()
+    }
   }
 }
 
@@ -47,7 +55,7 @@ object ShoppingItem {
       case id~itemname~description~ispurchased~listid => ShoppingItem(id,itemname,description,ispurchased,listid)
     }
   }
-  def create(item: ShoppingItem) = {
+  def create(item: ShoppingItem):ShoppingItem = {
     // TODO: check if newname is unique
     // TODO: check if newname trimmed is > 1 char
 //    Logger.error("List id is " + item.listId.getOrElse( throw new IllegalArgumentException("ID NULL") ))
@@ -59,8 +67,13 @@ object ShoppingItem {
         'ispurchased -> item.isPurchased,
         'listid -> item.listId
       ).executeInsert()
+      SQL("select * from shoppingitem " +
+        "where itemname = {name}" +
+        " and listid = {listid}").on(
+        'name -> item.name,
+        'listid -> item.listId
+      ).as(ShoppingItem.simple.single)
     }
-    item
   }
   def update(item: ShoppingItem) = {
     // TODO: check if newname is unique
@@ -79,20 +92,20 @@ object ShoppingItem {
     }
     item
   }
-  def storeAsPurchased(username:String, formerName: String): Unit = {
-    DB.withConnection { implicit connection =>
-      SQL("update shoppingitem " +
-        "set ispurchased=true" +
-        " where itemname = {formerName}").on(
-        'formerName -> formerName
-      ).executeUpdate()
-    }
-  }
-  def delete(name: String): Unit = {
+//  def storeAsPurchased(username:String, formerName: String): Unit = {
+//    DB.withConnection { implicit connection =>
+//      SQL("update shoppingitem " +
+//        "set ispurchased=true" +
+//        " where itemname = {formerName}").on(
+//        'formerName -> formerName
+//      ).executeUpdate()
+//    }
+//  }
+  def delete(id:Pk[Long]) {
     DB.withConnection { implicit connection =>
       SQL("delete from shoppingitem " +
-        " where itemname = {name}").on(
-        'name -> name
+        " where id = {id}").on(
+        'id -> id
       ).execute()
     }
   }

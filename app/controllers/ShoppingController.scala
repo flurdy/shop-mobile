@@ -43,7 +43,7 @@ object ShoppingItemController extends Controller with SecureShopper {
 
   def showItem(name: String) = IsAuthenticated { username => implicit request =>
     Logger.info("View show item")
-    val shoppingItem = ShoppingList.findItem(username, name)
+    val shoppingItem = ShoppingList.findItemByName(username, name)
     shoppingItem match {
       case None =>  NotFound
       case Some(item) =>  Ok(views.html.shopping.item(item,itemForm))
@@ -55,7 +55,7 @@ object ShoppingItemController extends Controller with SecureShopper {
     itemForm.bindFromRequest.fold(
       errors => {
         Logger.warn("Updating failed: "+errors)
-        val shoppingItem = ShoppingList.findItem(username, itemName)
+        val shoppingItem = ShoppingList.findItemByName(username, itemName)
         shoppingItem match {
           case None =>  BadRequest(html.shopping.item(null,errors))
           case Some(item) => BadRequest(html.shopping.item(item,errors))
@@ -134,7 +134,7 @@ object ShoppingListController extends Controller with SecureShopper {
           BadRequest(html.shopping.multiple(multipleItemForm.fill(multipleItems)))
         } else {
           for ( (potentialName,potentialItem) <- potentialItems){
-            val itemFound = ShoppingList.findItem(username,potentialName)
+            val itemFound = ShoppingList.findItemByName(username,potentialName)
             itemFound match {
               case None =>  ShoppingList.addItem(username,potentialItem)
               case Some(item) => {
