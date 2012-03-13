@@ -8,6 +8,12 @@
 </style>
 
 
+@formdata.globalError.map { error =>
+<p class="error">
+    @error.message
+</p>
+}
+
 <div>
     @form(action = routes.ShoppingListController.addMultipleItems()) {
     <fieldset>

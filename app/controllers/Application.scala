@@ -14,9 +14,9 @@ object Application extends Controller {
 
   val loginForm = Form(
     tuple(
-      "username" -> text,
+      "username" -> text(minLength = 2),
       "password" -> text
-    ) verifying ("Invalid username", result => result match {
+    ) verifying ("Invalid username? Perhaps register first?", result => result match {
       case (username, password) => Shopper.authenticate(username, password).isDefined
     })
   )
@@ -35,15 +35,15 @@ object Application extends Controller {
     Redirect(routes.ShoppingListController.index())
   }
 
-  def showLogin = Action { implicit request =>
-    Ok(html.login(loginForm,registerForm))
+  def showLogin(message:String="") = Action { implicit request =>
+    Ok(html.login(loginForm,registerForm,message))
   }
 
   def authenticate = Action { implicit request =>
     loginForm.bindFromRequest.fold(
       formWithErrors => {
         Logger.warn("Log in failed" )
-        BadRequest(html.login(formWithErrors,registerForm))
+        BadRequest(html.login(formWithErrors,registerForm,"Log in failed"))
       },
       user => {
         Logger.info("Logging in" )
@@ -56,18 +56,18 @@ object Application extends Controller {
     registerForm.bindFromRequest.fold(
       formWithErrors => {
         Logger.warn("Register failed" )
-        BadRequest(html.login(loginForm,formWithErrors))
+        BadRequest(html.login(loginForm,formWithErrors,"Registration failed"))
       },
       shopper => {
         Logger.info("Registering" )
         Shopper.create(shopper)
-        Redirect(routes.Application.showLogin)
+        Redirect(routes.Application.showLogin("Registered. Please log in"))
       }
     )
   }
 
   def logout = Action {
-    Redirect(routes.Application.showLogin).withNewSession.flashing(
+    Redirect(routes.Application.showLogin("You've been logged out")).withNewSession.flashing(
       "success" -> "You've been logged out"
     )
   }
@@ -78,10 +78,11 @@ trait SecureShopper {
 
   private def username(request: RequestHeader) = request.session.get("username")
 
-  private def onUnauthorized(request: RequestHeader) = Results.Redirect(routes.Application.showLogin)
+  private def onUnauthorised(request: RequestHeader) =
+        Results.Redirect(routes.Application.showLogin("Not authorised"))
 
   def IsAuthenticated(f: => String => Request[AnyContent] => Result) = {
-    Security.Authenticated(username, onUnauthorized) { shopper =>
+    Security.Authenticated(username, onUnauthorised) { shopper =>
       Action(request => f(shopper)(request))
     }
   }

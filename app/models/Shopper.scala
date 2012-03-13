@@ -8,7 +8,7 @@ import anorm.SqlParser._
 import scala.Some._
 
 
-case class Shopper(username: String, password: String)  {
+case class Shopper(username: String, password: String = "")  {
   def findList ={
     ShoppingList.findListByUsername(this.username)
   }
@@ -25,7 +25,7 @@ object Shopper {
       case username~password => Shopper(username, password)
     }
   }
-  val usernameCheck = """^[^ ][azAZ09_-]+[^ ]$""".r
+  val usernameCheck = """^[a-zA-Z0-9_\-]+$""".r
 
   def findByUsername(username: String): Option[Shopper] = {
     DB.withConnection { implicit connection =>
@@ -58,20 +58,25 @@ object Shopper {
   def create(shopper: Shopper): Shopper = {
     assert (shopper.username.trim == shopper.username)
     assert (shopper.username.length > 1)
-    assert ( usernameCheck.pattern.matcher(shopper.username).matches )
-    DB.withConnection { implicit connection =>
-      SQL(
-        """
-          insert into shopper values (
-            {username}, {password}
-          )
-        """
-      ).on(
-        'username -> shopper.username,
-        'password -> shopper.password
-      ).executeUpdate()
-      ShoppingList.createList(shopper.username)
-      shopper
+    assert ( usernameCheck.pattern.matcher(shopper.username).matches, "Invalid characters:"+shopper.username )
+    findByUsername(shopper.username) match {
+      case Some(oldShopper) => throw new IllegalStateException("Username already taken")
+      case None => {
+        DB.withConnection { implicit connection =>
+          SQL(
+            """
+              insert into shopper values (
+                {username}, {password}
+              )
+            """
+          ).on(
+            'username -> shopper.username,
+            'password -> shopper.password
+          ).executeUpdate()
+          ShoppingList.createList(shopper.username)
+          shopper
+        }
+      }
     }
   }
 

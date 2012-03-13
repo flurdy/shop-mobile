@@ -34,7 +34,7 @@ object ShoppingItemController extends Controller with SecureShopper {
         BadRequest(html.shopping.index(ShoppingList.findListByUsername(username).get,errors))
       },
       shoppingItem => {
-        ShoppingList.addItem(username,shoppingItem)
+        ShoppingList.addItem(username,new ShoppingItem(shoppingItem))
         Redirect(routes.ShoppingListController.index())
       }
     )
@@ -138,15 +138,16 @@ object ShoppingListController extends Controller with SecureShopper {
           BadRequest(html.shopping.multiple(multipleItemForm.fill(multipleItems)))
         } else {
           for ( (potentialName,potentialItem) <- potentialItems){
-            val itemFound = ShoppingList.findItemByName(username,potentialName)
-            itemFound match {
-              case None =>  ShoppingList.addItem(username,potentialItem)
-              case Some(item) => {
-                Logger.warn("Item already exists")
-                item.markAsNotPurchased
-                ShoppingList.updateItem(username,item)
-              }
-            }
+            ShoppingList.addItem(username,potentialItem)
+//            val itemFound = ShoppingList.findItemByName(username,potentialName)
+//            itemFound match {
+//              case None =>  ShoppingList.addItem(username,potentialItem)
+//              case Some(item) => {
+//                Logger.warn("Item already exists")
+//                item.markAsNotPurchased
+//                ShoppingList.updateItem(username,item)
+//              }
+//            }
           }
           Redirect(routes.ShoppingListController.index())
         }

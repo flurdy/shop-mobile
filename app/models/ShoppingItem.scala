@@ -13,21 +13,18 @@ case class ShoppingItem(
           name:String,
           description:String,
           var isPurchased:Boolean,
-          listId:Pk[Long]){
+          listId:Pk[Long] ){
   def this(name:String, description:String,isPurchased:Boolean,listId:Pk[Long]){
-    this(NotAssigned,name,description,isPurchased,listId)
-//    Logger.error("List id is " +  listId)
-//    Logger.error("Item id is " + id.getOrElse( throw new IllegalArgumentException("Item ID NULL:"+id) ))
-//    Logger.error("Item List id is " + listId.getOrElse( throw new IllegalArgumentException("Item list ID NULL:"+listId) ))
+    this(NotAssigned,name.trim,description,isPurchased,listId)
   }
   def this(id:Pk[Long], newItem:ShoppingItem,listId:Pk[Long]){
-    this(id,newItem.name,newItem.description,newItem.isPurchased,listId)
+    this(id,newItem.name.trim,newItem.description,newItem.isPurchased,listId)
   }
-  def this(name:String, description:String){
-    this(NotAssigned,name,description,false,NotAssigned)
+  def this(newItem:ShoppingItem){
+    this(newItem.id,newItem.name.trim,newItem.description,newItem.isPurchased,newItem.listId)
   }
-  def this(name:String){
-    this(NotAssigned,name,"",false,NotAssigned)
+  def this(name:String, description:String=""){
+    this(NotAssigned,name.trim,description,false,NotAssigned)
   }
   def markAsPurchased {
     isPurchased = true
@@ -58,28 +55,34 @@ object ShoppingItem {
       case id~itemname~description~ispurchased~listid => ShoppingItem(id,itemname,description,ispurchased,listid)
     }
   }
-  val itemNameCheck = """[a-zA-Z][a-zA-Z0-9_-]*""".r
+  val itemNameCheck = """^[a-zA-Z0-9_\-][a-zA-Z0-9_\-\ ]*[a-zA-Z0-9_\-]$""".r
   
   def create(item: ShoppingItem):ShoppingItem = {
 
     assert( item.name.trim == item.name )
     assert( item.name.length > 1 )
-    assert ( itemNameCheck.pattern.matcher(item.name).matches )
-    
-    DB.withConnection { implicit connection =>
-      SQL("insert into shoppingitem(itemname,description,ispurchased,listid)" +
-        " values ({name},{description},{ispurchased},{listid})").on(
-        'name -> item.name,
-        'description -> item.description,
-        'ispurchased -> item.isPurchased,
-        'listid -> item.listId
-      ).executeInsert()
-      SQL("select * from shoppingitem " +
-        "where itemname = {name}" +
-        " and listid = {listid}").on(
-        'name -> item.name,
-        'listid -> item.listId
-      ).as(ShoppingItem.simple.single)
+    assert ( itemNameCheck.pattern.matcher(item.name).matches, "Illegal charachters:["+item.name+"]" )
+
+    Logger.info("Creating new shopping item:"+item.name)
+    ShoppingList.findItemByNameAndListId(item.listId,item.name) match {
+      case Some(item) => throw new IllegalStateException("Item already exists")
+      case None => {
+        DB.withConnection { implicit connection =>
+          SQL("insert into shoppingitem(itemname,description,ispurchased,listid)" +
+            " values ({name},{description},{ispurchased},{listid})").on(
+            'name -> item.name,
+            'description -> item.description,
+            'ispurchased -> item.isPurchased,
+            'listid -> item.listId
+          ).executeInsert()
+          SQL("select * from shoppingitem " +
+            "where itemname = {name}" +
+            " and listid = {listid}").on(
+            'name -> item.name,
+            'listid -> item.listId
+          ).as(ShoppingItem.simple.single)
+        }
+      }
     }
   }
   

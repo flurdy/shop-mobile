@@ -8,6 +8,11 @@
     #aft, #bridge { display: block; }
 </style>
 
+@itemForm.globalError.map { error =>
+<p class="error">
+    @error.message
+</p>
+}
 
 <ol id="shoppingList">
     @shoppingList.list.map { item =>

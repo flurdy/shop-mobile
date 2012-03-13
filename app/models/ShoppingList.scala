@@ -17,6 +17,7 @@ case class ShoppingList(id:Pk[Long]){
   def addItem(shoppingItem:ShoppingItem):ShoppingItem = {
     findItemByName(shoppingItem.name) match {
       case None =>  {
+        Logger.info("Creating new shopping item:"+shoppingItem.name)
         ShoppingItem.create(
           new ShoppingItem(
             shoppingItem.name,
@@ -33,14 +34,7 @@ case class ShoppingList(id:Pk[Long]){
   }
 
   def findItemByName(itemName: String): Option[ShoppingItem] = {
-    DB.withConnection { implicit connection =>
-      SQL("select * from shoppingitem " +
-        "where itemname = {name}" +
-        " and listid = {listid}").on(
-        'name -> itemName,
-        'listid -> id
-      ).as(ShoppingItem.simple.singleOpt)
-    }
+    ShoppingList.findItemByNameAndListId(id,itemName)
   }
 
   def findItemById(itemId:Pk[Long]): Option[ShoppingItem] = {
@@ -103,6 +97,17 @@ object ShoppingList {
 
   def findItemByName(username: String, itemName: String): Option[ShoppingItem] = {
     findListByUsername(username).get.findItemByName(itemName)
+  }
+
+  def findItemByNameAndListId(listId:Pk[Long], itemName:String): Option[ShoppingItem] = {
+    DB.withConnection { implicit connection =>
+      SQL("select * from shoppingitem " +
+        "where itemname = {name}" +
+        " and listid = {listid}").on(
+        'name -> itemName,
+        'listid -> listId
+      ).as(ShoppingItem.simple.singleOpt)
+    }
   }
 
   def findItemsByUsername(username: String): Seq[ShoppingItem] = {

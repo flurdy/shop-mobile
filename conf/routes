@@ -6,7 +6,7 @@
 GET     /                      controllers.ShoppingListController.index
 GET     /index.html            controllers.ShoppingListController.index
 
-GET     /login.html            controllers.Application.showLogin
+GET     /login.html            controllers.Application.showLogin(message:String)
 GET     /login            controllers.Application.redirectToIndex
 POST    /login                 controllers.Application.authenticate
 POST    /register              controllers.Application.register

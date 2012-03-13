@@ -11,33 +11,33 @@ class ShopperSpec extends Specification {
   "A Shopper" should {
     "be able to register" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-        Shopper.create(new Shopper("thirduser","")) must beAnInstanceOf[Shopper]
+        Shopper.create(new Shopper("thirduser")) must beAnInstanceOf[Shopper]
       }
     }
     "must have a unique username" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-        Shopper.create(new Shopper("thirduser","")) must beAnInstanceOf[Shopper]
-        Shopper.create(new Shopper("thirduser","")) must throwAn[Exception]
+        Shopper.create(new Shopper("thirduser")) must beAnInstanceOf[Shopper]
+        Shopper.create(new Shopper("thirduser")) must throwAn[IllegalStateException]
       }
     }
     "when registering will have an empty list" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         Shopper.findByUsername("thirduser") must beNone
         ShoppingList.findListByUsername("thirduser") must beNone
-        Shopper.create(new Shopper("thirduser","")) must beAnInstanceOf[Shopper]
+        Shopper.create(new Shopper("thirduser")) must beAnInstanceOf[Shopper]
         Shopper.findByUsername("thirduser").get must beAnInstanceOf[Shopper]
         ShoppingList.findItemsByUsername("thirduser") must be empty
       }
     }
     "not have a blank username" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-        Shopper.create(new Shopper("",""))  must throwAn[AssertionError]
+        Shopper.create(new Shopper(""))  must throwAn[AssertionError]
       }
     }
     "username must not contain funny chars" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         val shoppingList = ShoppingList.findListByUsername("testuser").get
-        Shopper.create(new Shopper("sdsda&521%¤6",""))   must throwAn[Exception]
+        Shopper.create(new Shopper("sdsda&521%¤6"))   must throwAn[AssertionError]
       }
     }
   }
@@ -166,11 +166,18 @@ class ShoppingItemSpec extends Specification {
         shoppingList.findItemByName("Burgers").get.description must beEqualTo("Whopper")
       }
     }
-    "must not contain funny chars" in {
+    "name must not contain funny chars" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         val shoppingList = ShoppingList.findListByUsername("testuser").get
-        shoppingList.addItem(new ShoppingItem("Burgers/&12¨")) must throwAn[Exception]
+        shoppingList.addItem(new ShoppingItem("Burgers/&12¨")) must throwAn[AssertionError]
       }
+    }
+  }
+  "name can be several words" in {
+    running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
+      val shoppingList = ShoppingList.findListByUsername("testuser").get
+      shoppingList.addItem(new ShoppingItem("Burgers and chips",""))
+      shoppingList.findItemByName("Burgers and chips").get must beAnInstanceOf[ShoppingItem]
     }
   }
 } 
