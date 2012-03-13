@@ -35,8 +35,8 @@ object Application extends Controller {
     Redirect(routes.ShoppingListController.index())
   }
 
-  def showLogin(message:String="") = Action { implicit request =>
-    Ok(html.login(loginForm,registerForm,message))
+  def showLogin = Action { implicit request =>
+    Ok(html.login(loginForm,registerForm,flash.get("message").getOrElse("")))
   }
 
   def authenticate = Action { implicit request =>
@@ -60,15 +60,17 @@ object Application extends Controller {
       },
       shopper => {
         Logger.info("Registering" )
-        Shopper.create(shopper)
-        Redirect(routes.Application.showLogin("Registered. Please log in"))
+        Shopper.create(shopper)        
+        Redirect(routes.Application.showLogin).flashing(
+          "message" -> "Registered. Please log in"
+         )
       }
     )
   }
 
   def logout = Action {
-    Redirect(routes.Application.showLogin("You've been logged out")).withNewSession.flashing(
-      "success" -> "You've been logged out"
+    Redirect(routes.Application.showLogin).withNewSession.flashing(
+      "message" -> "You've been logged out"
     )
   }
 }
@@ -79,7 +81,7 @@ trait SecureShopper {
   private def username(request: RequestHeader) = request.session.get("username")
 
   private def onUnauthorised(request: RequestHeader) =
-        Results.Redirect(routes.Application.showLogin("Not authorised"))
+        Results.Redirect(routes.Application.showLogin)//("Not authorised"))
 
   def IsAuthenticated(f: => String => Request[AnyContent] => Result) = {
     Security.Authenticated(username, onUnauthorised) { shopper =>

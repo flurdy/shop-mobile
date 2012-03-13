@@ -15,8 +15,12 @@ a,a:visited{ color: black; }
 #bow h2 { margin: 0 2em 0 0; padding: 0.4em 1em; font-size: 1.7em; }
 
 #stern { padding: 0.2em 1.5em; margin: 0px; overflow: hidden; }
-#stern div {
+#stern #projectlink {
     float: right;
+    font-size: 0.8em;
+}
+#stern #logoutlink {
+    text-align: center;
     font-size: 0.8em;
 }
 #stern #flurdy{
@@ -36,10 +40,11 @@ a,a:visited{ color: black; }
 }
 
 #cargo #shoppingList  {
-    margin: 0.1em 0.3em 1em 0.1em;
-    padding: 0.2em;
+    margin: 0.1em 0 1em 0em;
+    padding: 0.2em 0;
     display: table;
-    width: 25em;
+    width: 19.5em;
+    /* border: 1px solid #999; */
 }
 #cargo #shoppingList li {
     list-style: none;
@@ -68,6 +73,7 @@ a,a:visited{ color: black; }
     clear: left;
 }
 #cargo #shoppingList li .buttons {
+    padding-right: 0.2em;
     white-space: nowrap;
     text-align: right;
     float: right;
@@ -76,12 +82,18 @@ a,a:visited{ color: black; }
 #bridge button,
 #aft button {
     font-size: 1.0em;
-    margin: 0em 0.5em;
-    padding: 0.6em 1em;
+    padding: 0.3em 0.2em 0.5em 0.1em;
 }
 #bridge button,
+#aft button {
+    margin: 0em 0.5em;
+}
 #cargo button{
-    width: 8em;
+    margin: 0em 0.1em 0 0.5em;
+}    
+#bridge button,
+#cargo button{
+    width: 6em;
 }
 #aft button {
     width: 12em;
