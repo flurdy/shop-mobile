@@ -25,6 +25,7 @@ object Shopper {
       case username~password => Shopper(username, password)
     }
   }
+  val usernameCheck = """^[^ ][azAZ09_-]+[^ ]$""".r
 
   def findByUsername(username: String): Option[Shopper] = {
     DB.withConnection { implicit connection =>
@@ -55,6 +56,9 @@ object Shopper {
   }
 
   def create(shopper: Shopper): Shopper = {
+    assert (shopper.username.trim == shopper.username)
+    assert (shopper.username.length > 1)
+    assert ( usernameCheck.pattern.matcher(shopper.username).matches )
     DB.withConnection { implicit connection =>
       SQL(
         """

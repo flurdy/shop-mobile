@@ -17,14 +17,29 @@ class ShopperSpec extends Specification {
     "must have a unique username" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         Shopper.create(new Shopper("thirduser","")) must beAnInstanceOf[Shopper]
-        Shopper.create(new Shopper("thirduser",""))  must throwAn[Exception]
+        Shopper.create(new Shopper("thirduser","")) must throwAn[Exception]
       }
     }
-//    "must have a username" in {
-//      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-//        Shopper.create(new Shopper("",""))  must throwAn[Exception]
-//      }
-//    }
+    "when registering will have an empty list" in {
+      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
+        Shopper.findByUsername("thirduser") must beNone
+        ShoppingList.findListByUsername("thirduser") must beNone
+        Shopper.create(new Shopper("thirduser","")) must beAnInstanceOf[Shopper]
+        Shopper.findByUsername("thirduser").get must beAnInstanceOf[Shopper]
+        ShoppingList.findItemsByUsername("thirduser") must be empty
+      }
+    }
+    "not have a blank username" in {
+      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
+        Shopper.create(new Shopper("",""))  must throwAn[AssertionError]
+      }
+    }
+    "username must not contain funny chars" in {
+      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
+        val shoppingList = ShoppingList.findListByUsername("testuser").get
+        Shopper.create(new Shopper("sdsda&521%¤6",""))   must throwAn[Exception]
+      }
+    }
   }
 }
 
@@ -42,17 +57,17 @@ class ShoppingListSpec extends Specification {
         ShoppingList.findItemsByUsername("otheruser") must be empty
       }
     }
-    "throw error for unknownuser" in {
+    "throw an error for unknownuser" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         Shopper.findByUsername("unknownuser").get.findItems must throwAn[Exception]
       }
     }
-    "bananas is on testusers list" in {
+    "bananas are on testusers list" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         ShoppingList.findItemByName("testuser","Bananas").get.name must beEqualTo("Bananas")
       }
     }
-    "Apples is not on testusers list" in {
+    "Apples are not on testusers list" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         ShoppingList.findItemByName("testuser","Apples") must beNone
       }
@@ -79,17 +94,16 @@ class ShoppingItemSpec extends Specification {
 
         val testusersList = ShoppingList.findListByUsername("testuser").get
         testusersList.id.get must beGreaterThan(0L)
-        val testitem:ShoppingItem = testusersList.addItem(new ShoppingItem("Burgers"))
+        val testitem = testusersList.addItem(new ShoppingItem("Burgers"))
         testitem must beAnInstanceOf[ShoppingItem]
 
         val otherusersList = ShoppingList.findListByUsername("otheruser").get
         otherusersList.id.get must beGreaterThan(1L)
-        val otheritem:ShoppingItem = otherusersList.addItem(new ShoppingItem("Burgers"))
+        val otheritem = otherusersList.addItem(new ShoppingItem("Burgers"))
         otheritem must beAnInstanceOf[ShoppingItem]
         otheritem.id must not be equalTo(testitem.id)
       }
     }
-
     "mark as purchased" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         val testusersList = ShoppingList.findListByUsername("testuser").get
@@ -130,6 +144,32 @@ class ShoppingItemSpec extends Specification {
         ShoppingItem.update(new ShoppingItem(burgers.id,"Hamburgers",burgers.description,burgers.isPurchased,burgers.listId))
         shoppingList.findItemByName("Burgers") must beNone
         shoppingList.findItemByName("Hamburgers") must beSome
+      }
+    }
+    "if adding similar named item then description is ignored" in {
+      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
+        val shoppingList = ShoppingList.findListByUsername("testuser").get
+        shoppingList.addItem(new ShoppingItem("Burgers","BigMac"))
+        shoppingList.findItemByName("Burgers").get.description must beEqualTo("BigMac")
+        shoppingList.addItem(new ShoppingItem("Burgers","Whopper"))
+        shoppingList.findItemByName("Burgers").get.description mustNotEqual("Whopper")
+        shoppingList.findItemByName("Burgers").get.description must beEqualTo("BigMac")
+      }
+    }
+    "if removed a similar named item can be added" in {
+      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
+        val shoppingList = ShoppingList.findListByUsername("testuser").get
+        shoppingList.addItem(new ShoppingItem("Burgers","BigMac"))
+        shoppingList.findItemByName("Burgers").get.description must beEqualTo("BigMac")
+        shoppingList.removeItem("Burgers")
+        shoppingList.addItem(new ShoppingItem("Burgers","Whopper"))
+        shoppingList.findItemByName("Burgers").get.description must beEqualTo("Whopper")
+      }
+    }
+    "must not contain funny chars" in {
+      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
+        val shoppingList = ShoppingList.findListByUsername("testuser").get
+        shoppingList.addItem(new ShoppingItem("Burgers/&12¨")) must throwAn[Exception]
       }
     }
   }

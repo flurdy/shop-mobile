@@ -55,15 +55,19 @@ object ShoppingItemController extends Controller with SecureShopper {
     itemForm.bindFromRequest.fold(
       errors => {
         Logger.warn("Updating failed: "+errors)
-        val shoppingItem = ShoppingList.findItemByName(username, itemName)
-        shoppingItem match {
+        ShoppingList.findItemByName(username, itemName) match {
           case None =>  BadRequest(html.shopping.item(null,errors))
           case Some(item) => BadRequest(html.shopping.item(item,errors))
         }
       },
       shoppingItem => {
-        ShoppingList.updateItem(username,shoppingItem)
-        Redirect(routes.ShoppingListController.index())
+        ShoppingList.findItemByName(username, itemName) match {
+          case None =>  BadRequest(html.shopping.item(null,itemForm))
+          case Some(item) => {
+              ShoppingList.updateItem(username,new ShoppingItem(item.id,shoppingItem,item.listId))
+              Redirect(routes.ShoppingListController.index())
+          } 
+        }   
       }
     )
   }

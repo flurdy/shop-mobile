@@ -20,6 +20,9 @@ case class ShoppingItem(
 //    Logger.error("Item id is " + id.getOrElse( throw new IllegalArgumentException("Item ID NULL:"+id) ))
 //    Logger.error("Item List id is " + listId.getOrElse( throw new IllegalArgumentException("Item list ID NULL:"+listId) ))
   }
+  def this(id:Pk[Long], newItem:ShoppingItem,listId:Pk[Long]){
+    this(id,newItem.name,newItem.description,newItem.isPurchased,listId)
+  }
   def this(name:String, description:String){
     this(NotAssigned,name,description,false,NotAssigned)
   }
@@ -55,10 +58,14 @@ object ShoppingItem {
       case id~itemname~description~ispurchased~listid => ShoppingItem(id,itemname,description,ispurchased,listid)
     }
   }
+  val itemNameCheck = """[a-zA-Z][a-zA-Z0-9_-]*""".r
+  
   def create(item: ShoppingItem):ShoppingItem = {
-    // TODO: check if newname is unique
-    // TODO: check if newname trimmed is > 1 char
-//    Logger.error("List id is " + item.listId.getOrElse( throw new IllegalArgumentException("ID NULL") ))
+
+    assert( item.name.trim == item.name )
+    assert( item.name.length > 1 )
+    assert ( itemNameCheck.pattern.matcher(item.name).matches )
+    
     DB.withConnection { implicit connection =>
       SQL("insert into shoppingitem(itemname,description,ispurchased,listid)" +
         " values ({name},{description},{ispurchased},{listid})").on(
@@ -75,6 +82,7 @@ object ShoppingItem {
       ).as(ShoppingItem.simple.single)
     }
   }
+  
   def update(item: ShoppingItem) = {
     // TODO: check if newname is unique
     // TODO: check if newname trimmed is > 1 char

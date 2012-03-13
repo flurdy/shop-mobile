@@ -12,7 +12,7 @@ a,a:visited{ color: black; }
 #bow a{ text-decoration: none; }
 #bow img { float: left; width: 5em; margin-left: -0em; margin-top: -0em; }
 
-#bow h2 { margin: 0 2em 0 0; padding: 0.4em 1em; font-size: 2em; }
+#bow h2 { margin: 0 2em 0 0; padding: 0.4em 1em; font-size: 1.7em; }
 
 #stern { padding: 0.2em 1.5em; margin: 0px; overflow: hidden; }
 #stern div {
@@ -104,7 +104,7 @@ a,a:visited{ color: black; }
 #cargo form,
 #aft form { display: inline; }
 #cargo fieldset { padding: 1.5em; }
-#cargo fieldset legend { font-size: 1.5em; }
+#cargo fieldset legend { font-size: 1.3em; }
 #cargo fieldset label { font-size: 1.2em; }
 #cargo fieldset textarea { font-size: 1.2em; padding: 0.5em; }
 
