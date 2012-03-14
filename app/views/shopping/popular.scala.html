@@ -8,25 +8,26 @@
 </style>
 
 
-<div id="popular">
-    <table>
-        <tbody>
+
+<ol id="popular" class="itemList">
     @for(item <- popularItems) {
-        <tr>
-            <td class="name">@item.name</td>
-            <td>
-                @form(action = routes.ShoppingItemController.addItem) {
+    <li>
+        <div class="buttons">
+            @form(action = routes.ShoppingItemController.addItem) {
                 <input type="hidden" name="name" value="@item.name"/>
                 <input type="hidden" name="description" value=""/>
                 <button type="submit">add</button>
-                }
-            </td>
-        </tr>
+            }
+        </div>
+        <div class="itemName">
+            @item.name
+        </div>
+        <div class="itemDescription">&nbsp;</div>
+    </li>
     }
-        </tbody>
-    </table>
+</ol>
 
-</div>
+
 
 <div id="cancel-button">
     @form(action = routes.ShoppingListController.index()) {

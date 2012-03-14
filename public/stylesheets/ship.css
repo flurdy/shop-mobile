@@ -50,7 +50,7 @@ body {  background-color: #ccc;  }
 body {  }
 #ocean { margin-left: 0em; }
 #fleet { padding: 0 0 0.8em 0; }
-#ship { min-width: 10em; max-width: 10em; }
+#ship { min-width: 12em; max-width: 14em; }
 #ballast { padding: 0.2em 0.1em 0.5em 0.1em; min-height: 14em;  }
 #cargo { padding: 0 0; }
 #bow {  }

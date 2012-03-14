@@ -8,11 +8,12 @@ a,a:visited{ color: black; }
 	text-align: center;
 	margin: 0;
 	padding: 0;
+    height: 3em;
 }
 #bow a{ text-decoration: none; }
-#bow img { float: left; width: 5em; margin-left: -0em; margin-top: -0em; }
+#bow img { float: left; width: 4em; margin-left: -0em; margin-top: -0em; }
 
-#bow h2 { margin: 0 2em 0 0; padding: 0.4em 1em; font-size: 1.7em; }
+#bow h2 { float: left; margin: 0 2em 0 0.5em; padding: 0.4em 0; font-size: 1.5em; }
 
 #stern { padding: 0.2em 1.5em; margin: 0px; overflow: hidden; }
 #stern #projectlink {
@@ -39,25 +40,31 @@ a,a:visited{ color: black; }
 	height: 1em;
 }
 
-#cargo #shoppingList  {
+#cargo .itemList  {
     margin: 0.1em 0 1em 0em;
     padding: 0.2em 0;
-    display: table;
+    /* display: table; */
     width: 19.5em;
     /* border: 1px solid #999; */
 }
-#cargo #shoppingList li {
+#cargo #shoppingList  {
+   /* width: 19.5em;
+}
+#cargo #popular  {
+    /* width: 12.5em; */
+}
+#cargo .itemList li {
     list-style: none;
     border-top: 1px dashed silver;
 }
-#cargo #shoppingList li:first-child {
+#cargo .itemList li:first-child {
     border-top: 0;
 }
-#cargo #shoppingList li > div {
+#cargo .itemList li > div {
     padding: 0.7em 0.5em;
     margin: 0;
 }
-#cargo #shoppingList li .itemName {
+#cargo .itemList li .itemName {
     min-width: 6em;
     max-width: 20em;
     overflow: hidden;
@@ -65,19 +72,42 @@ a,a:visited{ color: black; }
     font-size: 1.2em;
     font-weight: bold;
 }
-#cargo #shoppingList li .itemDescription {
+#cargo .itemList li .itemDescription {
     min-width: 10em;
     max-width: 20em;
     word-wrap: break-word;
     font-size: 0.8em;
     clear: left;
 }
-#cargo #shoppingList li .buttons {
+#cargo .itemList li .buttons {
     padding-right: 0.2em;
     white-space: nowrap;
     text-align: right;
     float: right;
+    clear: right;
 }
+#cargo #shoppingList li.purchased .itemName,
+#cargo #shoppingList li.purchased .itemDescription {
+    color: gray;
+    text-decoration: line-through;
+}
+#cargo #shoppingList li.purchased .itemName a {
+    color: gray;
+}
+#bridge input,
+#cargo input {   font-size: 1.2em; margin: 0 2em; }
+#bridge input[type="text"],
+#cargo input[type="text"] { width: 10em; }
+#cargo input[type="radio"] { clear: left; margin: 1em 1em; }
+
+#cargo form,
+#aft form { display: inline; }
+#cargo fieldset { padding: 1.5em; }
+#cargo fieldset legend { font-size: 1.3em; }
+#cargo fieldset label { font-size: 1.2em; }
+#cargo fieldset textarea { font-size: 1.2em; padding: 0.5em; }
+#cargo fieldset { margin: 1em 0; }
+
 #cargo button,
 #bridge button,
 #aft button {
@@ -98,37 +128,15 @@ a,a:visited{ color: black; }
 #aft button {
     width: 12em;
 }
-#cargo #shoppingList li.purchased .itemName,
-#cargo #shoppingList li.purchased .itemDescription {
-    color: gray;
-    text-decoration: line-through;
-
-}
-#cargo #shoppingList li.purchased .itemName a {
-    color: gray;
-}
-#bridge input,
-#cargo input {   font-size: 1.2em; margin: 0 2em; }
-#bridge input[type="text"],
-#cargo input[type="text"] { width: 10em; }
-#cargo input[type="radio"] { clear: left; margin: 1em 3em; }
-
-#cargo form,
-#aft form { display: inline; }
-#cargo fieldset { padding: 1.5em; }
-#cargo fieldset legend { font-size: 1.3em; }
-#cargo fieldset label { font-size: 1.2em; }
-#cargo fieldset textarea { font-size: 1.2em; padding: 0.5em; }
-
-
-#cargo fieldset { margin: 1em 0; }
 #cargo form button { text-align: center; }
 #cargo #update-button,
 #cargo #remove-button,
 #cargo #cancel-button {float: left;  margin: 0 0 1em 0; }
+#cargo button,
 #cargo #update-button button,
 #cargo #remove-button button,
 #cargo #cancel-button button { padding: 0.6em 0; }
+#cargo button,
 #cargo #update-button button,
 #cargo #remove-button button { width: 5em; }
 #cargo #cancel-button button { width: 8em; }
