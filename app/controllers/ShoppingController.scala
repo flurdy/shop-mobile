@@ -11,8 +11,13 @@ import play.Logger
 import anorm._
 import views.html
 import collection.mutable.HashMap
+import com.sun.xml.internal.bind.v2.model.core.NonElement
+import com.sun.xml.internal.ws.resources.SoapMessages
+
 
 object ShoppingItemController extends Controller with SecureShopper {
+
+  val ValidItemName = """^[a-zA-Z0-9\-\., ']*$""".r
 
   val itemForm: Form[ShoppingItem] = Form(
     mapping(
@@ -34,8 +39,16 @@ object ShoppingItemController extends Controller with SecureShopper {
         BadRequest(html.shopping.index(ShoppingList.findListByUsername(username).get,errors))
       },
       shoppingItem => {
-        ShoppingList.addItem(username,new ShoppingItem(shoppingItem))
-        Redirect(routes.ShoppingListController.index())
+        ValidItemName findFirstIn shoppingItem.name match {
+          case None => {
+            Logger.warn("Invalid name: "+shoppingItem.name)
+            BadRequest(html.shopping.index(ShoppingList.findListByUsername(username).get,itemForm.fill(shoppingItem))).flashing("message"->"Invalid name")
+          }
+          case Some(_) => {
+            ShoppingList.addItem(username,new ShoppingItem(shoppingItem))
+            Redirect(routes.ShoppingListController.index())
+          }
+        }
       }
     )
   }
@@ -106,7 +119,7 @@ object ShoppingListController extends Controller with SecureShopper {
   )
 
 
-  def index = IsAuthenticated {  username => _ =>
+  def index = IsAuthenticated {  username => implicit request =>
     //Shopper.findByUsername(username).map { shopper =>
       Ok(views.html.shopping.index(ShoppingList.findListByUsername(username).get,ShoppingItemController.itemForm))
     //}.getOrElse(Forbidden)

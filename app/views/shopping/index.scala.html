@@ -1,8 +1,17 @@
-@(shoppingList: models.ShoppingList, itemForm: Form[ShoppingItem])
+@(shoppingList: models.ShoppingList, itemForm: Form[ShoppingItem])(implicit flash: Flash)
 
 @import helper._
 
 @main("Shopping list") {
+
+<div id="add-line">
+    @form(action = routes.ShoppingItemController.addItem) {
+    <input type="text" name="name" maxlength="124" size="32" placeholder="Item name" value="@itemForm("name").value"/>
+    <input type="hidden" name="description" value=""/>
+    <button type="submit">add</button>
+    }
+</div>
+        }{
 
 <style type="text/css">
     #aft, #bridge { display: block; }
@@ -11,6 +20,12 @@
 @itemForm.globalError.map { error =>
 <p class="error">
     @error.message
+</p>
+}
+
+@flash.get("message").map { message =>
+<p class="error">
+   @message
 </p>
 }
 

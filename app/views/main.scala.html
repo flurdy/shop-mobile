@@ -1,4 +1,4 @@
-@(title: String)(cargo: Html)
+@(title: String)(bridge: Html)(cargo: Html)
 @import helper._
 <!DOCTYPE html>
 
@@ -35,13 +35,7 @@
                                 </div>
                             </div>
                             <div id="bridge" class="compartment">
-                                <div id="add-line">
-                                    @form(action = routes.ShoppingItemController.addItem) {
-                                    <input type="text" name="name" maxlength="124" size="32"/>
-                                    <input type="hidden" name="description" value=""/>
-                                    <button type="submit">add</button>
-                                    }
-                                </div>
+                                @bridge
                             </div>
                         </div>
                     </div>
