@@ -2,5 +2,11 @@
 logs
 tmp
 project/boot
+project/boot/
+project/boot/**
 .ivy2
+.ivy2/
+.ivy2/**
 .sbt_home
+.sbt_home/
+.sbt_home/**
