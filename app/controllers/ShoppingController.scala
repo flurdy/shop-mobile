@@ -176,5 +176,7 @@ object ShoppingListController extends Controller with SecureShopper {
     Ok(views.html.shopping.popular(popularItemsLeft))
   }
 
+  def purchased = TODO
+
 
 }

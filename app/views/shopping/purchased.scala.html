@@ -20,8 +20,8 @@
 
 <div class="tabs">
     <ul>
-        <li class="active-tab"><a class="#">to buy</a></li>
-        <li><a href="@routes.ShoppingListController.purchased()">purchased</a></li>
+        <li><a class="@routes.ShoppingListController.index()">to buy</a></li>
+        <li class="active-tab"><a href="#">purchased</a></li>
     </ul>
 </div>
 
@@ -42,9 +42,12 @@
     <li @if(item.isPurchased) { class="purchased" }>
         <div class="buttons">
 
-            @if(!item.isPurchased){
-                @form(action = routes.ShoppingItemController.purchaseItem(item.name)) {
-                     <button type="submit">purchase</button>
+            @if(item.isPurchased){
+                @form(action = routes.ShoppingItemController.addItem(item.name)) {
+                  <button type="submit">re-add</button>
+                }
+                @form(action = routes.ShoppingItemController.removeItem(item.name)) {
+                 <button type="submit">remove</button>
                 }
             }
 

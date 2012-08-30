@@ -5,6 +5,7 @@
 # Home page
 GET     /                      controllers.ShoppingListController.index
 GET     /index.html            controllers.ShoppingListController.index
+GET     /purchased.html            controllers.ShoppingListController.purchased
 
 GET     /login.html            controllers.Application.showLogin()
 GET     /login            controllers.Application.redirectToIndex
