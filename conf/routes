@@ -15,18 +15,18 @@ GET     /register            controllers.Application.redirectToIndex
 GET     /logout                controllers.Application.logout
 
 GET    /items                   controllers.Application.redirectToIndex
-POST    /items                  controllers.ShoppingItemController.addItem
-GET    /items/:name/            controllers.ShoppingItemController.showItem(name: String)
-GET    /items/:name/index.html  controllers.ShoppingItemController.showItem(name: String)
-POST    /items/:name/update     controllers.ShoppingItemController.updateItem(name: String)
-PUT    /items/:name/             controllers.ShoppingItemController.updateItem(name: String)
-POST    /items/:name/delete     controllers.ShoppingItemController.removeItem(name: String)
-DELETE    /items/:name/          controllers.ShoppingItemController.removeItem(name: String)
-POST    /items/:name/purchase   controllers.ShoppingItemController.purchaseItem(name: String)
-PUT    /items/:name/purchase    controllers.ShoppingItemController.purchaseItem(name: String)
+POST   /items                  controllers.ShoppingItemController.addItem
+GET    /items/:itemId/            controllers.ShoppingItemController.showItem(itemId: Long)
+GET    /items/:itemId/index.html  controllers.ShoppingItemController.showItem(itemId: Long)
+POST   /items/:itemId/update     controllers.ShoppingItemController.updateItem(itemId: Long)
+PUT    /items/:itemId/             controllers.ShoppingItemController.updateItem(itemId: Long)
+POST   /items/:itemId/delete     controllers.ShoppingItemController.removeItem(itemId: Long)
+DELETE /items/:itemId/          controllers.ShoppingItemController.removeItem(itemId: Long)
+POST   /items/:itemId/purchase   controllers.ShoppingItemController.purchaseItem(itemId: Long)
+PUT    /items/:itemId/purchase    controllers.ShoppingItemController.purchaseItem(itemId: Long)
 
 GET    /items/multiple.html     controllers.ShoppingListController.showMultipleItemsForm
-POST    /items/multiple/     controllers.ShoppingListController.addMultipleItems
+POST   /items/multiple/     controllers.ShoppingListController.addMultipleItems
 GET    /items/popular.html     controllers.ShoppingListController.showPopularItemsForm
 
 

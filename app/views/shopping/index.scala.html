@@ -42,12 +42,12 @@
         @if(!item.isPurchased){
             <li>
                 <div class="buttons">
-                 @form(action = routes.ShoppingItemController.purchaseItem(item.name)) {
+                 @form(action = routes.ShoppingItemController.purchaseItem(item.id.get)) {
                      <button type="submit">purchase</button>
                 }
                 </div>
                 <div class="itemName">
-                    <a href="@routes.ShoppingItemController.showItem(item.name)">@item.name</a>
+                    <a href="@routes.ShoppingItemController.showItem(item.id.get)">@item.name</a>
                 </div>
                 <div class="itemDescription">@item.description</div>
             </li>

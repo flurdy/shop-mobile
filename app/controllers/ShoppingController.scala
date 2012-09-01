@@ -54,9 +54,9 @@ object ShoppingItemController extends Controller with SecureShopper {
   }
 
 
-  def showItem(name: String) = IsAuthenticated { username => implicit request =>
+  def showItem(itemId: Long) = IsAuthenticated { username => implicit request =>
     Logger.info("View show item")
-    val shoppingItem = ShoppingList.findItemByName(username, name)
+    val shoppingItem = ShoppingList.findItemById(username, itemId)
     shoppingItem match {
       case None =>  NotFound
       case Some(item) =>  Ok(views.html.shopping.item(item,itemForm))
@@ -64,17 +64,17 @@ object ShoppingItemController extends Controller with SecureShopper {
   }
 
 
-  def updateItem(itemName: String) = IsAuthenticated { username => implicit request =>
+  def updateItem(itemId: Long) = IsAuthenticated { username => implicit request =>
     itemForm.bindFromRequest.fold(
       errors => {
         Logger.warn("Updating failed: "+errors)
-        ShoppingList.findItemByName(username, itemName) match {
+        ShoppingList.findItemById(username, itemId) match {
           case None =>  BadRequest(html.shopping.item(null,errors))
           case Some(item) => BadRequest(html.shopping.item(item,errors))
         }
       },
       shoppingItem => {
-        ShoppingList.findItemByName(username, itemName) match {
+        ShoppingList.findItemById(username, itemId) match {
           case None =>  BadRequest(html.shopping.item(null,itemForm))
           case Some(item) => {
               ShoppingList.updateItem(username,new ShoppingItem(item.id,shoppingItem,item.listId))
@@ -86,14 +86,14 @@ object ShoppingItemController extends Controller with SecureShopper {
   }
 
 
-  def removeItem(itemname: String) =  IsAuthenticated { username => implicit request =>
-    ShoppingList.removeItem(username,itemname)
+  def removeItem(itemId: Long) =  IsAuthenticated { username => implicit request =>
+    ShoppingList.removeItem(username,itemId)
     Redirect(routes.ShoppingListController.purchased())
   }
 
 
-  def purchaseItem(itemName: String) = IsAuthenticated { username => implicit request =>
-    ShoppingList.purchaseItem(username,itemName)
+  def purchaseItem(itemId: Long) = IsAuthenticated { username => implicit request =>
+    ShoppingList.purchaseItem(username,itemId)
     Redirect(routes.ShoppingListController.index())
   }
 

@@ -34,30 +34,34 @@ case class ShoppingList(id:Pk[Long]){
   }
 
   def findItemByName(itemName: String): Option[ShoppingItem] = {
-    ShoppingList.findItemByNameAndListId(id,itemName)
+    ShoppingList.findItemByNameAndListId(id.get,itemName)
   }
 
-  def findItemById(itemId:Pk[Long]): Option[ShoppingItem] = {
-    DB.withConnection { implicit connection =>
-      SQL("select * from shoppingitem " +
-        "where id = {id}" +
-        " and listid = {listid}").on(
-        'id -> itemId.get,
-        'listid -> id
-      ).as(ShoppingItem.simple.singleOpt)
-    }
+  def findItemById(itemId: Long): Option[ShoppingItem] = {
+    ShoppingList.findItemByIdAndListId(itemId,id.get)
   }
 
-  def purchaseItem(itemName: String) {
-    findItemByName(itemName) match {
+//  def findItemById(itemId:Pk[Long]): Option[ShoppingItem] = {
+//    DB.withConnection { implicit connection =>
+//      SQL("select * from shoppingitem " +
+//        "where id = {id}" +
+//        " and listid = {listid}").on(
+//        'id -> itemId.get,
+//        'listid -> id
+//      ).as(ShoppingItem.simple.singleOpt)
+//    }
+//  }
+
+  def purchaseItem(itemId: Long) {
+    findItemById(itemId) match {
       case None =>  throw new IllegalArgumentException("Item not on list")
       case Some(item) => {
         item.storeAsPurchased
       }
     }
   }
-  def removeItem(itemName: String):ShoppingItem = {
-    findItemByName(itemName) match {
+  def removeItem(itemId: Long):ShoppingItem = {
+    findItemById(itemId) match {
       case None => throw new IllegalArgumentException("Item not found")
       case Some(item) => {
         ShoppingItem.delete(item.id)
@@ -99,12 +103,27 @@ object ShoppingList {
     findListByUsername(username).get.findItemByName(itemName)
   }
 
-  def findItemByNameAndListId(listId:Pk[Long], itemName:String): Option[ShoppingItem] = {
+  def findItemById(username: String, itemId: Long): Option[ShoppingItem] = {
+    findListByUsername(username).get.findItemById(itemId)
+  }
+
+  def findItemByNameAndListId(listId:Long, itemName:String): Option[ShoppingItem] = {
     DB.withConnection { implicit connection =>
       SQL("select * from shoppingitem " +
         "where itemname = {name}" +
         " and listid = {listid}").on(
         'name -> itemName,
+        'listid -> listId
+      ).as(ShoppingItem.simple.singleOpt)
+    }
+  }
+
+  def findItemByIdAndListId(itemId:Long, listId:Long): Option[ShoppingItem] = {
+    DB.withConnection { implicit connection =>
+      SQL("select * from shoppingitem " +
+        "where id = {itemid}" +
+        " and listid = {listid}").on(
+        'itemid -> itemId,
         'listid -> listId
       ).as(ShoppingItem.simple.singleOpt)
     }
@@ -150,28 +169,26 @@ object ShoppingList {
   }
   def updateItem(username:String, shoppingItem:ShoppingItem) {
     val list = findListByUsername(username).get
-    list.findItemById(shoppingItem.id) match {
+    list.findItemById(shoppingItem.id.get) match {
       case None => throw new IllegalStateException("Item not on list")
       case Some(item) => ShoppingItem.update(shoppingItem)
     }
   }
 
-  def removeItem(username: String, itemName: String):ShoppingItem = {
+  def removeItem(username: String, itemId: Long):ShoppingItem = {
     val list = findListByUsername(username).get
-    list.removeItem(itemName)
+    list.removeItem(itemId)
   }
 
-  def purchaseItem(username: String,itemName: String) {
+  def purchaseItem(username: String, itemId: Long) {
     val list = findListByUsername(username).get
-    list.findItemByName(itemName) match {
+    list.findItemById(itemId) match {
       case None =>  throw new IllegalArgumentException("Item not on list")
       case Some(item) => item.storeAsPurchased
     }
   }
 
   def createList(username:String) = {
-
-
     DB.withConnection { implicit connection =>
       SQL("insert into shoppinglist(username)" +
         " values ({username})").on(

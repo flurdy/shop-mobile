@@ -76,8 +76,9 @@ class ShoppingListSpec extends Specification {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         val shoppingList = ShoppingList.findListByUsername("testuser").get
         val item = shoppingList.addItem(new ShoppingItem("Burgers"))
-        shoppingList.findItemByName("Burgers") must beSome
-        shoppingList.removeItem("Burgers")
+        val persistedItem = shoppingList.findItemByName("Burgers")
+        persistedItem must beSome
+        shoppingList.removeItem(persistedItem.get.id.get)
         shoppingList.findItemByName("Burgers") must beNone
       }
     }
@@ -160,8 +161,9 @@ class ShoppingItemSpec extends Specification {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         val shoppingList = ShoppingList.findListByUsername("testuser").get
         shoppingList.addItem(new ShoppingItem("Burgers","BigMac"))
-        shoppingList.findItemByName("Burgers").get.description must beEqualTo("BigMac")
-        shoppingList.removeItem("Burgers")
+        val burger = shoppingList.findItemByName("Burgers").get
+        burger.description must beEqualTo("BigMac")
+        shoppingList.removeItem(burger.id.get)
         shoppingList.addItem(new ShoppingItem("Burgers","Whopper"))
         shoppingList.findItemByName("Burgers").get.description must beEqualTo("Whopper")
       }

@@ -64,7 +64,7 @@ object ShoppingItem {
     assert ( itemNameCheck.pattern.matcher(item.name).matches, "Illegal charachters:["+item.name+"]" )
 
     Logger.info("Creating new shopping item:"+item.name)
-    ShoppingList.findItemByNameAndListId(item.listId,item.name) match {
+    ShoppingList.findItemByNameAndListId(item.listId.get,item.name) match {
       case Some(item) => throw new IllegalStateException("Item already exists")
       case None => {
         DB.withConnection { implicit connection =>

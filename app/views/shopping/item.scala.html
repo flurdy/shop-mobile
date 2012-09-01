@@ -15,7 +15,7 @@
 }
 
 <div>
-    @form(action = routes.ShoppingItemController.updateItem(shoppingItem.name)) {
+    @form(action = routes.ShoppingItemController.updateItem(shoppingItem.id.get)) {
     <fieldset>
         <legend>Name</legend>
         <input type="text" name="name" maxlength="124" size="32" value="@shoppingItem.name"/>
@@ -50,7 +50,7 @@
 
 
     <div id="remove-button">
-        @form(action = routes.ShoppingItemController.removeItem(shoppingItem.name)) {
+        @form(action = routes.ShoppingItemController.removeItem(shoppingItem.id.get)) {
         <button type="submit">remove</button>
         }
     </div>

@@ -47,14 +47,9 @@
                         <input type="hidden" name="description" value=""/>
                       <button type="submit">to buy</button>
                     }
-                    <!--
-                    @form(action = routes.ShoppingItemController.removeItem(item.name)) {
-                     <button type="submit">remove</button>
-                    }
-                    -->
                 </div>
                 <div class="itemName">
-                    <a href="@routes.ShoppingItemController.showItem(item.name)">@item.name</a>
+                    <a href="@routes.ShoppingItemController.showItem(item.id.get)">@item.name</a>
                 </div>
                 <div class="itemDescription">@item.description</div>
             </li>
