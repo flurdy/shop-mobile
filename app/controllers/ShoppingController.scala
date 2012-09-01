@@ -88,7 +88,7 @@ object ShoppingItemController extends Controller with SecureShopper {
 
   def removeItem(itemname: String) =  IsAuthenticated { username => implicit request =>
     ShoppingList.removeItem(username,itemname)
-    Redirect(routes.ShoppingListController.index())
+    Redirect(routes.ShoppingListController.purchased())
   }
 
 
@@ -176,7 +176,10 @@ object ShoppingListController extends Controller with SecureShopper {
     Ok(views.html.shopping.popular(popularItemsLeft))
   }
 
-  def purchased = TODO
-
+  def purchased =  IsAuthenticated {  username => implicit request =>
+    //Shopper.findByUsername(username).map { shopper =>
+      Ok(views.html.shopping.purchased(ShoppingList.findListByUsername(username).get,ShoppingItemController.itemForm))
+    //}.getOrElse(Forbidden)
+  }
 
 }

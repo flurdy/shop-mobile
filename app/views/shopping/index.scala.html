@@ -20,7 +20,7 @@
 
 <div class="tabs">
     <ul>
-        <li class="active-tab"><a class="#">to buy</a></li>
+        <li class="active-tab"><span>to buy</span></li>
         <li><a href="@routes.ShoppingListController.purchased()">purchased</a></li>
     </ul>
 </div>
@@ -39,21 +39,19 @@
 
 <ol id="shoppingList" class="itemList">
     @shoppingList.list.map { item =>
-    <li @if(item.isPurchased) { class="purchased" }>
-        <div class="buttons">
-
-            @if(!item.isPurchased){
-                @form(action = routes.ShoppingItemController.purchaseItem(item.name)) {
+        @if(!item.isPurchased){
+            <li>
+                <div class="buttons">
+                 @form(action = routes.ShoppingItemController.purchaseItem(item.name)) {
                      <button type="submit">purchase</button>
                 }
-            }
-
-        </div>
-        <div class="itemName">
-            <a href="@routes.ShoppingItemController.showItem(item.name)">@item.name</a>
-        </div>
-        <div class="itemDescription">@item.description</div>
-    </li>
+                </div>
+                <div class="itemName">
+                    <a href="@routes.ShoppingItemController.showItem(item.name)">@item.name</a>
+                </div>
+                <div class="itemDescription">@item.description</div>
+            </li>
+        }
     }
 </ol>
 

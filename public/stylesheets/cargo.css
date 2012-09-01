@@ -13,7 +13,7 @@ a,a:visited{ color: black; }
 #bow a{ text-decoration: none; }
 #bow img { float: left; width: 4em; margin-left: -0em; margin-top: -0em; }
 
-#bow h2 { float: left; margin: 0 2em 0 2em; padding: 0.4em 0; font-size: 1.5em; }
+#bow h2 { float: left; margin: 0 2em 0 3em; padding: 0.4em 0; font-size: 1.5em; }
 
 #stern { padding: 0.2em 1.5em; margin: 0px; overflow: hidden; }
 #stern #projectlink {
@@ -84,6 +84,9 @@ a,a:visited{ color: black; }
     white-space: nowrap;
     text-align: right;
     float: right;
+    clear: right;
+}
+#cargo .itemList li .buttons button {
     clear: right;
 }
 #cargo #shoppingList li.purchased .itemName,
@@ -174,12 +177,12 @@ a,a:visited{ color: black; }
 }
 #cargo .tabs ul li.active-tab {
 }
-#cargo .tabs ul li a {
+#cargo .tabs ul li a, #cargo .tabs ul li span {
     text-decoration: none;
     padding: 0.5em 2em 0.5em 2em;
     margin: 0;
 }
-#cargo .tabs ul li.active-tab a {
+#cargo .tabs ul li.active-tab span {
     background-color: white;
     border-bottom: 4px solid white;
     border-left: 1px solid black;

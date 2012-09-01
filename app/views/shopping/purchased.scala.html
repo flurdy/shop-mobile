@@ -20,8 +20,8 @@
 
 <div class="tabs">
     <ul>
-        <li><a class="@routes.ShoppingListController.index()">to buy</a></li>
-        <li class="active-tab"><a href="#">purchased</a></li>
+        <li><a href="@routes.ShoppingListController.index()">to buy</a></li>
+        <li class="active-tab"><span>purchased</span></li>
     </ul>
 </div>
 
@@ -39,24 +39,26 @@
 
 <ol id="shoppingList" class="itemList">
     @shoppingList.list.map { item =>
-    <li @if(item.isPurchased) { class="purchased" }>
-        <div class="buttons">
-
-            @if(item.isPurchased){
-                @form(action = routes.ShoppingItemController.addItem(item.name)) {
-                  <button type="submit">re-add</button>
-                }
-                @form(action = routes.ShoppingItemController.removeItem(item.name)) {
-                 <button type="submit">remove</button>
-                }
-            }
-
-        </div>
-        <div class="itemName">
-            <a href="@routes.ShoppingItemController.showItem(item.name)">@item.name</a>
-        </div>
-        <div class="itemDescription">@item.description</div>
-    </li>
+        @if(item.isPurchased){
+            <li class="purchased">
+                <div class="buttons">
+                    @form(action = routes.ShoppingItemController.addItem) {
+                        <input type="hidden" name="name" value="@item.name"/>
+                        <input type="hidden" name="description" value=""/>
+                      <button type="submit">to buy</button>
+                    }
+                    <!--
+                    @form(action = routes.ShoppingItemController.removeItem(item.name)) {
+                     <button type="submit">remove</button>
+                    }
+                    -->
+                </div>
+                <div class="itemName">
+                    <a href="@routes.ShoppingItemController.showItem(item.name)">@item.name</a>
+                </div>
+                <div class="itemDescription">@item.description</div>
+            </li>
+        }
     }
 </ol>
 
