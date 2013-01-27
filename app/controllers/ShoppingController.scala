@@ -182,4 +182,17 @@ object ShoppingListController extends Controller with SecureShopper {
     //}.getOrElse(Forbidden)
   }
 
+
+
+  def showSendListOptions = IsAuthenticated { username => implicit request =>
+
+
+    Ok(views.html.share.options())
+  }
+
+  def shareListByEmail = TODO
+
+  def shareListBySms = TODO
+
 }
+

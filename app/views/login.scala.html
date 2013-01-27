@@ -27,13 +27,13 @@
 
 <div>
             @form(routes.Application.authenticate) {
-               <h3>Log in</h3>
+               <h3>Find list</h3>
             <fieldset>
-                <legend>Username</legend>
+                <legend>List name</legend>
                 <input type="text" name="username" maxlength="120"/>
                 <input type="hidden" name="password" value=""/>
             </fieldset>
-            <button type="submit">log in</button>
+            <button type="submit">find</button>
             }
         </div>
 
@@ -41,9 +41,9 @@
 
         <div>
             @form(routes.Application.register) {
-            <h3>Register</h3>
+            <h3>Register new list</h3>
             <fieldset>
-                <legend>Username</legend>
+                <legend>List name</legend>
                 <input type="text" name="username" maxlength="120"/>
                 <input type="hidden" name="password" value=""/>
             </fieldset>

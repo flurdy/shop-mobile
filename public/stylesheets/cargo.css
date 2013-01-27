@@ -9,6 +9,7 @@ a,a:visited{ color: black; }
 	margin: 0;
 	padding: 0;
     height: 3em;
+    min-width: 18em;
 }
 #bow a{ text-decoration: none; }
 #bow img { float: left; width: 4em; margin-left: -0em; margin-top: -0em; }
@@ -187,4 +188,10 @@ a,a:visited{ color: black; }
     border-bottom: 4px solid white;
     border-left: 1px solid black;
     border-right: 1px solid black;
+}
+
+
+#cargo .option-box {
+    margin: 3em;
+    text-align: center;
 }
