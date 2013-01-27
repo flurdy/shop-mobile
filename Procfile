@@ -1,1 +1,2 @@
-web: target/start -Dconfig.resource=heroku.conf
+web: target/start -Dconfig.resource=heroku.conf http.port=${PORT}
+
