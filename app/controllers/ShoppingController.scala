@@ -11,8 +11,7 @@ import play.Logger
 import anorm._
 import views.html
 import collection.mutable.HashMap
-import com.sun.xml.internal.bind.v2.model.core.NonElement
-import com.sun.xml.internal.ws.resources.SoapMessages
+import notifiers.EmailNotifier
 
 
 object ShoppingItemController extends Controller with SecureShopper {
@@ -184,15 +183,20 @@ object ShoppingListController extends Controller with SecureShopper {
 
 
 
-  def showSendListOptions = IsAuthenticated { username => implicit request =>
-
-
+  def showShareListOptions = IsAuthenticated { username => implicit request =>
     Ok(views.html.share.options())
   }
 
-  def shareListByEmail = TODO
+  def shareListByEmail = IsAuthenticated { username => implicit request =>
+    ShoppingList.findListByUsername(username).map { shoppingList =>
+      EmailNotifier.shareByEmail(shoppingList)
+    }
+    Redirect(routes.ShoppingListController.index()).flashing("message"->"List shared by email")
+  }
 
-  def shareListBySms = TODO
+  def shareListBySms = IsAuthenticated { username => implicit request =>
+    NotImplemented//(routes.ShoppingListController.index()).flashing("message"->"List shared by sms")
+  }
 
 }
 

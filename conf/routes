@@ -29,7 +29,7 @@ GET    /items/multiple.html     controllers.ShoppingListController.showMultipleI
 POST   /items/multiple/     controllers.ShoppingListController.addMultipleItems
 GET    /items/popular.html     controllers.ShoppingListController.showPopularItemsForm
 
-POST   /list/share/     controllers.ShoppingListController.showSendListOptions
+POST   /list/share/     controllers.ShoppingListController.showShareListOptions
 POST   /list/share/email     controllers.ShoppingListController.shareListByEmail
 POST   /list/share/sms     controllers.ShoppingListController.shareListBySms
 
