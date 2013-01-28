@@ -89,7 +89,11 @@ object EmailNotifier extends EmailService{
 
   def generateItemsText(items:Seq[ShoppingItem]) : String = {
     if(!items.isEmpty) {
-      itemText(items.head) ++ generateItemsText(items.tail)
+      if(items.head.isPurchased){
+        generateItemsText(items.tail)
+      } else {
+        itemText(items.head) ++ generateItemsText(items.tail)
+      }
     } else {
       ""
     }
