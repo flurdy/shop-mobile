@@ -42,9 +42,7 @@
         @if(item.isPurchased){
             <li class="purchased">
                 <div class="buttons">
-                    @form(action = routes.ShoppingItemController.addItem) {
-                        <input type="hidden" name="name" value="@item.name"/>
-                        <input type="hidden" name="description" value=""/>
+                    @form(action = routes.ShoppingItemController.addExistingItem(item.id.get) ) {
                       <button type="submit">to buy</button>
                     }
                 </div>

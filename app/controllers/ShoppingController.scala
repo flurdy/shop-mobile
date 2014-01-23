@@ -53,6 +53,17 @@ object ShoppingItemController extends Controller with SecureShopper {
   }
 
 
+  def addExistingItem(itemId: Long) = IsAuthenticated { username => implicit request =>
+    ShoppingList.findItemById(username, itemId) match {
+      case Some(shoppingItem) => {
+          ShoppingList.addItem(username,new ShoppingItem(shoppingItem))
+          Redirect(routes.ShoppingListController.purchased())
+      }
+      case None => NotFound
+    }
+  }
+
+
   def showItem(itemId: Long) = IsAuthenticated { username => implicit request =>
     Logger.info("View show item")
     val shoppingItem = ShoppingList.findItemById(username, itemId)

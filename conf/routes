@@ -16,6 +16,7 @@ GET     /logout                controllers.Application.logout
 
 # GET    /items                   controllers.Application.redirectToIndex
 POST   /items                  controllers.ShoppingItemController.addItem
+POST   /items/:itemId/add      controllers.ShoppingItemController.addExistingItem(itemId: Long)
 GET    /items/:itemId/            controllers.ShoppingItemController.showItem(itemId: Long)
 # GET    /items/:itemId/index.html  controllers.ShoppingItemController.showItem(itemId: Long)
 POST   /items/:itemId/update     controllers.ShoppingItemController.updateItem(itemId: Long)
