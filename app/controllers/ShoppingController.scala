@@ -131,7 +131,11 @@ object ShoppingListController extends Controller with SecureShopper {
 
   def index = IsAuthenticated {  username => implicit request =>
     //Shopper.findByUsername(username).map { shopper =>
-      Ok(views.html.shopping.index(ShoppingList.findListByUsername(username).get,ShoppingItemController.itemForm))
+      ShoppingList.findListByUsername(username) match {
+        case Some(shoppingList) =>
+          Ok(views.html.shopping.index(shoppingList,ShoppingItemController.itemForm))
+        case None => Redirect(routes.ShoppingListController.index()).withNewSession
+      }
     //}.getOrElse(Forbidden)
   }
 
