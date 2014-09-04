@@ -1,84 +1,13 @@
 package models
 
-import play.api.Play.current
-import play.Logger
-import play.api.db._
-import anorm._
-import anorm.SqlParser._
-import scala.Some._
+import play.api.Logger
 
 
-case class Shopper(username: String, password: String = "")  {
-  def findList ={
-    ShoppingList.findListByUsername(this.username)
-  }
-  def findItems ={
-    ShoppingList.findItemsByUsername(this.username)
-  }
-}
 
-object Shopper {
+case class Shopper(id: Option[Long], username: String)
 
-  val simple = {
-    get[String]("shopper.username") ~
-      get[String]("shopper.password") map {
-      case username~password => Shopper(username, password)
-    }
-  }
-  val usernameCheck = """^[a-zA-Z0-9_\-]+$""".r
-
-  def findByUsername(username: String): Option[Shopper] = {
-    DB.withConnection { implicit connection =>
-      SQL("select * from shopper where username = {username}").on(
-        'username -> username
-      ).as(Shopper.simple.singleOpt)
-    }
-  }
-
-  def findAll: Seq[Shopper] = {
-    DB.withConnection { implicit connection =>
-      SQL("select * from shopper order by username").as(Shopper.simple *)
-    }
-  }
-
-  def authenticate(username: String, password: String): Option[Shopper] = {
-    DB.withConnection { implicit connection =>
-      SQL(
-        """
-         select * from shopper where
-         username = {username} and password = {password}
-        """
-      ).on(
-        'username -> username,
-        'password -> password
-      ).as(Shopper.simple.singleOpt)
-    }
-  }
-
-  def create(shopper: Shopper): Shopper = {
-    assert (shopper.username.trim == shopper.username)
-    assert (shopper.username.length > 1)
-    assert ( usernameCheck.pattern.matcher(shopper.username).matches, "Invalid characters:"+shopper.username )
-    findByUsername(shopper.username) match {
-      case Some(oldShopper) => throw new IllegalStateException("Username already taken")
-      case None => {
-        DB.withConnection { implicit connection =>
-          SQL(
-            """
-              insert into shopper values (
-                {username}, {password}
-              )
-            """
-          ).on(
-            'username -> shopper.username,
-            'password -> shopper.password
-          ).executeUpdate()
-          ShoppingList.createList(shopper.username)
-          shopper
-        }
-      }
-    }
-  }
-
+object Shoppers {
+	
+	def findShopper(username: String): Option[Shopper] = None
 
 }

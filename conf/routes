@@ -1,38 +1,20 @@
-# Routes
-# This file defines all application routes (Higher priority routes first)
-# ~~~~
 
-# Home page
-GET     /                      controllers.ShoppingListController.index
-# GET     /index.html            controllers.Application.redirectToIndexer
-GET     /purchased.html        controllers.ShoppingListController.purchased
 
-GET     /login.html            controllers.Application.showLogin()
-# GET     /login                 controllers.Application.redirectToIndex
-POST    /login                 controllers.Application.authenticate
-POST    /register              controllers.Application.register
-# GET     /register              controllers.Application.redirectToIndex
-GET     /logout                controllers.Application.logout
+GET  /			   controllers.Application.index
+GET  /home     	   controllers.Application.home
+GET  /about.html   controllers.Application.about
+GET  /help.html    controllers.Application.help
+GET  /contact.html controllers.Application.contact
+GET  /register     controllers.Application.viewRegister
+POST /register     controllers.Application.register
+GET  /login        controllers.Application.viewLogin
+POST /login        controllers.Application.login
+POST /logout       controllers.Application.logout
 
-# GET    /items                   controllers.Application.redirectToIndex
-POST   /items                  controllers.ShoppingItemController.addItem
-POST   /items/:itemId/add      controllers.ShoppingItemController.addExistingItem(itemId: Long)
-GET    /items/:itemId/            controllers.ShoppingItemController.showItem(itemId: Long)
-# GET    /items/:itemId/index.html  controllers.ShoppingItemController.showItem(itemId: Long)
-POST   /items/:itemId/update     controllers.ShoppingItemController.updateItem(itemId: Long)
-# PUT    /items/:itemId/             controllers.ShoppingItemController.updateItem(itemId: Long)
-POST   /items/:itemId/delete     controllers.ShoppingItemController.removeItem(itemId: Long)
-# DELETE /items/:itemId/          controllers.ShoppingItemController.removeItem(itemId: Long)
-POST   /items/:itemId/purchase   controllers.ShoppingItemController.purchaseItem(itemId: Long)
-# PUT    /items/:itemId/purchase    controllers.ShoppingItemController.purchaseItem(itemId: Long)
 
-GET    /items/multiple.html     controllers.ShoppingListController.showMultipleItemsForm
-POST   /items/multiple/     controllers.ShoppingListController.addMultipleItems
-GET    /items/popular.html     controllers.ShoppingListController.showPopularItemsForm
 
-POST   /list/share/     controllers.ShoppingListController.showShareListOptions
-POST   /list/share/email     controllers.ShoppingListController.shareListByEmail
-POST   /list/share/sms     controllers.ShoppingListController.shareListBySms
+
+
 
 GET     /webjars/*file        controllers.WebJarAssets.at(file)
 GET     /assets/*file         controllers.Assets.at(path="/public", file)

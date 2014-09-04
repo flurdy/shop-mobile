@@ -2,91 +2,170 @@ package controllers
 
 import play.api._
 import play.api.mvc._
+import play.api.mvc.Security._
+import play.api.mvc.Results._
 import play.api.data._
 import play.api.data.Forms._
 import models._
-import views._
-import play.Logger
-import anorm._
-import collection.mutable.HashMap
+import scala.concurrent.Future
 
-object Application extends Controller {
+class AuthenticatedRequest[A](val username: String, request: Request[A]) extends WrappedRequest[A](request) {
+	def findShopper: Option[Shopper] = Shoppers.findShopper(username)
+}
 
-  val loginForm = Form(
-    tuple(
-      "username" -> text(minLength = 2),
-      "password" -> text
-    ) verifying ("Invalid username? Perhaps register first?", result => result match {
-      case (username, password) => Shopper.authenticate(username, password).isDefined
-    })
-  )
+class AuthenticatedPossibleRequest[A](val username: Option[String], request: Request[A]) extends WrappedRequest[A](request) {
+	def isAuthenticated = username.isDefined
+	def findShopper: Option[Shopper] = username.flatMap( Shoppers.findShopper(_) )
+}
 
-  val registerForm = Form(
-    mapping(
-      "username" -> text,
-      "password" -> text
-    ) (Shopper.apply)(Shopper.unapply)
-      verifying ("Username taken or invalid", result => result match {
-        case (shopper) => !Shopper.findByUsername(shopper.username).isDefined
-    })
-  )
+trait Secured {
 
-  def redirectToIndex = Action {
-    Redirect(routes.ShoppingListController.index())
-  }
+	def Authenticated = new ActionBuilder[AuthenticatedRequest] {
+		def invokeBlock[A](request: Request[A], block: (AuthenticatedRequest[A]) => Future[SimpleResult]) = {
+			request.session.get("username") match {
+				case Some(username) => {	
+					Shoppers.findShopper(username) match {
+						case Some(shopper) => block(new AuthenticatedRequest(username, request))
+						case None => throw new IllegalStateException(s"No shopper found for username: $username")
+					}
+				}
+				case None => {
+					Logger.debug("Not logged in")
+					implicit val errorMessages = List(ErrorMessage("Not logged in"))
+					implicit val user: Option[Shopper] = None
+					Future.successful(Forbidden(views.html.login(Application.loginForm)))
+				}
+			}
+		}
+	}
 
-  def showLogin = Action { implicit request =>
-    Ok(html.login(loginForm,registerForm,flash.get("message").getOrElse("")))
-  }
 
-  def authenticate = Action { implicit request =>
-    loginForm.bindFromRequest.fold(
-      formWithErrors => {
-        Logger.warn("Log in failed" )
-        BadRequest(html.login(formWithErrors,registerForm,"Log in failed"))
-      },
-      user => {
-        Logger.info("Logging in" )
-        Redirect(routes.ShoppingListController.index).withSession("username" -> user._1)
-      }        
-    )
-  }
+	def AuthenticatedPossible = new ActionBuilder[AuthenticatedPossibleRequest] {
+		def invokeBlock[A](request: Request[A], block: (AuthenticatedPossibleRequest[A]) => Future[SimpleResult]) = {
+			request.session.get("username") match {
+				case Some(username) => {	
+					Shoppers.findShopper(username) match {
+						case Some(shopper) => block(new AuthenticatedPossibleRequest( Some(username), request))
+						case None => throw new IllegalStateException(s"No shopper found for username: $username")
+					}
+				}
+				case None => {
+					Logger.debug("Not logged in")
+					block(new AuthenticatedPossibleRequest(None, request))
+				}
+			}
+		}
+	}  
 
-  def register = Action { implicit request =>
-    registerForm.bindFromRequest.fold(
-      formWithErrors => {
-        Logger.warn("Register failed" )
-        BadRequest(html.login(loginForm,formWithErrors,"Registration failed"))
-      },
-      shopper => {
-        Logger.info("Registering" )
-        Shopper.create(shopper)        
-        Redirect(routes.Application.showLogin).flashing(
-          "message" -> "Registered. Please log in"
-         )
-      }
-    )
-  }
+	implicit def currentShopper[A](implicit request: AuthenticatedRequest[A]): Option[Shopper] = {        
+		Some(Shopper(None,request.username))
+	}
 
-  def logout = Action {
-    Redirect(routes.Application.showLogin).withNewSession.flashing(
-      "message" -> "You've been logged out"
-    )
-  }
+	implicit def currentPossibleShopper[A](implicit request: AuthenticatedPossibleRequest[A]): Option[Shopper] = {      
+		request.username.map( Shopper(None,_) )
+	}
+
 }
 
 
-trait SecureShopper {
 
-  private def username(request: RequestHeader) = request.session.get("username")
 
-  private def onUnauthorised(request: RequestHeader) =
-        Results.Redirect(routes.Application.showLogin)//("Not authorised"))
+object Application extends Controller with Secured {
 
-  def IsAuthenticated(f: => String => Request[AnyContent] => Result) = {
-    Security.Authenticated(username, onUnauthorised) { shopper =>
-      Action(request => f(shopper)(request))
-    }
-  }
+
+	def index = AuthenticatedPossible { implicit authRequest =>
+		if(authRequest.isAuthenticated) {
+			Redirect(routes.Application.home)
+		} else {
+			Ok(views.html.index())
+		}		
+	}
+
+	def home = Authenticated { implicit authRequest =>
+		Ok(views.html.home())
+	}
+
+	def about = AuthenticatedPossible { implicit authRequest =>
+		Ok(views.html.about())
+	}
+
+	def help = TODO
+	def contact = TODO
+
+	val registerFields = mapping (
+		"username" -> text,
+		"password" -> text,
+		"confirmPassword" -> text
+	)(RegisterDetails.apply)(RegisterDetails.unapply) verifying("Passwords does not match", fields => fields match {
+		case registerDetails => registerDetails.password == registerDetails.confirmPassword
+	})
+
+	val registerForm = Form( registerFields )
+
+	def viewRegister = AuthenticatedPossible { implicit authRequest =>
+		Ok(views.html.register(registerForm))
+	}
+
+	def register = Action { implicit request =>
+		registerForm.bindFromRequest.fold(
+			errors => {
+				Logger.warn("Registration form error")
+				BadRequest(views.html.register(errors))
+			},
+			registerDetails => {
+				Shoppers.findShopper(registerDetails.username) match {
+					case Some(shopper) => {
+						Logger.warn(s"Registration failed. Username taken: ${registerDetails.username}")
+						implicit val errorMessages = List(ErrorMessage("Registration failed. The username is already taken"))
+						BadRequest(views.html.register(registerForm.fill(registerDetails)))
+					}
+					case None => {
+						registerDetails.register
+						Redirect(routes.Application.home).withSession("username" -> registerDetails.username)						
+					}
+				}
+			}
+    	)
+	}	
+
+	val loginFields = mapping(
+		"username" -> text,
+		"password" -> text
+	)(LoginDetails.apply)(LoginDetails.unapply)
+
+	val loginForm = Form( loginFields )
+
+	def viewLogin = AuthenticatedPossible { implicit authRequest =>
+		Ok(views.html.login(loginForm))
+	}
+
+	def login = Action { implicit request =>
+		loginForm.bindFromRequest.fold(
+			errors => {
+				Logger.warn("Login form error")
+				BadRequest(views.html.login(errors))
+			},
+			loginDetails => {
+				Authentication.authenticate(loginDetails) match {
+					case Some(shopper) => {
+
+						Redirect(routes.Application.home).withSession("username" -> loginDetails.username)
+
+					}
+					case None => {
+						Logger.warn(s"Authentication failed for ${loginDetails.username}")
+						implicit val errorMessages = List(ErrorMessage(
+							"Authentication failed. Either the user does not exist or the password is incorrect"))
+						BadRequest(views.html.login(loginForm.fill(loginDetails)))
+					}
+				}
+			}
+    	)
+	}
+
+	def logout = AuthenticatedPossible { implicit authRequest =>
+		Logger.debug(s"Logging out: ${authRequest.username}")
+		Redirect(routes.Application.index).withNewSession
+	}
 
 }

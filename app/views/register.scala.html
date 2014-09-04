@@ -1,10 +1,10 @@
-@(loginForm: Form[LoginDetails])
+@(registerForm: Form[RegisterDetails])
 
 @import helper._
 
-@main(Some("Login")) {
+@main(Some("Register")) {
 	
-	@for(error <- loginForm.errors){
+	@for(error <- registerForm.errors){
         <div class="alert alert-danger" role="alert">
             <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
             @if(error.message == "error.required"){
@@ -17,13 +17,13 @@
 
     <section>
 
-		@form(action=routes.Application.login, 'class -> "form-horizontal", 'role -> "form"){
+		@form(action=routes.Application.register, 'class -> "form-horizontal", 'role -> "form"){
 
 			<div class="form-group">
 				<label for="inputUsername" class="col-sm-2 control-label">Username</label>
 				<div class="col-sm-10">
 					<input type="text" name="username" required class="form-control" id="inputUsername"
-						placeholder="" value="@loginForm("username").value" />
+						placeholder="" value="@registerForm("username").value" />
 				</div>
 			</div>
 
@@ -35,10 +35,18 @@
 				</div>
 			</div>
 
+			<div class="form-group">
+				<label for="inputPassword2" class="col-sm-2 control-label">Confirm password</label>
+				<div class="col-sm-10">
+					<input type="password" name="confirmPassword" required class="form-control" id="inputPassword2"
+						placeholder="******" value="" />
+				</div>
+			</div>
+
 
 			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10">
-					<button type="submit" class="btn btn-sm btn-block btn-success">log in</a>
+					<button type="submit" class="btn btn-sm btn-block btn-success">register</a>
 				</div>
 			</div>
 

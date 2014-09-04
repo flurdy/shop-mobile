@@ -1,71 +1,72 @@
-@(title: String)(bridge: Html)(cargo: Html)
+@(title: Option[String] = None)(content: Html)
 @import helper._
 <!DOCTYPE html>
 
 <html>
 <head>
-    <title>@Messages("application.title") @title</title>
-    <meta name="keywords" content="shop,grid,shopping,list" />
-    <meta name="description" content="Shop Grid - a shopping list" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=yes" />
-    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/grid.css")">
-    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/ship.css")">
-    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/cargo.css")">
+	@title match {
+       	case Some(title) => { <title>@Messages("application.title") | @title</title> }
+    	case None => { <title>@Messages("application.title") @Messages("application.tagline")</title> }
+    }
+    <meta name="keywords" content="shop,grid,shopping,list,shoppinglist" />
+    <meta name="description" content="@Messages("application.description")" />
+    <link rel='stylesheet' href='@routes.WebJarAssets.at(WebJarAssets.locate("css/bootstrap.min.css"))'>
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
     <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
-	<!-- link rel='stylesheet' media="screen" href='@routes.WebJarAssets.at(WebJarAssets.locate("css/bootstrap.min.css"))' -->
     <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))'></script>
+    <script type='text/javascript'>
+		$( document ).ready(function() {
+			window.setTimeout( "reload()", 5000);
+		});
+		function reload(){
+			location.reload(true)
+		}
+    </script>
 </head>
 <body>
-<div id="ocean" class="structure">
-    <div id="fleet" class="structure">
-        <div id="ship" class="structure">
-            <div id="hull" class="structure">
-                <div id="vaka" class="structure">
-                    <div id="bow" class="structure">
-                        <!-- <a href="http://github.com/flurdy/shoppinglist"><img alt="Fork me on github"
-                                title="Fork me on github" src="@routes.Assets.at("images/ForkMe_Blk.png")" /></a>        -->
-                        <h2><a href="@routes.ShoppingListController.index()">Shopping List</a></h2>
-                    </div>
-                    <div id="keel" class="structure">
-                        <div id="innerhull" class="structure">
-                            <div id="bulkhead" class="structure">
-                                <div id="ballast" class="structure compartment">
-                                    <div id="cargo" class="compartment">
-                                        @cargo
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="bridge" class="compartment">
-                                @bridge
-                            </div>
-                        </div>
-                    </div>
-                    <div id="aft" class="compartment">
-                        <div id="">
-                            @form(action = routes.ShoppingListController.showMultipleItemsForm()) {
-                            <button type="submit">add multiple items</button>
-                            }
-                            @form(action = routes.ShoppingListController.showPopularItemsForm()) {
-                            <button type="submit">add popular items</button>
-                            }
-                            @form(action = routes.ShoppingListController.showShareListOptions()) {
-                            <button type="submit">share list</button>
-                            }
-                        </div>
-                    </div>
-                    <div id="stern" class="compartment">
-                        <div id="flurdy"><a href="http://flurdy.com"><img
-                                alt="flurdy" title="made by flurdy" border="0"
-                                src="@routes.Assets.at("images/flurdy_warped_dual_small.png")" /></a></div>
-                        <div id="projectlink"><a href="http://github.com/flurdy/shoppinglist">project</a></div>
-                        <div id="logoutlink"><a href="@routes.Application.logout">logout</a></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div id="dragons" class="structure"></div>
+	<div id="ocean" class="structure">
+	    <div id="fleet" class="structure">
+	        <div id="ship" class="structure">
+	            <div id="hull" class="structure">
+	                <div id="vaka" class="structure">
+	                    <div id="bow" class="compartment">
+							<header>
+								<a href="@routes.Application.index"><h1>@Messages("application.title")</h1></a>
+							</header>
+	                    </div>
+	                    <div id="keel" class="structure">
+	                        <div id="innerhull" class="structure">
+	                            <div id="bulkhead" class="structure">
+	                                <div id="ballast" class="structure">
+	                                    <div id="cargo" class="compartment">
+
+	@content
+
+							        	</div>
+							        </div>
+							    </div>
+							</div>
+					    </div>
+	                    <div id="aft" class="compartment">
+	                    	<navigation>
+	                    		<ul class="horizontal nav nav-pills">
+		                    		<li><a href="@routes.Application.help">help</a></li>
+		                    		<li><a href="@routes.Application.about">about</a></li>
+		                    		<li><a href="@routes.Application.contact">contact</a></li>
+		                    	</ul>
+		                    </navigation>
+					    </div>
+					</div>
+			    </div>
+			</div>
+			<div id="net" class="structure">
+				<footer>
+         			<a href="http://flurdy.com"><img id="flurdy-footer" src="@routes.Assets.at("images/flurdy_warped_dual_small.png")" alt="flurdy" title="Created by flurdy"/></a>
+				</footer>
+			</div>
+	    </div>
+	</div>
+	<div id="dragons" class="structure"></div>
 </body>
-<!-- Copyright Ivar Abrahamsen 2013. Copyleft: MIT & CC (by sa) -->
+<!-- Copyright Ivar Abrahamsen 2012-2014. Copyleft: MIT & CC (by sa) -->
 </html>
