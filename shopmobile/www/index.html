@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <!-- Sets initial viewport load and disables zooming  -->
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <link rel="stylesheet" href="bower_components/ratchet/dist/css/ratchet.min.css">
+        <link rel="stylesheet" href="bower_components/ratchet/dist/css/ratchet-theme-ios.min.css">
+        <link rel="stylesheet" href="css/shop.css">
+        <script src="bower_components/ratchet/dist/js/ratchet.min.js"></script>
+        <title>Shop</title>
+        <!-- <link rel="stylesheet" href="bower_components/ratchet/dist/css/ratchet-theme-android.min.css"> -->
+    </head>
+    <body>
+
+    <header class="bar bar-nav">
+        <a class="icon icon-compose pull-right" href="list-edit.html"></a>
+        <h1 class="title">Shop</h1>
+    </header>
+
+    <nav class="bar bar-tab">
+        <ul class="tab-inner">
+            <li class="tab-item active">
+                <a href="index.html">
+                    <span class="icon icon-list"></span>
+                </a>
+            </li>
+            <li class="tab-item">
+                <a href="archive.html">
+                    <span class="icon icon-search"></span>
+                </a>
+            </li>
+            <li class="tab-item">
+                <a href="options.html">
+                    <span class="icon icon-gear"></span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+
+    <div class="content">
+        <div class="card">
+            <ul class="table-view">
+                <li class="table-view-cell">
+                    <a class="navigate-right" href="item.html" data-transition="slide-in">
+                     <strong>Milk</strong>
+                    </a>
+                </li>
+                <li class="table-view-cell">
+                    <a class="navigate-right" href="item.html" data-transition="slide-in">
+                     <strong>Bread</strong>
+                    </a>
+                </li>
+                <li class="table-view-cell">
+                    <a class="navigate-right" href="dinner.html" data-transition="slide-in">
+                        <span class="badge">3</span>
+                       <strong>Dinner</strong>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+
+    </body>
+</html>
