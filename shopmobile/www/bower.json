@@ -12,6 +12,9 @@
     "tests"
   ],
   "dependencies": {
-    "ratchet": "~2.0.2"
+    "ratchet": "~2.0.2",
+    "jquery": "~2.1.3",
+    "handlebars": "~2.0.0",
+    "fastclick": "~1.0.3"
   }
 }
