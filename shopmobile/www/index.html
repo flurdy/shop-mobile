@@ -53,17 +53,17 @@
             <div class="card">
                 <ul class="table-view" id="items">
                     <li class="table-view-cell">
-                        <a class="navigate-right" href="#item/{{id}}" data-transition="slide-in" data-ignore="push">
+                        <a class="navigate-right item-link" href="#item" data-ignore="push">
                          <strong>Milk</strong>
                         </a>
                     </li>
                     <li class="table-view-cell">
-                        <a class="navigate-right" href="#item/{{id}}" data-transition="slide-in" data-ignore="push">
+                        <a class="navigate-right item-link" href="#item" data-ignore="push">
                          <strong>Bread</strong>
                         </a>
                     </li>
                     <li class="table-view-cell">
-                        <a class="navigate-right" href="#item/{{id}}" data-transition="slide-in" data-ignore="push">
+                        <a class="navigate-right item-link" href="#item" data-ignore="push">
                             <span class="badge">3</span>
                            <strong>Dinner</strong>
                         </a>
@@ -111,7 +111,7 @@
             </div>
         </script>
 
-        <script id="item-edit-header-template" type="text/template">
+        <script id="item-sub-header-template" type="text/template">
             <a class="item-link icon icon-left-nav pull-left" data-transition="slide-out" href="#item"></a>
             <h1 class="title">Shop</h1>
         </script>
@@ -183,7 +183,7 @@
                         </li>
                     </ul>            
                 </div>
-                <a class="btn btn-primary btn-block item-add-link" href="item-add.html">add sub item</a>
+                <a class="btn btn-primary btn-block item-add-link" href="#item-add.html">add sub item</a>
 
                 <p>&nbsp;</p>
 
@@ -268,7 +268,7 @@
 
 
 
-        <script id="archive-header-template" type="text/template">
+        <script id="list-sub-header-template" type="text/template">
             <a class="list-link icon icon-left-nav pull-left" data-transition="slide-out" href="#index"></a>
             <h1 class="title">Shop</h1>
         </script>
@@ -360,7 +360,7 @@
 
 
 
-        <script id="recent-header-template" type="text/template">
+        <script id="archive-sub-header-template" type="text/template">
             <a class="archive-link icon icon-left-nav pull-left" data-transition="slide-out" href="#archive"></a>
             <h1 class="title">Shop</h1>
         </script>
