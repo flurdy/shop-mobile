@@ -93,6 +93,9 @@ var ShopService = function(){
    this.removeItem = function(list,item){
 
    }
+   this.removeSubList = function(list,subList){
+
+   }
    this.updateItem = function(list,item){
 
    }

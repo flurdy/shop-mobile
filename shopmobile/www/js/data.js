@@ -2,9 +2,9 @@
 var item1 = new ShoppingItem(10,
    "Milk","Semi skimmed 4 litre",1,"2015-01-21 12:02:12",false,false,false);
 var item2 = new ShoppingItem(11,
-   "Bread","Wholemeal",1,"2015-01-21 12:02:12",false,false,false);
+   "Bread","Wholemeal",0,"2015-01-21 12:02:12",false,false,false);
 var item3 = new ShoppingItem(12,
-   "Ice cream","All the flavours",1,"2015-01-21 12:02:12",false,false,false);
+   "Ice cream","All the flavours",3,"2015-01-21 12:02:12",false,false,false);
 var item4 = new ShoppingItem(13,
    "Lasagne","Family size",1,"2015-01-21 12:02:12",false,false,false);
 var item5 = new ShoppingItem(14,
@@ -20,22 +20,31 @@ var item9 = new ShoppingItem(18,
 var item10 = new ShoppingItem(19,
    "Tortellini","",2,"2015-01-21 12:02:12",false,false,false);
 var item11 = new ShoppingItem(20,
-   "Pizza Supreme","",1,"2015-01-21 12:02:12",false,false,false);
+   "Dr &Ouml;tker Supreme","",1,"2015-01-21 12:02:12",false,false,false);
+var item12 = new ShoppingItem(21,
+   "Dr &Ouml;tker Mozzarella","",1,"2015-01-21 12:02:12",false,false,false);
+var item13 = new ShoppingItem(22,
+   "Dr &Ouml;tker Hawaiian","",1,"2015-01-21 12:02:12",false,false,false);
 
 
 var subList1 = new ShoppingList(
-   41, "Lasagne Dinner", "", "2015-01-21 12:02:12", 
+   41, "Lasagne Dinner", "", 1, "2015-01-21 12:02:12", 
    [item4,item5,item6] );
 
+var subList3 = new ShoppingList(
+   44, "Pizzas", "", 1, "2015-01-21 12:02:12", 
+   [item11,item12,item13] );
+
 var subList2 = new ShoppingList(
-   43, "Dinner", "Lasagne dinner", "2015-01-21 12:02:12", 
-   [item11,subList1,item10] );
+   43, "Dinner", "Possible dinners", 1, "2015-01-21 12:02:12", 
+   [subList1,item10,subList3] );
 subList1.parent = subList2;
+subList3.parent = subList2;
 
 var list1 = new ShoppingList(
-   42, "Groceries", "Main weekly shopping list", "2015-01-21 12:02:12", 
-   [item1,item2,item3,item4,subList2] );
+   42, "Groceries", "", 1, "2015-01-21 12:02:12", 
+   [item1,item2,item3,subList2] );
 subList2.parent = list1;
 
-var items = [item1,item2,item3,item4,item5,item6,item7,item8,item9,item10,item11];
-var lists = [list1,subList1,subList2];
+var items = [item1,item2,item3,item4,item5,item6,item7,item8,item9,item10,item11,item12,item13];
+var lists = [list1,subList1,subList2,subList3];

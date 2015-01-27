@@ -131,7 +131,16 @@ var ListView = function(){
         });   
     }
     this.renderContent = function(list){
-        renderHelper.renderContent( this.contentTemplate(list.items) );
+        var filteredItems = list.items.filter(function(item){
+            return item.quantity > 0;
+        });
+        var context = {
+            title:       list.title,
+            description: list.description,
+            hasParent:   list.hasParent(),
+            items:       filteredItems
+        }
+        renderHelper.renderContent( this.contentTemplate( context ) );
         $('#items li a').click(function(){
             var type   = $(this).data("itemtype"); 
             var itemId = $(this).data("itemid");    
@@ -213,14 +222,32 @@ var ListEditView = function(){
         });   
     }
     this.renderContent = function(list){
-        renderHelper.renderContent( this.contentTemplate(list) );
+        var context = {
+            title:       list.title,
+            description: list.description,
+            hasParent:   list.hasParent(),
+            items:       list.items
+        };
+        renderHelper.renderContent( this.contentTemplate( context ) );
         $('.item-edit-link').click(function(){
-            app.homeView.listView.itemView.editView.render(
-                list.id, $(this).data("itemid"));    
+            var type   = $(this).data("itemtype"); 
+            var itemId = $(this).data("itemid");    
+            if(type == "ShoppingList"){
+                app.homeView.listView.editView.render(itemId);    
+            } else {
+                app.homeView.listView.itemView.editView.render(list.id, itemId);    
+            }
         });
         $('.item-remove-link').click(function(){
-            var item = this.service.findItem(list,$(this).data("itemid"));
-            app.service.removeItem(list,item);
+            var type   = $(this).data("itemtype"); 
+            var itemId = $(this).data("itemid");    
+            if(type == "ShoppingList"){
+                var subList = app.service.findList(itemId);
+                app.service.removeSubList(list,subList);    
+            } else {
+                var item = app.service.findItem(list,itemId);
+                app.service.removeItem(list,item);                
+            }
             $(this).parent().remove();
 
         });
@@ -230,9 +257,15 @@ var ListEditView = function(){
     }
     this.render = function(listId){
         app.logEvent('render list edit view');
+            console.log('list id ' + listId);
         var list = this.service.findList(listId);
-        this.renderHeader(list);
-        this.renderContent(list);
+        if(list == null){
+            console.log('List not found for id ' + listId);
+        } else {
+            console.log('list id ' + list.id);
+            this.renderHeader(list);
+            this.renderContent(list);
+        }
     }
 }
 

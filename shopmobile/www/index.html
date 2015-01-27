@@ -66,17 +66,38 @@
 
 
         <script id="list-content-template" type="text/template">
+            {{#if hasParent}}
+                <div class="card">
+                    <div class="content-padded">
+                         <h3>{{title}}</h3>
+                    </div>
+                </div>
+            {{/if}}
             <div class="card">
                 <ul class="table-view" id="items">
                     {{#each items}}
-                    <li class="table-view-cell">
-                        <a class="navigate-right item-link" href="#item" data-ignore="push" data-itemid="{{id}}" data-itemtype="{{type}}" >
-                         <strong>{{title}}</strong>
-                        </a>
-                    </li>
+                        <li class="table-view-cell">
+                            <a class="navigate-right item-link" href="#item"
+                                 data-ignore="push" 
+                                 data-itemid="{{id}}" 
+                                 data-itemtype="{{type}}" >
+                             {{quantity}} x
+                             <strong>{{{title}}}</strong>
+                             {{#if items}}
+                                <span class="badge">{{items.length}}</span>
+                            {{/if}}
+                            </a>
+                        </li>
                     {{/each}}
                 </ul>
             </div>
+            {{#if description}}
+                <div class="card">
+                    <div class="content-padded">
+                         {{description}}
+                     </div>
+                </div>
+            {{/if}}
         </script>
 
 
@@ -112,6 +133,52 @@
             </div>
         </script>
 
+
+        <script id="list-edit-content-template" type="text/template">
+            <div class="card">
+                <ul class="table-view">
+                    {{#each items}}
+                    <li class="table-view-cell">
+                        <a href="#edit" class="item-edit-link"
+                                data-transition="slide-in" 
+                                date-itemid="{{id}}"
+                                data-itemtype="{{type}}" >
+                            <strong>{{{title}}}</strong>   
+                        </a>
+                        <a class="btn btn-negative item-remove-link" href="#remove" 
+                                date-itemid="{{id}}"
+                                data-itemtype="{{type}}">
+                            remove
+                        </a>
+                    </li>
+                    {{/each}}
+                </ul>            
+            </div>
+            <div class="content-padded">
+                <a class="btn btn-primary btn-block item-add-link" href="#item-add.html">add item: {{hasParent}}</a>
+            </div>
+            {{#if hasParent}}
+            <div class="content-padded">
+                <form>
+                    <ul class="table-view">
+                        <li class="table-view-cell">
+                            <input type="text" name="title" 
+                                placeholder="title of list" value="{{title}}"/>
+                        </li>
+                        <li class="table-view-cell">
+                            <textarea name="description" 
+                                placeholder="describe list"
+                                rows="4">{{description}}</textarea>
+                        </li>
+                    </ul>
+                    <button class="btn btn-positive btn-block item-link" href="#update">update list</button>
+                </form>
+            </div>
+            {{/if}}
+
+            <p>&nbsp;</p>
+
+        </script>
 
 
         <script id="item-edit-content-template" type="text/template">
@@ -252,27 +319,6 @@
         </script>
 
 
-
-        <script id="list-edit-content-template" type="text/template">
-            <div class="card">
-                <ul class="table-view">
-                    {{#each items.items}}
-                    <li class="table-view-cell">
-                        <a href="#item-edit.html" class="item-edit-link" data-transition="slide-in" date-itemid="{{id}}">
-                            <strong>{{title}}</strong>   
-                        </a>
-                        <a class="btn btn-negative item-remove-link" href="#confirmRemove" date-itemid="{{id}}">
-                            remove
-                        </a>
-                    </li>
-                    {{/each}}
-                </ul>            
-            </div>
-            <div class="content-padded">
-                <a class="btn btn-primary btn-block item-add-link" href="#item-add.html">add item</a>
-            </div>
-
-        </script>
 
 
 
