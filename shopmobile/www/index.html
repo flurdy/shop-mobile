@@ -2,8 +2,9 @@
 <html>
     <head>
         <meta charset="utf-8" />
-        <!-- Sets initial viewport load and disables zooming  -->
-        <meta name="viewport" content="initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="viewport" content="initial-scale=1, minimum-scale=0.6, maximum-scale=1, user-scalable=yes, minimal-ui">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black">
         <link rel="stylesheet" href="bower_components/ratchet/dist/css/ratchet.min.css">
@@ -15,7 +16,6 @@
     <body>
 
         <header id="header" class="bar bar-nav">
-            <h1 class="title">Shop</h1>
         </header>
 
         <nav id="footer" class="bar bar-tab">
@@ -43,77 +43,73 @@
         </div>
 
 
-
-        <script id="list-header-template" type="text/template">
-            <a class="icon icon-compose pull-right list-edit-link" href="#list-edit"></a>
-            <h1 class="title">Shop</h1>
+        <script id="plain-header-template" type="text/template">
+            <h1 class="title">{{title}}</h1>
         </script>
+
+        <script id="editable-header-template" type="text/template">
+            <a class="icon icon-compose pull-right edit-link" href="#list-edit"></a>
+            <h1 class="title">{{title}}</h1>
+        </script>
+
+        <script id="sub-header-template" type="text/template">
+            <a class="parent-link icon icon-left-nav pull-left" data-transition="slide-out" href="#item"></a>
+            <h1 class="title">{{title}}</h1>
+        </script>
+
+        <script id="editable-sub-header-template" type="text/template">
+            <a class="parent-link icon icon-left-nav pull-left" data-transition="slide-out" href="#parent"></a>
+            <a class="edit-link icon icon-compose pull-right" data-transition="fade" href="#edit"></a>
+            <h1 class="title">{{title}}</h1>
+        </script>
+
+
 
         <script id="list-content-template" type="text/template">
             <div class="card">
                 <ul class="table-view" id="items">
+                    {{#each items}}
                     <li class="table-view-cell">
-                        <a class="navigate-right item-link" href="#item" data-ignore="push">
-                         <strong>Milk</strong>
+                        <a class="navigate-right item-link" href="#item" data-ignore="push" data-itemid="{{id}}" data-itemtype="{{type}}" >
+                         <strong>{{title}}</strong>
                         </a>
                     </li>
-                    <li class="table-view-cell">
-                        <a class="navigate-right item-link" href="#item" data-ignore="push">
-                         <strong>Bread</strong>
-                        </a>
-                    </li>
-                    <li class="table-view-cell">
-                        <a class="navigate-right item-link" href="#item" data-ignore="push">
-                            <span class="badge">3</span>
-                           <strong>Dinner</strong>
-                        </a>
-                    </li>
+                    {{/each}}
                 </ul>
             </div>
         </script>
 
 
-
-        <script id="item-header-template" type="text/template">
-            <a class="list-link icon icon-left-nav pull-left" data-transition="slide-out" href="#index"></a>
-            <a class="item-edit-link icon icon-compose pull-right" data-transition="fade" href="#item-edit"></a>
-            <h1 class="title">Shop</h1>
-        </script>
 
         <script id="item-content-template" type="text/template">
             <div class="card">     
                 <ul class="table-view">
                     <li class="table-view-cell">
-                        <h3>Milk</h3>
+                        <h3>{{title}}</h3>
                     </li>
                     <li class="table-view-cell">
-                        <p >4 pints (2 litree) organic semi skimmed</p>
+                        <p >{{description}}</p>
                     </li>
                     <li class="table-view-cell">
-                        <p >Quantity: 1</p>
+                        <p >Quantity: {{quantity}}</p>
                     </li>
                     <li class="table-view-cell">
-                        <div class="toggle active">
+                        <div class="toggle {{#if inBasket}}active{{/if}}">
                             <div class="toggle-handle"></div>
                         </div>
                         <p>In basket</p>
                     </li>
                     <li class="table-view-cell">
-                        <div class="toggle">
+                        <div class="toggle {{#if isPurchased}}active{{/if}}">
                             <div class="toggle-handle"></div>
                         </div>
                         <p>Purchased</p>
                     </li>
                     <li class="table-view-cell">
-                        <p><em>Item synced: 2015-01-15 12:23</em></p>
+                        <p><em>Item synced: {{lastSynced}}</em></p>
                     </li>
                 </ul>
             </div>
-        </script>
-
-        <script id="item-sub-header-template" type="text/template">
-            <a class="item-link icon icon-left-nav pull-left" data-transition="slide-out" href="#item"></a>
-            <h1 class="title">Shop</h1>
         </script>
 
 
@@ -123,15 +119,17 @@
                 <form>
                     <ul class="table-view">
                         <li class="table-view-cell">
-                            <input type="text" name="title" placeholder="name of item" value="Milk"/>
+                            <input type="text" name="title" placeholder="name of item" value="{{title}}"/>
                         </li>
                         <li class="table-view-cell">
                             <textarea name="description" placeholder="describe item"
-                                rows="4">4 pints (2 litre) organic semi skimmed</textarea>
+                                rows="4">{{description}}</textarea>
                         </li>
                         <li class="table-view-cell">
                             <select name="quantity">
-                                <option selected>1</option>
+                                <option selected>{{quantity}}</option>
+                                <option disabled>---</option>
+                                <option>1</option>
                                 <option>2</option>
                                 <option>3</option>
                                 <option>4</option>
@@ -148,66 +146,22 @@
                         </li>
                     </ul>
                     
-                    <a class="btn btn-positive btn-block" href="item.html">update item</a>
+                    <button class="btn btn-positive btn-block item-link" href="#item.html" data-itemid="{{id}}">update item</button>
 
                 </form>
 
 
-                <a class="btn btn-negative btn-block" href="#confirmRemove">remove from list</a>
+                <a class="btn btn-negative btn-block item-remove-link" href="#confirmRemove" data-itemid="{{id}}">remove from list</a>
 
-                <div class="card">
-                    <ul class="table-view">
-                        <li class="table-view-cell">
-                            <a href="item-edit.html" data-transition="slide-in">
-                                <strong>Milk</strong>   
-                            </a>
-                            <a class="btn btn-negative" href="#confirmRemove">
-                                remove
-                            </a>
-                        </li>
-                        <li class="table-view-cell">
-                            <a href="item-edit.html" data-transition="slide-in">
-                                <strong>Bread</strong>   
-                            </a>
-                            <a class="btn btn-negative" href="#confirmRemove">
-                                remove
-                            </a>
-                        </li>
-                        <li class="table-view-cell">
-                            <a href="item-edit.html" data-transition="slide-in">
-                                <strong>Dinner</strong>   
-                            </a>
-                            <a class="btn btn-negative" href="#confirmRemove">
-                                remove
-                            </a>
-                        </li>
-                    </ul>            
-                </div>
+                <!-- 
+                
                 <a class="btn btn-primary btn-block item-add-link" href="#item-add.html">add sub item</a>
+                -->
 
                 <p>&nbsp;</p>
 
             </div>
-
-            <div id="confirmRemove" class="modal">
-                <header class="bar bar-nav">
-                    <a class="icon icon-left-nav pull-left" data-transition="fade" href="item-edit.html"></a>
-                    <h1 class="title">Shop</h1>
-                </header>
-                <div class="content">
-                    <div class="card"> 
-                        <ul class="table-view">
-                            <!-- <li class="table-view-cell">
-                                <h3>Remove</h3>
-                            </li> -->
-                            <li class="table-view-cell">
-                                <h3>Milk</h3>
-                            </li>
-                        </ul>
-                        <button class="btn btn-negative btn-block">confirm remove</button>
-                    </div>
-                </div>
-            </div>
+            
         </script>
 
 
@@ -244,34 +198,10 @@
 
                 </form>
             </div>
-
-            <div id="confirmRemove" class="modal">
-                <header class="bar bar-nav">
-                    <a class="icon icon-left-nav pull-left item-edit-link" data-transition="fade" href="#item-edit.html"></a>
-                    <h1 class="title">Shop</h1>
-                </header>
-                <div class="content">
-                    <div class="card"> 
-                        <ul class="table-view">
-                            <li class="table-view-cell">
-                                <h3>Remove</h3>
-                            </li>
-                            <li class="table-view-cell">
-                                <h3>Milk</h3>
-                            </li>
-                        </ul>
-                        <button class="btn btn-negative btn-block">confirm remove</button>
-                    </div>
-                </div>
-            </div>
         </script>
 
 
 
-        <script id="list-sub-header-template" type="text/template">
-            <a class="list-link icon icon-left-nav pull-left" data-transition="slide-out" href="#index"></a>
-            <h1 class="title">Shop</h1>
-        </script>
 
         <script id="archive-content-template" type="text/template">
             <div class="content-padded">
@@ -305,7 +235,7 @@
             <div class="card">
                 <ul class="table-view">
                     <li class="table-view-cell">
-                        <p><a href="http://github.com/flurdy/shoppinglist" data-ignore="push">Shop project page</a></p>
+                        <p><a href="http://github.com/flurdy/shoppinglist" data-ignore="push">Project page</a></p>
                     </li>
                     <li class="table-view-cell">
                         <p><a href="http://github.com/flurdy/shoppinglist/blob/master/FAQ.md" data-ignore="push">Project FAQ</a></p>
@@ -326,30 +256,16 @@
         <script id="list-edit-content-template" type="text/template">
             <div class="card">
                 <ul class="table-view">
+                    {{#each items.items}}
                     <li class="table-view-cell">
-                        <a href="#item-edit.html" class="item-edit-link" data-transition="slide-in">
-                            <strong>Milk</strong>   
+                        <a href="#item-edit.html" class="item-edit-link" data-transition="slide-in" date-itemid="{{id}}">
+                            <strong>{{title}}</strong>   
                         </a>
-                        <a class="btn btn-negative" href="#confirmRemove">
+                        <a class="btn btn-negative item-remove-link" href="#confirmRemove" date-itemid="{{id}}">
                             remove
                         </a>
                     </li>
-                    <li class="table-view-cell">
-                        <a href="#item-edit.html" class="item-edit-link" data-transition="slide-in">
-                            <strong>Bread</strong>   
-                        </a>
-                        <a class="btn btn-negative" href="#confirmRemove">
-                            remove
-                        </a>
-                    </li>
-                    <li class="table-view-cell">
-                        <a href="#item-edit.html" class="item-edit-link" data-transition="slide-in">
-                            <strong>Dinner</strong>   
-                        </a>
-                        <a class="btn btn-negative" href="#confirmRemove">
-                            remove
-                        </a>
-                    </li>
+                    {{/each}}
                 </ul>            
             </div>
             <div class="content-padded">
@@ -360,41 +276,19 @@
 
 
 
-        <script id="archive-sub-header-template" type="text/template">
-            <a class="archive-link icon icon-left-nav pull-left" data-transition="slide-out" href="#archive"></a>
-            <h1 class="title">Shop</h1>
-        </script>
-
-
-
-        <script id="item-find-template" type="text/template">         
+        <script id="item-find-template" type="text/template">
             <div class="card">
                 <ul class="table-view">
-                    <li class="table-view-cell">
-                        <a href="#item-find.html" class="item-link" data-transition="slide-in">
-                            <strong>Milk</strong>   
-                        </a>
-                        <a class="btn btn-positive item-add-link" href="#recent.html">
-                            add
-                        </a>
-                    </li>
-                    <li class="table-view-cell">
-                        <a href="#item-find.html" class="item-link" data-transition="slide-in">
-                            <strong>Bread</strong>   
-                        </a>
-                        <a class="btn btn-positive item-add-link" href="#recent.html">
-                            add
-                        </a>
-                    </li>
-                    <li class="table-view-cell">
-                        <a href="#item-find.html" class="item-link" data-transition="slide-in">
-                            <strong>Dinner</strong>                           
-                            <span class="badge">3</span>
-                        </a>
-                        <a class="btn btn-positive item-add-link" href="#recent.html">
-                            add
-                        </a>
-                    </li>
+                    {{#each items}}
+                        <li class="table-view-cell">
+                            <a href="#item-find.html" class="item-link" data-ignore="push" data-itemid="{{id}}">
+                                <strong>{{title}}</strong>   
+                            </a>
+                            <a class="btn btn-positive item-add-link" href="#recent.html" data-ignore="push" data-itemid="{{id}}">
+                                add
+                            </a>
+                        </li>
+                    {{/each}}
                 </ul>
             </div>
         </script>
@@ -416,6 +310,11 @@
         <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
         <script type="text/javascript" src="bower_components/handlebars/handlebars.min.js"></script>
         <script type="text/javascript" src="bower_components/fastclick/lib/fastclick.js"></script>
+        <script type="text/javascript" src="js/domain.js"></script>
+        <script type="text/javascript" src="js/data.js"></script>
+        <script type="text/javascript" src="js/adapter.js"></script>
+        <script type="text/javascript" src="js/service.js"></script>
+        <script type="text/javascript" src="js/view.js"></script>
         <script type="text/javascript" src="js/app.js"></script>
     </body>
 </html>
