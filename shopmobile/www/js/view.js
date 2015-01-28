@@ -1,46 +1,46 @@
 var renderHelper = {
-    compileTemplate: function(template){
+    compile: function(template){
         return Handlebars.compile($(template).html());
     },
     templates: {
         plainHeader: function(){
-            return renderHelper.compileTemplate("#plain-header-template");
+            return renderHelper.compile("#plain-header-template");
         },
         editableHeader: function(){
-            return renderHelper.compileTemplate("#editable-header-template");
+            return renderHelper.compile("#editable-header-template");
         },
         subHeader: function(){
-            return renderHelper.compileTemplate("#sub-header-template");
+            return renderHelper.compile("#sub-header-template");
         },
         editableSubHeader: function(){ 
-            return renderHelper.compileTemplate("#editable-sub-header-template");
+            return renderHelper.compile("#editable-sub-header-template");
         },
         listContent: function(){
-            return renderHelper.compileTemplate("#list-content-template");
+            return renderHelper.compile("#list-content-template");
         },
         listEditContent: function(){ 
-            return renderHelper.compileTemplate("#list-edit-content-template");
+            return renderHelper.compile("#list-edit-content-template");
         },
         itemContent: function(){ 
-            return renderHelper.compileTemplate("#item-content-template");
+            return renderHelper.compile("#item-content-template");
         },
         itemEditContent: function(){
-            return renderHelper.compileTemplate("#item-edit-content-template");
+            return renderHelper.compile("#item-edit-content-template");
         },
         itemAddContent: function(){ 
-            return renderHelper.compileTemplate("#item-add-content-template");
+            return renderHelper.compile("#item-add-content-template");
         },
         archiveContent: function(){ 
-            return renderHelper.compileTemplate("#archive-content-template");
+            return renderHelper.compile("#archive-content-template");
         },
         optionsContent: function(){ 
-            return renderHelper.compileTemplate("#options-content-template");
+            return renderHelper.compile("#options-content-template");
         },
         itemFindContent: function(){
-            return renderHelper.compileTemplate("#item-find-template");
+            return renderHelper.compile("#item-find-template");
         },
         searchContent: function(){ 
-            return renderHelper.compileTemplate("#search-content-template");
+            return renderHelper.compile("#search-content-template");
         }
     },
     renderBody: function(html){
@@ -91,11 +91,21 @@ var HomeView = function(){
         $('.options-link').click(function(){
             app.homeView.optionsView.render();
         });
+        $('.sync-link').click(function(){
+            app.service.sync();
+        });
     }
     this.render = function(){
         app.logEvent('render home view');
         this.renderFooter(this.currentList);
         this.listView.render(this.currentList.id);
+    }
+    this.inputsToMap = function(form){
+        var values = {};
+        $.each(form.serializeArray(), function(i, field) {
+            values[field.name] = field.value;
+        });
+        return values;
     }
 }
 
@@ -114,7 +124,7 @@ var ListView = function(){
         this.contentTemplate  = renderHelper.templates.listContent();
         this.editView.initialize(service);
         this.itemView.initialize(service);
-        this.itemAddView.initialize();
+        this.itemAddView.initialize(service);
         return this;
     }    
     this.renderHeader = function(list){
@@ -134,11 +144,17 @@ var ListView = function(){
         var filteredItems = list.items.filter(function(item){
             return item.quantity > 0;
         });
+        var mappedItems = $.map(filteredItems,function(item,i){
+            if(item.quantity <= 1){
+                // item.quantity = null;
+            }
+            return item;
+        });
         var context = {
             title:       list.title,
             description: list.description,
             hasParent:   list.hasParent(),
-            items:       filteredItems
+            items:       mappedItems
         }
         renderHelper.renderContent( this.contentTemplate( context ) );
         $('#items li a').click(function(){
@@ -252,8 +268,27 @@ var ListEditView = function(){
 
         });
         $('.item-add-link').click(function(){
-            app.homeView.listView.itemAddView.render(list.id);
+            app.homeView.listView.itemAddView.renderListParent(list.id);
         });   
+        $( ".list-update-form" ).submit(function( event ) {
+            event.preventDefault();
+            var inputs = app.homeView.inputsToMap($(this));
+            console.log( "Form inputs: " + inputs );
+            var list   = app.service.findList( inputs.listId );
+            if(list == null){
+                console.log('List not found for id ' + inputs.listId );            
+            } else {
+                var parent = app.service.findList( inputs.parentId );
+                if(parent == null){
+                    console.log('List not found for parent id ' + inputs.parentId);
+                } else {
+                    list.title       = list.title;
+                    list.description = list.description;  
+                    app.service.updateSubList(parent,list);
+                    app.homeView.listView.editView.render(list.id);
+                }
+            }
+        });
     }
     this.render = function(listId){
         app.logEvent('render list edit view');
@@ -286,18 +321,31 @@ var ItemEditView = function(){
         });     
     }
     this.renderContent = function(list,item){
-        renderHelper.renderContent( this.contentTemplate(item) ); 
-        $('.item-edit-link').click(function(){
-            app.homeView.listView.itemView.editView.render(
-                list.id, item.id, $(this).data("itemid"));    
-        });   
-        $('.item-edit-link').click(function(){
-            app.homeView.listView.itemView.editView.render(
-                list.id, $(this).data("itemid"));    
-        });    
+        renderHelper.renderContent( this.contentTemplate(item) );  
         $('.item-add-link').click(function(){
-            app.homeView.listView.itemAddView.render(list.id,item.id);
+            // app.service.convertToSubList(list,item);
+            app.homeView.listView.itemAddView.renderItemParent(list.id,item.id);
         });     
+        $( ".item-update-form" ).submit(function( event ) {
+            event.preventDefault();
+            var inputs = app.homeView.inputsToMap($(this));
+            console.log( "Form inputs: " + inputs );
+            var list = app.service.findList( inputs.listId );
+            if(list == null){
+                console.log('List not found for id ' + inputs.listId);
+            } else {
+                var item = app.service.findItem(list,inputs.itemId);
+                if(item == null){
+                    console.log('Item not found for id ' + inputs.itemId);
+                } else {                        
+                    item.title       = inputs.title;
+                    item.description = inputs.description;    
+                    item.quantity    = inputs.quantity;
+                    app.service.updateItem(list,item);
+                    app.homeView.listView.editView.render(list.id);
+                }
+            }
+        });
         $('.item-remove-link').click(function(){
             var item = app.service.findItem(list,$(this).data("itemid"));
             app.service.removeItem(list,item);
@@ -323,24 +371,63 @@ var ItemAddView = function(){
         this.contentTemplate = renderHelper.templates.itemAddContent();
         return this;
     }    
-    this.renderHeader = function(list){
+    this.renderListParentHeader = function(list){
         renderHelper.renderHeader( this.headerTemplate(app.messages) );
         $('.parent-link').click(function(){
-            app.homeView.listView.render();
+            app.homeView.listView.editView.render(list.id);
         });     
     }
-    this.renderContent = function(list){
-        renderHelper.renderContent( this.contentTemplate(item) );
+    this.renderItemParentHeader = function(item){
+        renderHelper.renderHeader( this.headerTemplate(app.messages) );
+        $('.parent-link').click(function(){
+            app.homeView.listView.itemView.editView.render(item.id);
+        });     
+    }
+    this.renderListParentContent = function(list){
+        renderHelper.renderContent( this.contentTemplate(list) );
         $( ".item-add-form" ).submit(function( event ) {
             event.preventDefault();
-            app.homeView.listView.render(list.id);
+            var inputs = app.homeView.inputsToMap($(this));
+            var item   = app.service.createNewItem(inputs);
+            app.service.addNewItem(list,item);
+            app.homeView.listView.editView.render(list.id);
         });
     }
-    this.render = function(listId){
-        app.logEvent('render item add view');
+    this.renderItemParentContent = function(list,subListItem){
+        renderHelper.renderContent( this.contentTemplate(subListItem) );
+        $( ".item-add-form" ).submit(function( event ) {
+            event.preventDefault();
+            var inputs  = app.homeView.inputsToMap($(this));
+            var item    = app.service.createNewItem(inputs);
+            var subList = app.service.convertToSubList(list,subListItem);
+            app.service.addNewItem(subList,item);
+            app.homeView.listView.editView.render(subList.id);
+        });
+    }
+    this.renderListParent = function(listId){
+        app.logEvent('render item add view for list');
         var list = this.service.findList(listId);
-        this.renderHeader(list);
-        this.renderContent(list);
+        if(list == null){
+            console.log('List not found for id ' + listId);
+        } else {
+            this.renderListParentHeader(list);
+            this.renderListParentContent(list);
+        }
+    }
+    this.renderItemParent = function(listId,itemId){
+        app.logEvent('render item add view for item');
+        var list = this.service.findList(listId);
+        if(list == null){
+            console.log('List not found for id ' + listId);
+        } else {
+            var item = this.service.findItem(itemId);
+            if(list == null){
+                console.log('Item not found for id ' + itemId);
+            } else {
+                this.renderItemParentHeader(item);
+                this.renderItemParentContent(list,item);
+            }
+        }
     }
 }
 

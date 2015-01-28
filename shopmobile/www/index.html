@@ -20,6 +20,11 @@
 
         <nav id="footer" class="bar bar-tab">
             <ul class="tab-inner">
+                <li class="tab-item sync-link">
+                    <a href="#sync">
+                        <span class="icon icon-refresh"></span>
+                    </a>
+                </li>
                 <li class="tab-item active index-link">
                     <a href="#index">
                         <span class="icon icon-list"></span>
@@ -80,12 +85,14 @@
                             <a class="navigate-right item-link" href="#item"
                                  data-ignore="push" 
                                  data-itemid="{{id}}" 
-                                 data-itemtype="{{type}}" >
-                             {{quantity}} x
-                             <strong>{{{title}}}</strong>
-                             {{#if items}}
-                                <span class="badge">{{items.length}}</span>
-                            {{/if}}
+                                 data-itemtype="{{type}}" >      
+                                <span>
+                                    <strong>{{title}}</strong>
+                                    <span class="badge-quantity-{{quantity}} badge badge-inverted">x {{quantity}}</span>
+                                </span>
+                                {{#if items}}
+                                    <span class="badge">{{items.length}}</span>
+                                {{/if}}
                             </a>
                         </li>
                     {{/each}}
@@ -108,9 +115,11 @@
                     <li class="table-view-cell">
                         <h3>{{title}}</h3>
                     </li>
+                    {{#if description}}
                     <li class="table-view-cell">
                         <p >{{description}}</p>
                     </li>
+                    {{/if}}
                     <li class="table-view-cell">
                         <p >Quantity: {{quantity}}</p>
                     </li>
@@ -143,7 +152,10 @@
                                 data-transition="slide-in" 
                                 date-itemid="{{id}}"
                                 data-itemtype="{{type}}" >
-                            <strong>{{{title}}}</strong>   
+                            <span>
+                                <strong>{{title}}</strong>
+                                <span class="badge badge-inverted">x {{quantity}}</span>
+                            </span>
                         </a>
                         <a class="btn btn-negative item-remove-link" href="#remove" 
                                 date-itemid="{{id}}"
@@ -155,25 +167,27 @@
                 </ul>            
             </div>
             <div class="content-padded">
-                <a class="btn btn-primary btn-block item-add-link" href="#item-add.html">add item: {{hasParent}}</a>
+                <a class="btn btn-primary btn-block item-add-link" href="#item-add.html">add item</a>
             </div>
             {{#if hasParent}}
-            <div class="content-padded">
-                <form>
-                    <ul class="table-view">
-                        <li class="table-view-cell">
-                            <input type="text" name="title" 
-                                placeholder="title of list" value="{{title}}"/>
-                        </li>
-                        <li class="table-view-cell">
-                            <textarea name="description" 
-                                placeholder="describe list"
-                                rows="4">{{description}}</textarea>
-                        </li>
-                    </ul>
-                    <button class="btn btn-positive btn-block item-link" href="#update">update list</button>
-                </form>
-            </div>
+                <div class="content-padded">
+                    <form class="list-update-form" action="#">
+                        <input type="hidden" name="parentId" value="{{parent.id}}"/>
+                        <input type="hidden" name="listId" value="{{id}}"/>
+                        <ul class="table-view">
+                            <li class="table-view-cell">
+                                <input type="text" name="title" 
+                                    placeholder="title of list" value="{{title}}"/>
+                            </li>
+                            <li class="table-view-cell">
+                                <textarea name="description" 
+                                    placeholder="describe list"
+                                    rows="4">{{description}}</textarea>
+                            </li>
+                        </ul>
+                        <button class="btn btn-positive btn-block item-link" href="#update">update list</button>
+                    </form>
+                </div>
             {{/if}}
 
             <p>&nbsp;</p>
@@ -183,7 +197,9 @@
 
         <script id="item-edit-content-template" type="text/template">
             <div class="content-padded">
-                <form>
+                <form class="item-update-form" action="#">
+                    <input type="hidden" name="listId" value="{{parent.id}}"/>
+                    <input type="hidden" name="itemId" value="{{id}}"/>
                     <ul class="table-view">
                         <li class="table-view-cell">
                             <input type="text" name="title" placeholder="name of item" value="{{title}}"/>
@@ -220,10 +236,7 @@
 
                 <a class="btn btn-negative btn-block item-remove-link" href="#confirmRemove" data-itemid="{{id}}">remove from list</a>
 
-                <!-- 
-                
                 <a class="btn btn-primary btn-block item-add-link" href="#item-add.html">add sub item</a>
-                -->
 
                 <p>&nbsp;</p>
 
@@ -235,10 +248,10 @@
 
         <script id="item-add-content-template" type="text/template">
             <div class="content-padded">
-                <form action="#item-add">
+                <form action="#" class="item-add-form">
                     <ul class="table-view">
                         <li class="table-view-cell">
-                            <input type="text" name="title" placeholder="name of item" value=""/>
+                            <input type="text" name="title" placeholder="name of item" value="" required />
                         </li>
                         <li class="table-view-cell">
                             <textarea name="description" placeholder="describe item"></textarea>
@@ -261,7 +274,7 @@
                         </li>
                     </ul>
                     
-                    <a class="btn btn-positive btn-block" href="item.html">add</a>
+                    <button class="btn btn-positive btn-block" type="submit">add</button>
 
                 </form>
             </div>
@@ -320,8 +333,6 @@
 
 
 
-
-
         <script id="item-find-template" type="text/template">
             <div class="card">
                 <ul class="table-view">
@@ -356,6 +367,7 @@
         <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
         <script type="text/javascript" src="bower_components/handlebars/handlebars.min.js"></script>
         <script type="text/javascript" src="bower_components/fastclick/lib/fastclick.js"></script>
+        <script type="text/javascript" src="bower_components/uuid/uuid.js"></script>
         <script type="text/javascript" src="js/domain.js"></script>
         <script type="text/javascript" src="js/data.js"></script>
         <script type="text/javascript" src="js/adapter.js"></script>

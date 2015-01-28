@@ -41,3 +41,10 @@ shopmobile/www/bower_components/handlebars/handlebars.runtime.amd.min.js
 shopmobile/www/bower_components/handlebars/component.json
 shopmobile/www/bower_components/handlebars/composer.json
 shopmobile/www/bower_components/handlebars/handlebars.amd.js
+shopmobile/www/bower_components/uuid/test
+shopmobile/www/bower_components/uuid/misc
+shopmobile/www/bower_components/uuid/benchmark
+shopmobile/www/bower_components/uuid/LICENSE.md
+shopmobile/www/bower_components/uuid/rng-browser.js
+shopmobile/www/bower_components/uuid/rng.js
+.travis.yml

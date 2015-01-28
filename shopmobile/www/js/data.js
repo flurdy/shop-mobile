@@ -20,11 +20,11 @@ var item9 = new ShoppingItem(18,
 var item10 = new ShoppingItem(19,
    "Tortellini","",2,"2015-01-21 12:02:12",false,false,false);
 var item11 = new ShoppingItem(20,
-   "Dr &Ouml;tker Supreme","",1,"2015-01-21 12:02:12",false,false,false);
+   "Dr Ötker Supreme","",1,"2015-01-21 12:02:12",false,false,false);
 var item12 = new ShoppingItem(21,
-   "Dr &Ouml;tker Mozzarella","",1,"2015-01-21 12:02:12",false,false,false);
+   "Dr Ötker Mozzarella","",1,"2015-01-21 12:02:12",false,false,false);
 var item13 = new ShoppingItem(22,
-   "Dr &Ouml;tker Hawaiian","",1,"2015-01-21 12:02:12",false,false,false);
+   "Dr Ötker Hawaiian","",1,"2015-01-21 12:02:12",false,false,false);
 
 
 var subList1 = new ShoppingList(

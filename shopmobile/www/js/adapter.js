@@ -47,4 +47,25 @@ var ShopAdapter = function(){
       return [item2,item8];
    }
 
+   this.addNewItem = function(list,item){
+   }
+   
+   this.addItem = function(list,item){
+   }
+   
+   this.updateItem = function(list,item){
+   }
+
+   this.updateSubList = function(list,subList){
+   }
+   
+   this.convertToSubList = function(list,item){   
+   }
+   
+   this.removeItem = function(list,item){
+   }
+   
+   this.removeSubList = function(list,subList){
+   }   
+
 }

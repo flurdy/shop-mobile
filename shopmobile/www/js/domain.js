@@ -1,5 +1,5 @@
 
-var ShoppingItem = function(id,title,description,quantity,lastSynced,inBasket,isPurchased,dirty){
+var ShoppingItem = function(id,title,description,quantity,lastSynced,inBasket,isPurchased,dirty,parent){
    this.type        = "ShoppingItem"
    this.id          = id;
    this.title       = title;
@@ -9,6 +9,7 @@ var ShoppingItem = function(id,title,description,quantity,lastSynced,inBasket,is
    this.inBasket    = inBasket;
    this.isPurchased = isPurchased;
    this.dirty       = dirty;
+   this.parent;     = parent;
 }
 
 var ShoppingList = function(id,title,description,quantity,lastSynced,items){
