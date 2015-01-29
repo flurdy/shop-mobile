@@ -25,6 +25,12 @@ var item12 = new ShoppingItem(21,
    "Dr Ötker Mozzarella","",1,"2015-01-21 12:02:12",false,false,false);
 var item13 = new ShoppingItem(22,
    "Dr Ötker Hawaiian","",1,"2015-01-21 12:02:12",false,false,false);
+var item14 = new ShoppingItem(23,
+   "Pasta","Twirlies",1,"2015-01-21 12:02:12",false,false,false);
+var item15 = new ShoppingItem(24,
+   "Cheddar cheese","Pack of 20",1,"2015-01-21 12:02:12",false,false,false);
+var item16 = new ShoppingItem(25,
+   "Aptamil formula","2-3 year",1,"2015-01-21 12:02:12",false,false,false);
 
 
 var subList1 = new ShoppingList(
@@ -43,8 +49,40 @@ subList3.parent = subList2;
 
 var list1 = new ShoppingList(
    42, "Groceries", "", 1, "2015-01-21 12:02:12", 
-   [item1,item2,item3,subList2] );
+   [item1,item2,item3,subList2,item14,item15,item16] );
 subList2.parent = list1;
 
-var items = [item1,item2,item3,item4,item5,item6,item7,item8,item9,item10,item11,item12,item13];
+var items = [item1,item2,item3,item4,item5,item6,item7,item8,item9,item10,item11,item12,item13,item14,item15,item16];
 var lists = [list1,subList1,subList2,subList3];
+
+
+var ShopRepository = function(){
+   this.lists = {}
+   this.items = {}
+   this.initialize = function(stubLists,stubItems){
+      this.addToLists(stubLists);
+      this.addToItems(stubItems);
+   }
+   this.addToLists = function(newLists){
+      this.addToObject(this.lists,newLists);
+   }
+   this.addToItems = function(newItems){
+      this.addToObject(this.items,newItems);
+   }
+   this.addToObject = function(object,newObjects){      
+      for(var i=0, len=newObjects.length; i < len; i++){
+         object[newObjects[i].id] = newObjects[i];
+      }
+   }
+   this.findList = function(listId){
+      return this.lists[listId];
+   }
+   this.findDefaultListId = function(){
+      return 42;
+   }
+
+   this.addNewItem = function(list,item){
+      this.items[item.id] = item;
+   }
+}
+

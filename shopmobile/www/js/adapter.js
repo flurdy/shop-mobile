@@ -1,18 +1,35 @@
 
 var ShopAdapter = function(){
-
-   this.initialize = function(){
+   this.repository;
+   this.api;
+   this.initialize = function(repository,api){
+      this.repository = repository;
+      this.api        = api;
       return this;
    }
-
+   this.useRepository = function(){
+      return this.api === undefined && this.repository !== undefined;
+   }
+   this.findDefaultList = function(){
+      if(this.useRepository()){
+         var id = this.repository.findDefaultListId();
+         console.log('Default id is ' + id);
+         return this.findList(id);
+      } else {
+         console.log('No repository nor api defined');
+         return null;
+      }
+   }
    this.findList = function(listId){
       if(listId === undefined){
          console.log('List id is undefined');
          return null;
       } else {
-         for(var i=0, len=lists.length; i < len; i++){
-            if(lists[i].id == listId)
-               return lists[i];
+         if(this.useRepository()){
+            return this.repository.findList(listId);
+         } else {
+            console.log('No repository nor api defined');
+            // return this.api.findList(listId);
          }
          console.log('No list found for id '+ listId);
          return null;
@@ -48,24 +65,40 @@ var ShopAdapter = function(){
    }
 
    this.addNewItem = function(list,item){
+      if(this.useRepository()){
+         this.repository.addNewItem(list,item);
+      } else {
+         console.log('No repository nor api defined');
+      }
    }
    
    this.addItem = function(list,item){
+      // todo
    }
    
    this.updateItem = function(list,item){
+      // todo
    }
 
    this.updateSubList = function(list,subList){
+      // todo
    }
    
-   this.convertToSubList = function(list,item){   
+   this.convertToSubList = function(list,item,subList){ 
+      if(this.useRepository()){
+         this.repository.deleteItem(item);
+         this.repository.addList(subList);
+      } else {
+         console.log('No repository nor api defined');
+      }
    }
    
    this.removeItem = function(list,item){
+      // todo
    }
    
    this.removeSubList = function(list,subList){
+      // todo
    }   
 
 }

@@ -15,6 +15,8 @@ sync objects
    write queues in both directions
    add revision numbers
 
+check offline/online status, accept fragility
+
 cache time invalidation
    
 local id generation for offline creation of new items etc

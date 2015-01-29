@@ -22,24 +22,40 @@ var ShopCache = function(){
    }
 }
 
+var ShopFactory = function(){
+   this.guid = new Guid();
+   this.initialize = function(){
+      return this;
+   }
+   this.newId = function(){
+      return this.guid.guid();
+
+   }
+   this.newItem = function(inputs){
+      return new ShoppingItem(this.newId(),inputs.title,inputs.description,1);
+   }
+}
+
 var ShopService = function(){
    this.adapter;
-   this.defaultListId = 42;
+   this.defaultListId;
    this.listCache      = new ShopCache();
    this.itemCache      = new ShopCache();
    this.frequentCache  = new ShopCache();
    this.recentCache    = new ShopCache();
-   this.searchCache    = {}
-   this.uuid;
+   this.searchCache    = {}; // Map of caches per list
+   this.factory        = new ShopFactory();
    this.initialize = function(adapter){
-      this.uuid    = uuid;
       this.adapter = adapter;
    }
-   this.newId = function(){
-      return this.uuid.v4();
-   }
    this.findDefaultList = function(){
-      return this.findList(this.defaultListId);
+      if(this.defaultListId){
+        return this.findList(this.defaultListId);
+      } else {
+         var list = this.adapter.findDefaultList();
+         this.defaultListId = list.id;
+         return list;
+      }
    }
    this.findList = function(listId){
       if(this.listCache.isCached(listId)){
@@ -99,7 +115,7 @@ var ShopService = function(){
       this.listCache.cache(list.id,list);
    }
    this.createNewItem = function(inputs){
-      return new ShoppingItem(this.newId(),inputs.title,inputs.description);
+      return this.factory.newItem(inputs);
    }
    this.addNewItem = function(list,item){
       this.listCache.invalidate(list.id);
@@ -120,7 +136,7 @@ var ShopService = function(){
    this.removeSubList = function(list,subList){
       this.listCache.invalidate(list.id);
       var filteredItems = list.items.filter(function(element,i){
-         return element.id !== item.id;
+         return element.id !== subList.id;
       });
       list.items = filteredItems;
       this.adapter.removeSubList(list,subList);
