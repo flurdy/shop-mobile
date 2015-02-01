@@ -16,6 +16,8 @@ var app = {
 
     homeView: new HomeView(),
 
+    breadCrumbs: new BreadCrumbs(),
+
     initialize: function() {
         this.bindEvents();   
         this.repository.initialize(lists,items);

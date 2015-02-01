@@ -73,15 +73,30 @@ var ShopAdapter = function(){
    }
    
    this.addItem = function(list,item){
+      if(this.useRepository()){
+         this.repository.addItem(list,item);
+      } else {
+         console.log('No repository nor api defined');
       // todo
+      }
    }
    
    this.updateItem = function(list,item){
+      if(this.useRepository()){
+         this.repository.updateItem(list,item);
+      } else {
+         console.log('No repository nor api defined');
       // todo
+      }
    }
 
    this.updateSubList = function(list,subList){
+      if(this.useRepository()){
+         this.repository.updateSubList(list,subList);
+      } else {
+         console.log('No repository nor api defined');
       // todo
+      }
    }
    
    this.convertToSubList = function(list,item,subList){ 
@@ -90,15 +105,26 @@ var ShopAdapter = function(){
          this.repository.addList(subList);
       } else {
          console.log('No repository nor api defined');
+      // todo
       }
    }
    
    this.removeItem = function(list,item){
+      if(this.useRepository()){
+         this.repository.removeItem(list,item);
+      } else {
+         console.log('No repository nor api defined');
       // todo
+      }
    }
    
    this.removeSubList = function(list,subList){
+      if(this.useRepository()){
+         this.repository.removeSubList(list,subList);
+      } else {
+         console.log('No repository nor api defined');
       // todo
+      }
    }   
 
 }

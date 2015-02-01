@@ -22,20 +22,6 @@ var ShopCache = function(){
    }
 }
 
-var ShopFactory = function(){
-   this.guid = new Guid();
-   this.initialize = function(){
-      return this;
-   }
-   this.newId = function(){
-      return this.guid.guid();
-
-   }
-   this.newItem = function(inputs){
-      return new ShoppingItem(this.newId(),inputs.title,inputs.description,1);
-   }
-}
-
 var ShopService = function(){
    this.adapter;
    this.defaultListId;
@@ -143,7 +129,6 @@ var ShopService = function(){
       this.listCache.cache(list.id,list);
    }
    this.updateItem = function(list,item){
-      this.listCache.invalidate(list.id);
       this.itemCache.invalidate(item.id);
       this.adapter.updateItem(list,item);
       list.items = $.map(list.items,function(listItem,i){

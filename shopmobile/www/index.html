@@ -157,7 +157,7 @@
                                 <span class="badge badge-inverted">x {{quantity}}</span>
                             </span>
                         </a>
-                        <a class="btn btn-negative item-remove-link" href="#remove" 
+                        <a class="btn btn-negative btn-outlined item-remove-link" href="#remove" 
                                 data-itemid="{{id}}"
                                 data-itemtype="{{type}}">
                             remove
@@ -166,29 +166,43 @@
                     {{/each}}
                 </ul>            
             </div>
-            <div class="content-padded">
-                <a class="btn btn-primary btn-block item-add-link" href="#item-add.html">add item</a>
-            </div>
+
             {{#if hasParent}}
-                <div class="content-padded">
-                    <form class="list-update-form" action="#">
-                        <input type="hidden" name="parentId" value="{{parent.id}}"/>
-                        <input type="hidden" name="listId" value="{{id}}"/>
-                        <ul class="table-view">
-                            <li class="table-view-cell">
-                                <input type="text" name="title" 
-                                    placeholder="title of list" value="{{title}}"/>
-                            </li>
-                            <li class="table-view-cell">
-                                <textarea name="description" 
-                                    placeholder="describe list"
-                                    rows="4">{{description}}</textarea>
-                            </li>
-                        </ul>
-                        <button class="btn btn-positive btn-block item-link" href="#update">update list</button>
-                    </form>
+                <form class="list-update-form" action="#">
+                    <input type="hidden" name="parentId" value="{{parent.id}}"/>
+                    <input type="hidden" name="listId" value="{{id}}"/>
+                <div class="card">
+                    <ul class="table-view">
+                        <li class="table-view-cell">
+                            <input type="text" name="title" 
+                                placeholder="title of list" value="{{title}}"/>
+                        </li>
+                        <li class="table-view-cell">
+                            <textarea name="description" 
+                                placeholder="describe list"
+                                rows="4">{{description}}</textarea>
+                        </li>
+                    </ul>
                 </div>
             {{/if}}
+
+
+            <div class="card">
+                <div class="content-padded">
+                    {{#if hasParent}}
+                        <button class="btn btn-positive btn-outlined btn-block item-link" href="#update">update list</button>
+                    {{/if}}
+                    <a class="btn btn-primary btn-outlined btn-block item-find-link" href="#item-find">find item</a>
+               
+                    <a class="btn btn-primary btn-outlined btn-block item-add-link" href="#item-add">add new item</a>
+                    <a class="btn btn-negative btn-outlined btn-block item-purchased-remove-link" href="#remove-purchased">remove all purchased</a>
+                </div>
+            </div>
+
+            {{#if hasParent}}
+            </form>
+            {{/if}}
+
 
             <p>&nbsp;</p>
 
@@ -248,6 +262,9 @@
 
         <script id="item-add-content-template" type="text/template">
             <div class="content-padded">
+
+                <a class="btn btn-primary btn-inverted btn-block item-find-link" href="#item-find">find item</a>
+
                 <form action="#" class="item-add-form">
                     <ul class="table-view">
                         <li class="table-view-cell">
@@ -274,7 +291,7 @@
                         </li>
                     </ul>
                     
-                    <button class="btn btn-positive btn-block" type="submit">add</button>
+                    <button class="btn btn-positive btn-block" type="submit">add item</button>
 
                 </form>
             </div>

@@ -131,7 +131,8 @@ var ListView = function(){
         if(list.hasParent()){
             renderHelper.renderHeader( this.headerTemplateSub(app.messages) );
             $('.parent-link').click(function(){
-                app.homeView.listView.render(list.parent.id);
+                // app.homeView.listView.render(list.parent.id);
+                app.breadCrumbs.pop();
             });     
         } else {
             renderHelper.renderHeader( this.headerTemplate(app.messages) );
@@ -144,17 +145,11 @@ var ListView = function(){
         var filteredItems = list.items.filter(function(item){
             return item.quantity > 0;
         });
-        var mappedItems = $.map(filteredItems,function(item,i){
-            if(item.quantity <= 1){
-                // item.quantity = null;
-            }
-            return item;
-        });
         var context = {
             title:       list.title,
             description: list.description,
             hasParent:   list.hasParent(),
-            items:       mappedItems
+            items:       filteredItems
         }
         renderHelper.renderContent( this.contentTemplate( context ) );
         $('#items li a').click(function(){
@@ -171,6 +166,12 @@ var ListView = function(){
         app.logEvent('render list view');
         var list = this.service.findList(listId);
         console.log('list id ' + list.id);
+        if(!list.hasParent()){
+            app.breadCrumbs.reset();
+        }
+        app.breadCrumbs.push(function(){
+            app.homeView.listView.render(listId);
+        });
         this.renderHeader(list);
         this.renderContent(list);
     }
@@ -193,7 +194,8 @@ var ItemView = function(){
         console.log('item id ' + item.id);
         renderHelper.renderHeader( this.headerTemplate(app.messages) );
         $('.parent-link').click(function(){
-            app.homeView.listView.render(list.id);
+            // app.homeView.listView.render(list.id);                   
+            app.breadCrumbs.pop();
         });     
         $('.edit-link').click(function(){
             app.homeView.listView.itemView.editView.render(list.id,item.id);
@@ -204,6 +206,9 @@ var ItemView = function(){
     }
     this.render = function(listId,itemId){
         app.logEvent('render item view');
+        app.breadCrumbs.push(function(){
+            app.homeView.listView.itemView.render(listId,itemId);
+        });
         var list = this.service.findList(listId);
         if(list == null){
             console.log('List not found for id ' + listId);
@@ -234,15 +239,18 @@ var ListEditView = function(){
     this.renderHeader = function(list){
         renderHelper.renderHeader( this.headerTemplate(app.messages) );
         $('.parent-link').click(function(){
-            app.homeView.listView.render(list.id);
+            // app.homeView.listView.render(list.id);                      
+            app.breadCrumbs.pop();
         });   
     }
     this.renderContent = function(list){
         var context = {
+            id:          list.id,
             title:       list.title,
             description: list.description,
             hasParent:   list.hasParent(),
-            items:       list.items
+            items:       list.items,
+            parent:      list.parent 
         };
         renderHelper.renderContent( this.contentTemplate( context ) );
         $('.item-edit-link').click(function(){
@@ -270,6 +278,9 @@ var ListEditView = function(){
         $('.item-add-link').click(function(){
             app.homeView.listView.itemAddView.renderListParent(list.id);
         });   
+        $('.item-find-link').click(function(){
+            app.homeView.archiveView.render(list.id);
+        });   
         $( ".list-update-form" ).submit(function( event ) {
             event.preventDefault();
             var inputs = app.homeView.inputsToMap($(this));
@@ -282,17 +293,25 @@ var ListEditView = function(){
                 if(parent == null){
                     console.log('List not found for parent id ' + inputs.parentId);
                 } else {
-                    list.title       = list.title;
-                    list.description = list.description;  
+                    list.title       = inputs.title;
+                    list.description = inputs.description;  
                     app.service.updateSubList(parent,list);
-                    app.homeView.listView.editView.render(list.id);
+                    app.breadCrumbs.peek();
                 }
             }
+        });    
+        $('.item-purchased-remove-link').click(function(){
+            var list = app.service.findList( list.id );
+            app.service.removePurchasedItems(link);
+            app.breadCrumbs.peek();
         });
     }
     this.render = function(listId){
         app.logEvent('render list edit view');
-            console.log('list id ' + listId);
+        console.log('list id ' + listId);        
+        app.breadCrumbs.push(function(){
+            app.homeView.listView.editView.render(listId);
+        });
         var list = this.service.findList(listId);
         if(list == null){
             console.log('List not found for id ' + listId);
@@ -317,7 +336,8 @@ var ItemEditView = function(){
     this.renderHeader = function(list,item){
         renderHelper.renderHeader( this.headerTemplate(app.messages) );
         $('.parent-link').click(function(){
-            app.homeView.listView.itemView.render(list.id,item.id);
+            app.breadCrumbs.pop();
+            // app.homeView.listView.itemView.render(list.id,item.id);
         });     
     }
     this.renderContent = function(list,item){
@@ -353,7 +373,10 @@ var ItemEditView = function(){
         });   
     }
     this.render = function(listId,itemId){
-        app.logEvent('render item edit view');
+        app.logEvent('render item edit view');     
+        app.breadCrumbs.push(function(){
+            app.homeView.listView.itemView.editView.render(listId,itemId);
+        });
         var list = this.service.findList(listId);
         var item = this.service.findItem(list,itemId);
         this.renderHeader(list,item);
@@ -374,13 +397,15 @@ var ItemAddView = function(){
     this.renderListParentHeader = function(list){
         renderHelper.renderHeader( this.headerTemplate(app.messages) );
         $('.parent-link').click(function(){
-            app.homeView.listView.editView.render(list.id);
+            // app.homeView.listView.editView.render(list.id);            
+            app.breadCrumbs.pop();
         });     
     }
     this.renderItemParentHeader = function(item){
         renderHelper.renderHeader( this.headerTemplate(app.messages) );
         $('.parent-link').click(function(){
-            app.homeView.listView.itemView.editView.render(item.id);
+            // app.homeView.listView.itemView.editView.render(item.id);            
+            app.breadCrumbs.pop();
         });     
     }
     this.renderListParentContent = function(list){
@@ -392,6 +417,9 @@ var ItemAddView = function(){
             app.service.addNewItem(list,item);
             app.homeView.listView.editView.render(list.id);
         });
+        $('.item-find-link').click(function(){
+            app.homeView.archiveView.render(list.id);
+        });  
     }
     this.renderItemParentContent = function(list,subListItem){
         renderHelper.renderContent( this.contentTemplate(subListItem) );
@@ -403,9 +431,15 @@ var ItemAddView = function(){
             app.service.addNewItem(subList,item);
             app.homeView.listView.editView.render(subList.id);
         });
+        $('.item-find-link').click(function(){
+            app.homeView.archiveView.render(list.id);
+        });  
     }
     this.renderListParent = function(listId){
         app.logEvent('render item add view for list');
+        app.breadCrumbs.push(function(){
+            app.homeView.itemAddView.renderListParent(listId);
+        });
         var list = this.service.findList(listId);
         if(list == null){
             console.log('List not found for id ' + listId);
@@ -416,6 +450,9 @@ var ItemAddView = function(){
     }
     this.renderItemParent = function(listId,itemId){
         app.logEvent('render item add view for item');
+        app.breadCrumbs.push(function(){
+            app.homeView.itemAddView.renderItemParent(listId,itemId);
+        });
         var list = this.service.findList(listId);
         if(list == null){
             console.log('List not found for id ' + listId);
@@ -450,7 +487,7 @@ var ArchiveView = function(){
     this.renderHeader = function(list){
         renderHelper.renderHeader( this.headerTemplate(app.messages) );
         $('.parent-link').click(function(){
-            app.homeView.listView.render(list.id);
+            app.breadCrumbs.pop();
         });     
     }
     this.renderContent = function(list){
@@ -468,6 +505,9 @@ var ArchiveView = function(){
     }
     this.render = function(listId){
         app.logEvent('render archive view');
+        app.breadCrumbs.push(function(){
+            app.homeView.archiveView.render(listId);
+        });
         var list = this.service.findList(listId);
         this.renderHeader(list);
         this.renderContent(list);
@@ -487,7 +527,8 @@ var RecentView = function(){
     this.renderHeader = function(list){
         renderHelper.renderHeader( this.headerTemplate(app.messages) );
         $('.parent-link').click(function(){
-            app.homeView.archiveView.render(list.id);
+            // app.homeView.archiveView.render(list.id);
+            app.breadCrumbs.pop();
         });  
     }
     this.renderContent = function(list){
@@ -505,6 +546,9 @@ var RecentView = function(){
     }
     this.render = function(listId){
         app.logEvent('render archive view');
+        app.breadCrumbs.push(function(){
+            app.homeView.archiveView.recentView.render(listId);
+        });
         var list = this.service.findList(listId);
         this.renderHeader(list);
         this.renderContent(list);
@@ -524,7 +568,8 @@ var FrequentView = function(list){
     this.renderHeader = function(list){
         renderHelper.renderHeader( this.headerTemplate(app.messages) );
         $('.parent-link').click(function(){
-            app.homeView.archiveView.render(list.id);
+            // app.homeView.archiveView.render(list.id);
+            app.breadCrumbs.pop();
         });  
     }
     this.renderContent = function(list){
@@ -542,6 +587,9 @@ var FrequentView = function(list){
     }
     this.render = function(listId){
         app.logEvent('render frequent view');
+        app.breadCrumbs.push(function(){
+            app.homeView.archiveView.frequentView.render(listId);
+        });
         var list = this.service.findList(listId);
         this.renderHeader(list);
         this.renderContent(list);
@@ -563,7 +611,8 @@ var SearchView = function(){
     this.renderHeader = function(list){
         renderHelper.renderHeader( this.headerTemplate(app.messages) );
         $('.parent-link').click(function(){
-            app.homeView.archiveView.render(list.id);
+            // app.homeView.archiveView.render(list.id);
+            app.breadCrumbs.pop();
         });  
     }
     this.renderContent = function(list,searchTerm){
@@ -587,6 +636,9 @@ var SearchView = function(){
     }
     this.render = function(listId,searchTerm){
         app.logEvent('render search view');
+        app.breadCrumbs.push(function(){
+            app.homeView.archiveView.searchView.render(listId,searchTerm);
+        });
         var list = this.service.findList(listId);
         this.renderHeader(list);
         this.renderContent(list,searchTerm);
@@ -611,6 +663,7 @@ var OptionsView = function(){
     }
     this.render = function(){
         app.logEvent('render options view');
+        app.breadCrumbs.reset();
         this.renderHeader();
         this.renderContent();
     }
