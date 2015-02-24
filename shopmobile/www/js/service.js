@@ -66,9 +66,15 @@ var ShopService = function(){
       if(this.recentCache.isCached(list.id)){
          return this.recentCache.findObject(list.id);
       } else {
-         var items = this.adapter.findRecentItems(list.id);
-         this.recentCache.cache(list.id,items);
-         return items;
+         var items = this.adapter.findRecentItems(list);
+         var notOnListItems = items.filter(function(element,i){
+               return !element.item.isOnList();
+            });
+         var itemsOnly = $.map(notOnListItems,function(mapItem,i){
+            return mapItem.item;
+         });
+         this.recentCache.cache(list.id,itemsOnly);
+         return itemsOnly;
       }
    }
    this.findFrequentItems = function(list){
@@ -77,9 +83,15 @@ var ShopService = function(){
          console.log('Found cached recent items');
          return this.frequentCache.findObject(list.id);
       } else {
-         var items = this.adapter.findFrequentItems(list.id);
-         this.frequentCache.cache(list.id,items);
-         return items;
+         var items = this.adapter.findFrequentItems(list);
+         var hydrated = $.map(items,function(mapItem,i){
+            return app.service.findItem(list,mapItem.item.id);
+         });
+         var notOnListItems = hydrated.filter(function(element,i){
+               return !element.isOnList();
+            });
+         this.frequentCache.cache(list.id,notOnListItems);
+         return notOnListItems;
       }
    }
    this.searchForItems = function(list,searchTerm){
@@ -96,6 +108,8 @@ var ShopService = function(){
    }
    this.addItem = function(list,item){
       this.listCache.invalidate(list.id);
+      this.frequentCache.invalidate(list.id);
+      this.recentCache.invalidate(list.id);
       list.items.push(item);
       this.adapter.addItem(list,item);
       this.listCache.cache(list.id,list);

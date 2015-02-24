@@ -1,17 +1,17 @@
 
-var ShoppingItem = function(id,title,description,quantity,lastSynced,inBasket,isPurchased,dirty,parent){
+var ShoppingItem = function(id,title,description,quantity,lastSynced,parent){
    this.type        = "ShoppingItem"
    this.id          = id;
    this.title       = title;
    this.description = description;
    this.quantity    = quantity;
    this.lastSynced  = lastSynced;
-   this.inBasket    = inBasket;
-   this.isPurchased = isPurchased;
-   this.dirty       = dirty;
+   this.inBasket    = false;
+   this.isPurchased = false;
+   this.dirty       = false;
    this.parent      = parent;
    this.isOnList    = function(){
-      return this.parent && this.parent.hasItem(this);
+      return this.parent && this.parent.hasItem(this.id);
    }
 }
 
@@ -24,11 +24,24 @@ var ShoppingList = function(id,title,description,quantity,lastSynced,items){
    this.items       = items;
    this.quantity    = quantity;
    this.parent      = null;
+   this.setAsItemsParent = function(){
+      for(var i=0;i<this.items.length;i++) {
+         this.items[i].parent = this;
+      }
+   }
    this.hasParent   = function(){
       return this.parent !== undefined && this.parent !== null;
    }
    this.isOnList    = function(){
-      return this.parent && this.parent.hasItem(this);
+      return this.parent && this.parent.hasItem(this.id);
+   }
+   this.hasItem     = function(itemId){
+      for(var i=0;i<this.items.length;i++) {
+         if(this.items[i].id === itemId){
+            return true;
+         }
+      }
+    return false;
    }
 }
 

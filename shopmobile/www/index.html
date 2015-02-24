@@ -113,33 +113,42 @@
             <div class="card">     
                 <ul class="table-view">
                     <li class="table-view-cell">
-                        <h3>{{title}}</h3>
+                        <h3>{{item.title}}</h3>
                     </li>
                     {{#if description}}
                     <li class="table-view-cell">
-                        <p >{{description}}</p>
+                        <p >{{item.description}}</p>
                     </li>
                     {{/if}}
                     <li class="table-view-cell">
-                        <p >Quantity: {{quantity}}</p>
+                        <p >Quantity: {{item.quantity}}</p>
                     </li>
+                    {{#if isOnList}}
                     <li class="table-view-cell">
-                        <div class="toggle {{#if inBasket}}active{{/if}}">
+                        <div class="toggle {{#if item.inBasket}}active{{/if}}">
                             <div class="toggle-handle"></div>
                         </div>
                         <p>In basket</p>
                     </li>
                     <li class="table-view-cell">
-                        <div class="toggle {{#if isPurchased}}active{{/if}}">
+                        <div class="toggle {{#if item.isPurchased}}active{{/if}}">
                             <div class="toggle-handle"></div>
                         </div>
                         <p>Purchased</p>
                     </li>
+                    {{/if}}
                     <li class="table-view-cell">
-                        <p><em>Item synced: {{lastSynced}}</em></p>
+                        <p><em>Item synced: {{item.lastSynced}}</em></p>
                     </li>
                 </ul>
             </div>
+            {{#unless isOnList}}
+            <div class="card">     
+                <div class="content-padded">                         
+                    <a class="btn btn-positive btn-block item-add-link" href="#item-add">add item</a>
+                </div>
+            </div>
+            {{/unless}}
         </script>
 
 
@@ -210,10 +219,11 @@
 
 
         <script id="item-edit-content-template" type="text/template">
-            <div class="content-padded">
-                <form class="item-update-form" action="#">
-                    <input type="hidden" name="listId" value="{{parent.id}}"/>
-                    <input type="hidden" name="itemId" value="{{id}}"/>
+        
+            <form class="item-update-form" action="#">
+                <input type="hidden" name="listId" value="{{parent.id}}"/>
+                <input type="hidden" name="itemId" value="{{id}}"/>
+                <div class="card">
                     <ul class="table-view">
                         <li class="table-view-cell">
                             <input type="text" name="title" placeholder="name of item" value="{{title}}"/>
@@ -242,19 +252,21 @@
 
                         </li>
                     </ul>
+                </div>
                     
-                    <button class="btn btn-positive btn-block item-link" href="#item.html" data-itemid="{{id}}">update item</button>
+                <div class="card">
+                    <div class="content-padded">
+                        <button class="btn btn-positive btn-block item-link" href="#item.html" data-itemid="{{id}}">update item</button>
 
-                </form>
+                        <a class="btn btn-negative btn-block item-remove-link" href="#confirmRemove" data-itemid="{{id}}">remove from list</a>
 
+                        <a class="btn btn-primary btn-block item-add-link" href="#item-add.html">add sub item</a>
 
-                <a class="btn btn-negative btn-block item-remove-link" href="#confirmRemove" data-itemid="{{id}}">remove from list</a>
+                    </div>
+                </div>
+            </form>
 
-                <a class="btn btn-primary btn-block item-add-link" href="#item-add.html">add sub item</a>
-
-                <p>&nbsp;</p>
-
-            </div>
+            <p>&nbsp;</p>
             
         </script>
 

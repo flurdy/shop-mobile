@@ -52,16 +52,27 @@ var ShopAdapter = function(){
    }
 
    this.findRecentItems = function(list){
-      console.log('Finding recent items');
-      return [item4,item7];
+      if(this.useRepository()){
+         return this.repository.findRecentItems(list);
+      } else {
+         console.log('No repository nor api defined');
+      }
    }
 
    this.findFrequentItems = function(list){
-      return [item3,item10];
+      if(this.useRepository()){
+         return this.repository.findFrequentItems(list);
+      } else {
+         console.log('No repository nor api defined');
+      }
    }
 
    this.searchForItems = function(list,searchTerm){
-      return [item2,item8];
+      if(this.useRepository()){
+         return this.repository.searchForItems(list,searchTerm);
+      } else {
+         console.log('No repository nor api defined');
+      }
    }
 
    this.addNewItem = function(list,item){

@@ -1,65 +1,42 @@
-var renderHelper = {
-    compile: function(template){
-        return Handlebars.compile($(template).html());
-    },
-    templates: {
-        plainHeader: function(){
-            return renderHelper.compile("#plain-header-template");
-        },
-        editableHeader: function(){
-            return renderHelper.compile("#editable-header-template");
-        },
-        subHeader: function(){
-            return renderHelper.compile("#sub-header-template");
-        },
-        editableSubHeader: function(){ 
-            return renderHelper.compile("#editable-sub-header-template");
-        },
-        listContent: function(){
-            return renderHelper.compile("#list-content-template");
-        },
-        listEditContent: function(){ 
-            return renderHelper.compile("#list-edit-content-template");
-        },
-        itemContent: function(){ 
-            return renderHelper.compile("#item-content-template");
-        },
-        itemEditContent: function(){
-            return renderHelper.compile("#item-edit-content-template");
-        },
-        itemAddContent: function(){ 
-            return renderHelper.compile("#item-add-content-template");
-        },
-        archiveContent: function(){ 
-            return renderHelper.compile("#archive-content-template");
-        },
-        optionsContent: function(){ 
-            return renderHelper.compile("#options-content-template");
-        },
-        itemFindContent: function(){
-            return renderHelper.compile("#item-find-template");
-        },
-        searchContent: function(){ 
-            return renderHelper.compile("#search-content-template");
+var RenderHelper = function(){
+    this.header;
+    this.content;
+    this.selector;
+    this.initialize = function(header,content,selector){
+        this.header = this.compile(header);
+        if(content !== undefined){
+            this.content = this.compile(content);
         }
-    },
-    renderBody: function(html){
-       $('body').html(html); 
-    },
-    renderHeader: function(html){
-       $('#header').html(html); 
-    },
-    renderFooter: function(html){
-       $('#footer').html(html); 
-    },
-    renderContent: function(html){
-       $('.content').html(html); 
-    },
-    renderSelector: function(selector,html){
-       $(selector).html(html); 
-    },
-    renderElement: function(element,selector,html){
-       element.find(selector).html(html); 
+        if(selector !== undefined){
+            this.selector = this.compile(selector);
+        }
+    };
+    this.compile = function(templateName){
+        return Handlebars.compile($(templateName).html());
+    };
+    this.templates = {
+        plainHeader:       "#plain-header-template",
+        editableHeader:    "#editable-header-template",
+        subHeader:         "#sub-header-template",
+        editableSubHeader: "#editable-sub-header-template",
+        listContent:       "#list-content-template",
+        listEditContent:   "#list-edit-content-template",
+        itemContent:       "#item-content-template",
+        itemEditContent:   "#item-edit-content-template",
+        itemAddContent:    "#item-add-content-template",
+        archiveContent:    "#archive-content-template",
+        optionsContent:    "#options-content-template",
+        itemFindContent:   "#item-find-template",
+        searchContent:     "#search-content-template"
+    };
+    this.renderHeader = function(context){
+        $('#header').html(this.header(context));
+    }
+    this.renderContent = function(context){
+        $('.content').html(this.content(context));
+    }
+    this.renderSelector = function(selectorElement,context){
+        $(selectorElement).html(this.selector(context));
     }
 }
 
@@ -69,17 +46,12 @@ var HomeView = function(){
     this.optionsView = new OptionsView();
     this.archiveView = new ArchiveView();
     this.currentList;
-    this.headerTemplate = "<div/>";
     this.initialize = function(service){
         this.service = service;
         this.listView.initialize(this.service);
         this.optionsView.initialize(service);
         this.archiveView.initialize(service);
         this.currentList = this.service.findDefaultList();
-        this.headerTemplate = renderHelper.templates.plainHeader();
-    }
-    this.renderHeader = function(){
-        renderHelper.renderHeader( this.headerTemplate(app.messages) );
     }
     this.renderFooter = function(list){
         $('.index-link').click(function(){
@@ -114,14 +86,18 @@ var ListView = function(){
     this.editView    = new ListEditView();
     this.itemView    = new ItemView();
     this.itemAddView = new ItemAddView();
-    this.headerTemplate    = "<div/>";
-    this.headerTemplateSub = "<div/>";
-    this.contentTemplate   = "<div/>";
+    this.renderTopListHelper = new RenderHelper();
+    this.renderSubListHelper = new RenderHelper();
     this.initialize = function(service){
         this.service = service;
-        this.headerTemplate  = renderHelper.templates.editableHeader();
-        this.headerTemplateSub  = renderHelper.templates.editableSubHeader();
-        this.contentTemplate  = renderHelper.templates.listContent();
+        this.renderTopListHelper.initialize(
+            this.renderTopListHelper.templates.editableHeader,
+            this.renderTopListHelper.templates.listContent
+        );
+        this.renderSubListHelper.initialize(
+            this.renderSubListHelper.templates.editableSubHeader,
+            this.renderSubListHelper.templates.listContent
+        );
         this.editView.initialize(service);
         this.itemView.initialize(service);
         this.itemAddView.initialize(service);
@@ -129,13 +105,12 @@ var ListView = function(){
     }    
     this.renderHeader = function(list){
         if(list.hasParent()){
-            renderHelper.renderHeader( this.headerTemplateSub(app.messages) );
+            this.renderSubListHelper.renderHeader(app.messages);
             $('.parent-link').click(function(){
-                // app.homeView.listView.render(list.parent.id);
                 app.breadCrumbs.pop();
             });     
         } else {
-            renderHelper.renderHeader( this.headerTemplate(app.messages) );
+            this.renderTopListHelper.renderHeader(app.messages);
         }
         $('.edit-link').click(function(){
             app.homeView.listView.editView.render(list.id);
@@ -151,7 +126,7 @@ var ListView = function(){
             hasParent:   list.hasParent(),
             items:       filteredItems
         }
-        renderHelper.renderContent( this.contentTemplate( context ) );
+        this.renderTopListHelper.renderContent( context );
         $('#items li a').click(function(){
             var type   = $(this).data("itemtype"); 
             var itemId = $(this).data("itemid");    
@@ -180,21 +155,21 @@ var ListView = function(){
 var ItemView = function(){   
     this.service;
     this.editView = new ItemEditView();
-    this.headerTemplate  = "<div/>";
-    this.contentTemplate = "<div/>";
+    this.renderHelper = new RenderHelper();
     this.initialize = function(service){
         this.service = service;
-        this.headerTemplate  = renderHelper.templates.editableSubHeader();
-        this.contentTemplate = renderHelper.templates.itemContent();
+        this.renderHelper.initialize(
+            this.renderHelper.templates.editableSubHeader,
+            this.renderHelper.templates.itemContent
+        );
         this.editView.initialize(service);
         return this;
     }    
     this.renderHeader = function(list,item){
         console.log('list id ' + list.id);
         console.log('item id ' + item.id);
-        renderHelper.renderHeader( this.headerTemplate(app.messages) );
-        $('.parent-link').click(function(){
-            // app.homeView.listView.render(list.id);                   
+        this.renderHelper.renderHeader( app.messages );
+        $('.parent-link').click(function(){               
             app.breadCrumbs.pop();
         });     
         $('.edit-link').click(function(){
@@ -202,7 +177,12 @@ var ItemView = function(){
         });   
     }
     this.renderContent = function(list,item){
-        renderHelper.renderContent( this.contentTemplate(item) );
+        var context = {
+            id:          item.id,
+            item:        item,
+            isOnList:    item.isOnList()
+        };        
+        this.renderHelper.renderContent( context );
     }
     this.render = function(listId,itemId){
         app.logEvent('render item view');
@@ -228,18 +208,18 @@ var ItemView = function(){
 
 var ListEditView = function(){
     this.service;
-    this.headerTemplate  = "<div/>";
-    this.contentTemplate = "<div/>";
+    this.renderHelper = new RenderHelper();
     this.initialize = function(service){
         this.service = service;
-        this.headerTemplate  = renderHelper.templates.subHeader();
-        this.contentTemplate = renderHelper.templates.listEditContent();
+        this.renderHelper.initialize(
+            this.renderHelper.templates.subHeader,
+            this.renderHelper.templates.listEditContent
+        );
         return this;
     }    
     this.renderHeader = function(list){
-        renderHelper.renderHeader( this.headerTemplate(app.messages) );
-        $('.parent-link').click(function(){
-            // app.homeView.listView.render(list.id);                      
+        this.renderHelper.renderHeader( app.messages );
+        $('.parent-link').click(function(){                  
             app.breadCrumbs.pop();
         });   
     }
@@ -252,7 +232,7 @@ var ListEditView = function(){
             items:       list.items,
             parent:      list.parent 
         };
-        renderHelper.renderContent( this.contentTemplate( context ) );
+        this.renderHelper.renderContent( context );
         $('.item-edit-link').click(function(){
             var type   = $(this).data("itemtype"); 
             var itemId = $(this).data("itemid");    
@@ -325,25 +305,24 @@ var ListEditView = function(){
 
 var ItemEditView = function(){
     this.service;
-    this.headerTemplate  = "<div/>";
-    this.contentTemplate = "<div/>";
+    this.renderHelper = new RenderHelper();
     this.initialize = function(service){
         this.service = service;
-        this.headerTemplate  = renderHelper.templates.subHeader();
-        this.contentTemplate = renderHelper.templates.itemEditContent();
+        this.renderHelper.initialize(
+            this.renderHelper.templates.subHeader,
+            this.renderHelper.templates.itemEditContent
+        );
         return this;
     }    
     this.renderHeader = function(list,item){
-        renderHelper.renderHeader( this.headerTemplate(app.messages) );
+        this.renderHelper.renderHeader( app.messages );
         $('.parent-link').click(function(){
             app.breadCrumbs.pop();
-            // app.homeView.listView.itemView.render(list.id,item.id);
         });     
     }
     this.renderContent = function(list,item){
-        renderHelper.renderContent( this.contentTemplate(item) );  
+        this.renderHelper.renderContent( item );  
         $('.item-add-link').click(function(){
-            // app.service.convertToSubList(list,item);
             app.homeView.listView.itemAddView.renderItemParent(list.id,item.id);
         });     
         $( ".item-update-form" ).submit(function( event ) {
@@ -386,30 +365,29 @@ var ItemEditView = function(){
 
 var ItemAddView = function(){   
     this.service;
-    this.headerTemplate  = "<div/>";
-    this.contentTemplate = "<div/>";
+    this.renderHelper = new RenderHelper();
     this.initialize = function(service){
         this.service = service;
-        this.headerTemplate  = renderHelper.templates.subHeader();
-        this.contentTemplate = renderHelper.templates.itemAddContent();
+        this.renderHelper.initialize(
+            this.renderHelper.templates.subHeader,
+            this.renderHelper.templates.itemAddContent
+        );
         return this;
     }    
     this.renderListParentHeader = function(list){
-        renderHelper.renderHeader( this.headerTemplate(app.messages) );
-        $('.parent-link').click(function(){
-            // app.homeView.listView.editView.render(list.id);            
+        this.renderHelper.renderHeader( app.messages );
+        $('.parent-link').click(function(){           
             app.breadCrumbs.pop();
         });     
     }
     this.renderItemParentHeader = function(item){
-        renderHelper.renderHeader( this.headerTemplate(app.messages) );
-        $('.parent-link').click(function(){
-            // app.homeView.listView.itemView.editView.render(item.id);            
+        this.renderHelper.renderHeader( app.messages );
+        $('.parent-link').click(function(){           
             app.breadCrumbs.pop();
         });     
     }
     this.renderListParentContent = function(list){
-        renderHelper.renderContent( this.contentTemplate(list) );
+        this.renderHelper.renderContent( list );
         $( ".item-add-form" ).submit(function( event ) {
             event.preventDefault();
             var inputs = app.homeView.inputsToMap($(this));
@@ -422,7 +400,7 @@ var ItemAddView = function(){
         });  
     }
     this.renderItemParentContent = function(list,subListItem){
-        renderHelper.renderContent( this.contentTemplate(subListItem) );
+        this.renderHelper.renderContent( subListItem );
         $( ".item-add-form" ).submit(function( event ) {
             event.preventDefault();
             var inputs  = app.homeView.inputsToMap($(this));
@@ -470,28 +448,29 @@ var ItemAddView = function(){
 
 var ArchiveView = function(){   
     this.service;
-    this.recentView      = new RecentView();
-    this.searchView      = new SearchView();
-    this.frequentView    = new FrequentView();
-    this.headerTemplate  = "<div/>";
-    this.contentTemplate = "<div/>";
+    this.recentView   = new RecentView();
+    this.searchView   = new SearchView();
+    this.frequentView = new FrequentView();
+    this.renderHelper = new RenderHelper();
     this.initialize = function(service){
         this.service = service;
-        this.headerTemplate  = renderHelper.templates.subHeader();
-        this.contentTemplate = renderHelper.templates.archiveContent();
+        this.renderHelper.initialize(
+            this.renderHelper.templates.subHeader,
+            this.renderHelper.templates.archiveContent
+        );
         this.recentView.initialize(service);
         this.searchView.initialize(service);
         this.frequentView.initialize(service);
         return this;
     }    
     this.renderHeader = function(list){
-        renderHelper.renderHeader( this.headerTemplate(app.messages) );
+        this.renderHelper.renderHeader( app.messages );
         $('.parent-link').click(function(){
             app.breadCrumbs.pop();
         });     
     }
     this.renderContent = function(list){
-        renderHelper.renderContent( this.contentTemplate );
+        this.renderHelper.renderContent();
         $('.recent-link').click(function(){
             app.homeView.archiveView.recentView.render(list.id);
         });   
@@ -516,24 +495,25 @@ var ArchiveView = function(){
 
 var RecentView = function(){   
     this.service;
-    this.headerTemplate  = "<div/>";
-    this.contentTemplate = "<div/>";
+    this.renderHelper = new RenderHelper();
     this.initialize = function(service){
         this.service = service;
-        this.headerTemplate  = renderHelper.templates.subHeader();
-        this.contentTemplate = renderHelper.templates.itemFindContent();
+        this.renderHelper.initialize(
+            this.renderHelper.templates.subHeader,
+            this.renderHelper.templates.itemFindContent
+        );
         return this;
     }    
     this.renderHeader = function(list){
-        renderHelper.renderHeader( this.headerTemplate(app.messages) );
+        this.renderHelper.renderHeader( app.messages );
         $('.parent-link').click(function(){
-            // app.homeView.archiveView.render(list.id);
             app.breadCrumbs.pop();
         });  
     }
-    this.renderContent = function(list){
-        var recentItems = { items: this.service.findRecentItems(list) };
-        renderHelper.renderContent( this.contentTemplate(recentItems) );
+    this.renderContent = function(list,recentItems){
+        console.log("Recent items found: "+ recentItems);
+        var context = { items: recentItems };
+        this.renderHelper.renderContent( context );
         $('.item-link').click(function(){
             app.homeView.listView.itemView.render(
                 list.id, $(this).data("itemid"));    
@@ -550,34 +530,34 @@ var RecentView = function(){
             app.homeView.archiveView.recentView.render(listId);
         });
         var list = this.service.findList(listId);
+        var recentItems = this.service.findRecentItems(list);
         this.renderHeader(list);
-        this.renderContent(list);
+        this.renderContent(list,recentItems);
     }
 }
 
 var FrequentView = function(list){   
     this.service;
-    this.headerTemplate  = "<div/>";
-    this.contentTemplate = "<div/>";
+    this.renderHelper = new RenderHelper();
     this.initialize = function(service){
         this.service = service;
-        this.headerTemplate  = renderHelper.templates.subHeader();
-        this.contentTemplate = renderHelper.templates.itemFindContent();
+        this.renderHelper.initialize(
+            this.renderHelper.templates.subHeader,
+            this.renderHelper.templates.itemFindContent
+        );
         return this;
     }    
     this.renderHeader = function(list){
-        renderHelper.renderHeader( this.headerTemplate(app.messages) );
+        this.renderHelper.renderHeader( app.messages );
         $('.parent-link').click(function(){
-            // app.homeView.archiveView.render(list.id);
             app.breadCrumbs.pop();
         });  
     }
     this.renderContent = function(list){
         var frequentItems = { items: this.service.findFrequentItems(list) };
-        renderHelper.renderContent( this.contentTemplate(frequentItems) );
+        this.renderHelper.renderContent( frequentItems );
         $('.item-link').click(function(){
-            app.homeView.listView.itemView.render(
-                list.id, $(this).data("itemid"));    
+            app.homeView.listView.itemView.render(list.id, $(this).data("itemid"));    
         });  
         $('.item-add-link').click(function(){
             var item = app.service.findItem(list, $(this).data("itemid"));   
@@ -598,28 +578,26 @@ var FrequentView = function(list){
 
 var SearchView = function(){   
     this.service;
-    this.headerTemplate  = "<div/>";
-    this.contentTemplate = "<div/>";
-    this.elementTemplate = "<div/>";
+    this.renderHelper = new RenderHelper();
     this.initialize = function(service){
         this.service = service;
-        this.headerTemplate  = renderHelper.templates.subHeader();
-        this.contentTemplate = renderHelper.templates.searchContent();
-        this.elementTemplate = renderHelper.templates.itemFindContent();
+        this.renderHelper.initialize(
+            this.renderHelper.templates.subHeader,
+            this.renderHelper.templates.searchContent,
+            this.renderHelper.templates.itemFindContent
+        );
         return this;
     }    
     this.renderHeader = function(list){
-        renderHelper.renderHeader( this.headerTemplate(app.messages) );
+        this.renderHelper.renderHeader( app.messages );
         $('.parent-link').click(function(){
-            // app.homeView.archiveView.render(list.id);
             app.breadCrumbs.pop();
         });  
     }
     this.renderContent = function(list,searchTerm){
-        renderHelper.renderContent( this.contentTemplate );
+        this.renderHelper.renderContent();
         var searchItems = { items: this.service.searchForItems(list,searchTerm) };
-        renderHelper.renderSelector('.content .item-find', 
-                    this.elementTemplate(searchItems) ); 
+        this.renderHelper.renderSelector('.content .item-find', searchItems); 
         $( ".search-form" ).submit(function( event ) {
             event.preventDefault();
             app.homeView.archiveView.searchView.render(list.id);
@@ -647,19 +625,20 @@ var SearchView = function(){
 
 var OptionsView = function(){   
     this.service;
-    this.headerTemplate  = "<div/>";
-    this.contentTemplate = "<div/>";
+    this.renderHelper = new RenderHelper();
     this.initialize = function(service){
         this.service = service;
-        this.headerTemplate  = renderHelper.templates.plainHeader();
-        this.contentTemplate = renderHelper.templates.optionsContent();
+        this.renderHelper.initialize(
+            this.renderHelper.templates.plainHeader,
+            this.renderHelper.templates.optionsContent
+        );
         return this;
     }    
     this.renderHeader = function(){
-        renderHelper.renderHeader( this.headerTemplate(app.messages) );
+        this.renderHelper.renderHeader( app.messages );
     }
     this.renderContent = function(){
-        renderHelper.renderContent( this.contentTemplate );
+        this.renderHelper.renderContent();
     }
     this.render = function(){
         app.logEvent('render options view');
