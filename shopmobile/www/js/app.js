@@ -5,7 +5,8 @@ var app = {
     isCordova: typeof cordova !== 'undefined',
 
     messages: {
-        title: "Shop"
+        title: "Shop",
+        noneFound: "None found"
     },
 
     repository: new ShopRepository(),

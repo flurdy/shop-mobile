@@ -280,9 +280,37 @@ var ShopRepository = function(){
    this.findFrequentItems = function(list){
       return this.frequentItems[list.id];  
    }
+
+   this.objectToArray = function(object){
+      var array = [];
+      for(key in object){
+         array.push(object[key]);
+      }
+      return array;
+   }
    
    this.searchForItems = function(list,searchTerm){
-      return [];
+      var searchLists = this.objectToArray(this.lists).filter(function(element,i){
+         if(element.parent && element.parent.id == list.id){
+            if(element.title.toLowerCase().indexOf(searchTerm) > -1){
+               return true;
+            } else if(element.description && element.description.toLowerCase().indexOf(searchTerm) > -1){
+               return true;
+            }
+         }
+         return false;
+      });
+      var searchItems = this.objectToArray(this.items).filter(function(element,i){
+         if(element.parent && element.parent.id == list.id){
+            if(element.title.toLowerCase().indexOf(searchTerm) > -1){
+               return true;
+            } else if(element.description && element.description.toLowerCase().indexOf(searchTerm) > -1){
+               return true;
+            }
+         }
+         return false;
+      });
+      return searchLists.concat(searchItems);
    }
 
 }

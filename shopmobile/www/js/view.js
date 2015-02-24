@@ -479,7 +479,8 @@ var ArchiveView = function(){
         });   
         $( ".search-form" ).submit(function( event ) {
             event.preventDefault();
-            app.homeView.archiveView.searchView.render(list.id);
+            var inputs = app.homeView.inputsToMap($(this));
+            app.homeView.archiveView.searchView.render(list.id,inputs.searchterm);
         });
     }
     this.render = function(listId){
@@ -512,7 +513,10 @@ var RecentView = function(){
     }
     this.renderContent = function(list,recentItems){
         console.log("Recent items found: "+ recentItems);
-        var context = { items: recentItems };
+        var context = { 
+            messages: app.messages,
+            items: recentItems 
+        };
         this.renderHelper.renderContent( context );
         $('.item-link').click(function(){
             app.homeView.listView.itemView.render(
@@ -554,8 +558,11 @@ var FrequentView = function(list){
         });  
     }
     this.renderContent = function(list){
-        var frequentItems = { items: this.service.findFrequentItems(list) };
-        this.renderHelper.renderContent( frequentItems );
+        var context = {             
+            messages: app.messages,
+            items: this.service.findFrequentItems(list) 
+        };
+        this.renderHelper.renderContent( context );
         $('.item-link').click(function(){
             app.homeView.listView.itemView.render(list.id, $(this).data("itemid"));    
         });  
@@ -594,17 +601,21 @@ var SearchView = function(){
             app.breadCrumbs.pop();
         });  
     }
-    this.renderContent = function(list,searchTerm){
-        this.renderHelper.renderContent();
-        var searchItems = { items: this.service.searchForItems(list,searchTerm) };
-        this.renderHelper.renderSelector('.content .item-find', searchItems); 
+    this.renderContent = function(list,searchItems,searchTerm){
+        var context = { 
+            messages: app.messages,
+            items: searchItems,
+            searchTerm: searchTerm 
+        };
+        this.renderHelper.renderContent(context);
+        this.renderHelper.renderSelector('.content .item-find', context); 
         $( ".search-form" ).submit(function( event ) {
             event.preventDefault();
-            app.homeView.archiveView.searchView.render(list.id);
+            var inputs = app.homeView.inputsToMap($(this));
+            app.homeView.archiveView.searchView.render(list.id,inputs.searchterm);
         });
         $('.item-link').click(function(){
-            app.homeView.listView.itemView.render(
-                list.id, $(this).data("itemid"));
+            app.homeView.listView.itemView.render(list.id, $(this).data("itemid"));
         });  
         $('.item-add-link').click(function(){
             var item = app.service.findItem(list, $(this).data("itemid"));   
@@ -617,9 +628,10 @@ var SearchView = function(){
         app.breadCrumbs.push(function(){
             app.homeView.archiveView.searchView.render(listId,searchTerm);
         });
-        var list = this.service.findList(listId);
+        var list        = this.service.findList(listId);
+        var searchItems = this.service.searchForItems(list,searchTerm);
         this.renderHeader(list);
-        this.renderContent(list,searchTerm);
+        this.renderContent(list,searchItems,searchTerm);
     }
 }
 

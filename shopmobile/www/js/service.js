@@ -68,7 +68,7 @@ var ShopService = function(){
       } else {
          var items = this.adapter.findRecentItems(list);
          var notOnListItems = items.filter(function(element,i){
-               return !element.item.isOnList();
+               return !element.item.isOnList() || element.item.quantity < 1;
             });
          var itemsOnly = $.map(notOnListItems,function(mapItem,i){
             return mapItem.item;
@@ -88,25 +88,38 @@ var ShopService = function(){
             return app.service.findItem(list,mapItem.item.id);
          });
          var notOnListItems = hydrated.filter(function(element,i){
-               return !element.isOnList();
+               return !element.isOnList() || element.quantity < 1;
             });
          this.frequentCache.cache(list.id,notOnListItems);
          return notOnListItems;
       }
    }
    this.searchForItems = function(list,searchTerm){
+      console.log("Searching list: " + list.id);
+      console.log("Searching for: " + searchTerm);
+      var lowerCaseSearchTerm = searchTerm.toLowerCase();
       if( !this.searchCache[list.id] ){
          this.searchCache[list.id] = new ShopCache();
       } 
-      if( this.searchCache[list.id].isCached(searchTerm) ){
-         return this.searchCache[list.id].findObject(searchTerm);
+      if( this.searchCache[list.id].isCached(lowerCaseSearchTerm) ){
+         return this.searchCache[list.id].findObject(lowerCaseSearchTerm);
       } else {
-         var items = this.adapter.searchForItems(list,searchTerm);
-         this.searchCache[list.id].cache(searchTerm,items);
-         return items;
+         var items = this.adapter.searchForItems(list,lowerCaseSearchTerm);
+         var hydrated = $.map(items,function(mapItem,i){
+            return app.service.findItem(list,mapItem.id);
+         });
+         var notOnListItems = hydrated.filter(function(element,i){
+               return !element.isOnList() || element.quantity < 1;
+            });
+         this.searchCache[list.id].cache(lowerCaseSearchTerm,notOnListItems);
+         return notOnListItems;
       }
    }
    this.addItem = function(list,item){
+      if(item.quantity<1){
+         item.quantity = 1;
+      }
+      this.updateItem(list,item);
       this.listCache.invalidate(list.id);
       this.frequentCache.invalidate(list.id);
       this.recentCache.invalidate(list.id);

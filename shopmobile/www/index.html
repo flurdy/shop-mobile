@@ -374,6 +374,10 @@
                                 add
                             </a>
                         </li>
+                    {{else}}
+                        <li class="table-view-cell">
+                        <strong>{{messages.noneFound}}</strong>
+                        </li>
                     {{/each}}
                 </ul>
             </div>
@@ -384,7 +388,7 @@
         <script id="search-content-template" type="text/template">        
             <div class="content-padded">  
                 <form action="#search.html" class="search-form">
-                    <input type="search" name="searchterm" placeholder="search" value="assds"/>
+                    <input type="search" name="searchterm" placeholder="search" value="{{searchTerm}}"/>
                     <!-- <button type="submit" class="btn btn-block">search again</button> -->
                 </form>
             </div>
