@@ -166,7 +166,7 @@
                                 <span class="badge badge-inverted">x {{quantity}}</span>
                             </span>
                         </a>
-                        <a class="btn btn-negative btn-outlined item-remove-link" href="#remove" 
+                        <a class="btn btn-negative item-remove-link" href="#remove" 
                                 data-itemid="{{id}}"
                                 data-itemtype="{{type}}">
                             remove
@@ -195,16 +195,20 @@
                 </div>
             {{/if}}
 
-
             <div class="card">
                 <div class="content-padded">
                     {{#if hasParent}}
-                        <button class="btn btn-positive btn-outlined btn-block item-link" href="#update">update list</button>
+                        <button class="btn btn-positive btn-block item-update-link" href="#update">update list</button>
                     {{/if}}
-                    <a class="btn btn-primary btn-outlined btn-block item-find-link" href="#item-find">find item</a>
+                    <a class="btn btn-primary btn-block item-find-link" href="#item-find">find item</a>
                
-                    <a class="btn btn-primary btn-outlined btn-block item-add-link" href="#item-add">add new item</a>
-                    <a class="btn btn-negative btn-outlined btn-block item-purchased-remove-link" href="#remove-purchased">remove all purchased</a>
+                    <a class="btn btn-primary btn-block item-add-link" href="#item-add">add new item</a>
+                    <a class="btn btn-negative btn-block item-purchased-remove-link" href="#remove-purchased">remove all purchased</a>
+
+                    {{#if hasParent}}
+                        <a class="btn btn-negative btn-block list-remove-link" href="#confirmRemove">remove list</a>
+                    {{/if}}
+
                 </div>
             </div>
 

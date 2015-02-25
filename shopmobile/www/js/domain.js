@@ -43,6 +43,11 @@ var ShoppingList = function(id,title,description,quantity,lastSynced,items){
       }
     return false;
    }
+   this.orderedItems = function() {
+      return this.items.sort(function(a,b){
+         return a.title > b.title;
+      });
+   }
 }
 
 var ShopFactory = function(){

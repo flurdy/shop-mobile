@@ -117,7 +117,7 @@ var ListView = function(){
         });   
     }
     this.renderContent = function(list){
-        var filteredItems = list.items.filter(function(item){
+        var filteredItems = list.orderedItems().filter(function(item){
             return item.quantity > 0;
         });
         var context = {
@@ -279,7 +279,11 @@ var ListEditView = function(){
                     app.breadCrumbs.peek();
                 }
             }
-        });    
+        });   
+        $('.list-remove-link').click(function(){
+            app.service.removeSubList(list.parent,list);
+            app.breadCrumbs.pop();
+        });  
         $('.item-purchased-remove-link').click(function(){
             var list = app.service.findList( list.id );
             app.service.removePurchasedItems(link);
@@ -341,14 +345,16 @@ var ItemEditView = function(){
                     item.description = inputs.description;    
                     item.quantity    = inputs.quantity;
                     app.service.updateItem(list,item);
-                    app.homeView.listView.editView.render(list.id);
+                    // app.homeView.listView.editView.render(list.id);
+                    app.breadCrumbs.pop();
                 }
             }
         });
         $('.item-remove-link').click(function(){
             var item = app.service.findItem(list,$(this).data("itemid"));
             app.service.removeItem(list,item);
-            app.homeView.listView.editView.render(list.id);
+            // app.homeView.listView.editView.render(list.id);
+            app.breadCrumbs.pop();
         });   
     }
     this.render = function(listId,itemId){

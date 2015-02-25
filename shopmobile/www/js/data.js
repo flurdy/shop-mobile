@@ -250,7 +250,7 @@ var ShopRepository = function(){
       if(localList != null){
          var localItem = this.findItem(item.id);
          if(localItem != null){
-            var items = localItem.items.filter(function(element,i){
+            var items = localList.items.filter(function(element,i){
                return element.id !== localItem.id;
             });
             localList.items = items;
@@ -259,12 +259,12 @@ var ShopRepository = function(){
       }
    }
    
-   this.removeSubList = function(list,item){
+   this.removeSubList = function(list,subList){
       var localList = this.findList(list.id);
       if(localList != null){
          var localSubList = this.findList(subList.id);
          if(localSubList != null){
-            var items = localItem.items.filter(function(element,i){
+            var items = localList.items.filter(function(element,i){
                return element.id !== localSubList.id;
             });
             localList.items = items;
