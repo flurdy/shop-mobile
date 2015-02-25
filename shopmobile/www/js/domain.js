@@ -83,3 +83,18 @@ var BreadCrumbs = function(){
    }  
 }
 
+var RecentItem = function(itemOrList){
+   this.lastAdded = new Date();
+   this.item = itemOrList;
+   this.addAgain = function(){
+      this.lastAdded = new Date();
+   }
+}
+
+var FrequentItem = function(itemOrList){
+   this.frequency = 0;
+   this.item = itemOrList;
+   this.increment = function(){
+      this.frequency = this.frequency + 1;
+   }
+}

@@ -125,13 +125,13 @@
                     </li>
                     {{#if isOnList}}
                     <li class="table-view-cell">
-                        <div class="toggle {{#if item.inBasket}}active{{/if}}">
+                        <div id="inBasketToggle" data-itemid="{{id}}" class="toggle {{#if item.inBasket}}active{{/if}}">
                             <div class="toggle-handle"></div>
                         </div>
                         <p>In basket</p>
                     </li>
                     <li class="table-view-cell">
-                        <div class="toggle {{#if item.isPurchased}}active{{/if}}">
+                        <div id="inPurchasedToggle" data-itemid="{{id}}" class="toggle {{#if item.isPurchased}}active{{/if}}">
                             <div class="toggle-handle"></div>
                         </div>
                         <p>Purchased</p>
