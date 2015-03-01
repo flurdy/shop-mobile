@@ -21,12 +21,12 @@
         <nav id="footer" class="bar bar-tab">
             <ul class="tab-inner">
                 <li class="tab-item sync-link">
-                    <a href="#sync">
+                    <a href="index.html" data-ignore="push">
                         <span class="icon icon-refresh"></span>
                     </a>
                 </li>
                 <li class="tab-item active index-link">
-                    <a href="#index">
+                    <a href="#list">
                         <span class="icon icon-list"></span>
                     </a>
                 </li>
@@ -115,7 +115,7 @@
                     <li class="table-view-cell">
                         <h3>{{item.title}}</h3>
                     </li>
-                    {{#if description}}
+                    {{#if item.description}}
                     <li class="table-view-cell">
                         <p >{{item.description}}</p>
                     </li>
@@ -129,12 +129,6 @@
                             <div class="toggle-handle"></div>
                         </div>
                         <p>In basket</p>
-                    </li>
-                    <li class="table-view-cell">
-                        <div id="inPurchasedToggle" data-itemid="{{id}}" class="toggle {{#if item.isPurchased}}active{{/if}}">
-                            <div class="toggle-handle"></div>
-                        </div>
-                        <p>Purchased</p>
                     </li>
                     {{/if}}
                     <li class="table-view-cell">

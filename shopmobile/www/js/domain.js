@@ -7,7 +7,6 @@ var ShoppingItem = function(id,title,description,quantity,lastSynced,parent){
    this.quantity    = quantity;
    this.lastSynced  = lastSynced;
    this.inBasket    = false;
-   this.isPurchased = false;
    this.dirty       = false;
    this.parent      = parent;
    this.isOnList    = function(){

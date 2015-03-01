@@ -184,30 +184,12 @@ var ItemView = function(){
         };        
         this.renderHelper.renderContent( context );
         document.querySelector('#inBasketToggle').addEventListener('toggle', function (event) {
-            var itemId = $(this).data("itemid");   
-            var item   = app.service.findItem(list,itemId); 
-            if(event.detail.isActive){
-              item.inBasket = true;
-            } else {
-              item.inBasket    = false;
-              item.isPurchased = false;
-            }
+            var itemId    = $(this).data("itemid");   
+            var item      = app.service.findItem(list,itemId); 
+            item.inBasket = event.detail.isActive;
             app.service.updateItem(list,item);
             app.breadCrumbs.peek();
         });
-        document.querySelector('#inPurchasedToggle').addEventListener('toggle', function (event) {
-            var itemId = $(this).data("itemid");   
-            var item   = app.service.findItem(list,itemId); 
-            if(event.detail.isActive){
-              item.inBasket    = true;
-              item.isPurchased = true;
-            } else {
-              item.isPurchased = false;
-            }
-            app.service.updateItem(list,item);
-            app.breadCrumbs.peek();
-        });
-
     }
     this.render = function(listId,itemId){
         app.logEvent('render item view');
