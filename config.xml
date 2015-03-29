@@ -2,10 +2,10 @@
 <widget id="com.flurdy.shop.mobile" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>ShopMobile</name>
     <description>
-        A sample Apache Cordova application that responds to the deviceready event.
+        An Apache Cordova application for creating a shopping list.
     </description>
-    <author email="dev@cordova.apache.org" href="http://cordova.io">
-        Apache Cordova Team
+    <author email="ivar@flurdy.com" href="http://flurdy.com">
+        Flurdy
     </author>
     <content src="index.html" />
     <access origin="*" />
