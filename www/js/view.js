@@ -69,8 +69,12 @@ var HomeView = function(){
     }
     this.render = function(){
         app.logEvent('render home view');
-        this.renderFooter(this.currentList);
-        this.listView.render(this.currentList.id);
+        if(this.currentList){
+            this.renderFooter(this.currentList);
+            this.listView.render(this.currentList.id);
+        } else {
+            console.log("No current list found");
+        }
     }
     this.inputsToMap = function(form){
         var values = {};
@@ -140,15 +144,19 @@ var ListView = function(){
     this.render = function(listId){
         app.logEvent('render list view');
         var list = this.service.findList(listId);
-        console.log('list id ' + list.id);
-        if(!list.hasParent()){
-            app.breadCrumbs.reset();
+        if(list){
+            console.log('list id ' + list.id);
+            if(!list.hasParent()){
+                app.breadCrumbs.reset();
+            }
+            app.breadCrumbs.push(function(){
+                app.homeView.listView.render(listId);
+            });
+            this.renderHeader(list);
+            this.renderContent(list);
+        } else {
+            console.log("List not found");
         }
-        app.breadCrumbs.push(function(){
-            app.homeView.listView.render(listId);
-        });
-        this.renderHeader(list);
-        this.renderContent(list);
     }
 }
 
@@ -183,13 +191,15 @@ var ItemView = function(){
             isOnList:    item.isOnList()
         };        
         this.renderHelper.renderContent( context );
-        document.querySelector('#inBasketToggle').addEventListener('toggle', function (event) {
-            var itemId    = $(this).data("itemid");   
-            var item      = app.service.findItem(list,itemId); 
-            item.inBasket = event.detail.isActive;
-            app.service.updateItem(list,item);
-            app.breadCrumbs.peek();
-        });
+        if(item.isOnList()){
+            document.querySelector('#inBasketToggle').addEventListener('toggle', function (event) {
+                var itemId    = $(this).data("itemid");   
+                var item      = app.service.findItem(list,itemId); 
+                item.inBasket = event.detail.isActive;
+                app.service.updateItem(list,item);
+                app.breadCrumbs.peek();
+            });
+        }
     }
     this.render = function(listId,itemId){
         app.logEvent('render item view');

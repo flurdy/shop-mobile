@@ -39,8 +39,10 @@ var ShopService = function(){
         return this.findList(this.defaultListId);
       } else {
          var list = this.adapter.findDefaultList();
-         this.defaultListId = list.id;
-         return list;
+         if(list){
+            this.defaultListId = list.id;
+            return list;
+         }
       }
    }
    this.findList = function(listId){

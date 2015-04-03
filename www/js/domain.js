@@ -9,8 +9,13 @@ var ShoppingItem = function(id,title,description,quantity,lastSynced,parent){
    this.inBasket    = false;
    this.dirty       = false;
    this.parent      = parent;
+   this.parentId = (parent) ? parent.id : null;
    this.isOnList    = function(){
       return this.parent && this.parent.hasItem(this.id);
+   }
+   this.setAsParent = function(list){
+      this.parent   = list;
+      this.parentId = list.id;
    }
 }
 
@@ -21,15 +26,24 @@ var ShoppingList = function(id,title,description,quantity,lastSynced,items){
    this.description = description;
    this.lastSynced  = lastSynced;
    this.items       = items;
+   this.itemIds     = [];
+   for(var i = 0, len = items.length; i < len; i++){      
+      this.itemIds.push(items[i].id);
+   }
    this.quantity    = quantity;
    this.parent      = null;
+   this.parentId    = null;
    this.setAsItemsParent = function(){
       for(var i=0;i<this.items.length;i++) {
-         this.items[i].parent = this;
+         this.items[i].setAsParent(this);
       }
    }
-   this.hasParent   = function(){
-      return this.parent !== undefined && this.parent !== null;
+   this.setAsParent = function(list){
+      this.parent   = list;
+      this.parentId = list.id;
+   }
+   this.hasParent = function(){
+      return this.parentId !== undefined && this.parentId !== null;
    }
    this.isOnList    = function(){
       return this.parent && this.parent.hasItem(this.id);
@@ -42,10 +56,27 @@ var ShoppingList = function(id,title,description,quantity,lastSynced,items){
       }
     return false;
    }
+   this.hasItemId    = function(itemId){
+      for(var i=0;i<this.itemIds.length;i++) {
+         if(this.itemIds[i] === itemId){
+            return true;
+         }
+      }
+    return false;
+   }
    this.orderedItems = function() {
       return this.items.sort(function(a,b){
          return a.title > b.title;
       });
+   }
+   this.addItem = function(item){
+      if(!this.hasItem(item.id)){
+         this.items.push(item);
+      }
+      if(!this.hasItemId(item.id)){
+         this.itemIds.push(item.id);
+      }
+      item.setAsParent(this);
    }
 }
 

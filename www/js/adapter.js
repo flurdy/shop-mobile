@@ -42,10 +42,16 @@ var ShopAdapter = function(){
          console.log('Item id is undefined');
          return null;
       } else {
-         for(var i=0, len=items.length; i < len; i++){
-            if(items[i].id == itemId)
-               return items[i];
+         if(this.useRepository()){
+            return this.repository.findItem(itemId,list);
+         } else {
+            console.log('No repository nor api defined');
+            // return this.api.findList(listId);
          }
+         // for(var i=0, len=items.length; i < len; i++){
+         //    if(items[i].id == itemId)
+         //       return items[i];
+         // }
          console.log('No item found for id '+ itemId);
          return null;
       }

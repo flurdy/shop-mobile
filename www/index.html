@@ -15,8 +15,7 @@
     </head>
     <body>
 
-        <header id="header" class="bar bar-nav">
-        </header>
+        <header id="header" class="bar bar-nav"></header>
 
         <nav id="footer" class="bar bar-tab">
             <ul class="tab-inner">
@@ -117,11 +116,11 @@
                     </li>
                     {{#if item.description}}
                     <li class="table-view-cell">
-                        <p >{{item.description}}</p>
+                        <p>{{item.description}}</p>
                     </li>
                     {{/if}}
                     <li class="table-view-cell">
-                        <p >Quantity: {{item.quantity}}</p>
+                        <p>Quantity: {{item.quantity}}</p>
                     </li>
                     {{#if isOnList}}
                     <li class="table-view-cell">
@@ -131,9 +130,11 @@
                         <p>In basket</p>
                     </li>
                     {{/if}}
+                    <!--
                     <li class="table-view-cell">
                         <p><em>Item synced: {{item.lastSynced}}</em></p>
                     </li>
+                    -->
                 </ul>
             </div>
             {{#unless isOnList}}
@@ -326,6 +327,7 @@
 
 
         <script id="options-content-template" type="text/template">
+            <!--
             <div class="card">
                 <ul class="table-view">
                     <li class="table-view-cell">
@@ -339,6 +341,7 @@
                     </li>
                 </ul>
             </div>
+            -->
             <div class="card">
                 <ul class="table-view">
                     <li class="table-view-cell">
@@ -401,6 +404,12 @@
         <script type="text/javascript" src="js/guid.js"></script>
         <script type="text/javascript" src="js/domain.js"></script>
         <script type="text/javascript" src="js/data.js"></script>
+        <script  
+            type="text/javascript" src="js/storage-local.js"
+            aatype="text/javascript" src="js/storage-memory.js" 
+            aatype="text/javascript" src="js/storage-server.js"
+            aatype="text/javascript" src="js/storage-sync.js"
+        ></script>
         <script type="text/javascript" src="js/adapter.js"></script>
         <script type="text/javascript" src="js/service.js"></script>
         <script type="text/javascript" src="js/view.js"></script>
