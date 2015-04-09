@@ -73,7 +73,7 @@ var HomeView = function(){
             this.renderFooter(this.currentList);
             this.listView.render(this.currentList.id);
         } else {
-            console.log("No current list found");
+            throw new Error("No current list found");
         }
     }
     this.inputsToMap = function(form){
@@ -145,7 +145,7 @@ var ListView = function(){
         app.logEvent('render list view');
         var list = this.service.findList(listId);
         if(list){
-            console.log('list id ' + list.id);
+            // console.log('list id ' + list.id);
             if(!list.hasParent()){
                 app.breadCrumbs.reset();
             }
@@ -174,8 +174,8 @@ var ItemView = function(){
         return this;
     }    
     this.renderHeader = function(list,item){
-        console.log('list id ' + list.id);
-        console.log('item id ' + item.id);
+        // console.log('list id ' + list.id);
+        // console.log('item id ' + item.id);
         this.renderHelper.renderHeader( app.messages );
         $('.parent-link').click(function(){               
             app.breadCrumbs.pop();
@@ -208,14 +208,14 @@ var ItemView = function(){
         });
         var list = this.service.findList(listId);
         if(list == null){
-            console.log('List not found for id ' + listId);
+            throw new Error('List not found for id ' + listId);
         } else {
-            console.log('list id ' + list.id);
+            // console.log('list id ' + list.id);
             var item = this.service.findItem(list,itemId);
             if(item==null){
-                console.log('Item not found for id ' + itemId);
+                throw new Error('Item not found for id ' + itemId);
             } else {
-                console.log('item id ' + item.id);
+                // console.log('item id ' + item.id);
                 this.renderHeader(list,item);
                 this.renderContent(list,item);
             }
@@ -281,14 +281,14 @@ var ListEditView = function(){
         $( ".list-update-form" ).submit(function( event ) {
             event.preventDefault();
             var inputs = app.homeView.inputsToMap($(this));
-            console.log( "Form inputs: " + inputs );
+            // console.log( "Form inputs: " + inputs );
             var list   = app.service.findList( inputs.listId );
             if(list == null){
-                console.log('List not found for id ' + inputs.listId );            
+                throw new Error('List not found for id ' + inputs.listId );            
             } else {
                 var parent = app.service.findList( inputs.parentId );
                 if(parent == null){
-                    console.log('List not found for parent id ' + inputs.parentId);
+                    throw new Error('List not found for parent id ' + inputs.parentId);
                 } else {
                     list.title       = inputs.title;
                     list.description = inputs.description;  
@@ -309,15 +309,15 @@ var ListEditView = function(){
     }
     this.render = function(listId){
         app.logEvent('render list edit view');
-        console.log('list id ' + listId);        
+        // console.log('list id ' + listId);        
         app.breadCrumbs.push(function(){
             app.homeView.listView.editView.render(listId);
         });
         var list = this.service.findList(listId);
         if(list == null){
-            console.log('List not found for id ' + listId);
+            throw new Error('List not found for id ' + listId);
         } else {
-            console.log('list id ' + list.id);
+            // console.log('list id ' + list.id);
             this.renderHeader(list);
             this.renderContent(list);
         }
@@ -349,14 +349,14 @@ var ItemEditView = function(){
         $( ".item-update-form" ).submit(function( event ) {
             event.preventDefault();
             var inputs = app.homeView.inputsToMap($(this));
-            console.log( "Form inputs: " + inputs );
+            // console.log( "Form inputs: " + inputs );
             var list = app.service.findList( inputs.listId );
             if(list == null){
-                console.log('List not found for id ' + inputs.listId);
+                throw new Error('List not found for id ' + inputs.listId);
             } else {
                 var item = app.service.findItem(list,inputs.itemId);
                 if(item == null){
-                    console.log('Item not found for id ' + inputs.itemId);
+                    throw new Error('Item not found for id ' + inputs.itemId);
                 } else {                        
                     item.title       = inputs.title;
                     item.description = inputs.description;    
@@ -416,6 +416,7 @@ var ItemAddView = function(){
             var inputs = app.homeView.inputsToMap($(this));
             var item   = app.service.createNewItem(inputs);
             app.service.addNewItem(list,item);
+            app.breadCrumbs.unpush(); // remove add line
             app.homeView.listView.editView.render(list.id);
         });
         $('.item-find-link').click(function(){
@@ -426,11 +427,26 @@ var ItemAddView = function(){
         this.renderHelper.renderContent( subListItem );
         $( ".item-add-form" ).submit(function( event ) {
             event.preventDefault();
-            var inputs  = app.homeView.inputsToMap($(this));
-            var item    = app.service.createNewItem(inputs);
-            var subList = app.service.convertToSubList(list,subListItem);
-            app.service.addNewItem(subList,item);
-            app.homeView.listView.editView.render(subList.id);
+            var parentId = subListItem.id;
+            var parentAsItem  = app.service.findItem(list,parentId);
+            if(parentAsItem){
+                var inputs    = app.homeView.inputsToMap($(this));
+                var item      = app.service.createNewItem(inputs);
+                app.service.convertToSubList(list,parentAsItem);
+                var parentAsList = app.service.findList(parentId);
+                if(parentAsList){
+                    app.service.addNewItem(parentAsList,item);
+                    app.breadCrumbs.unpush(); // remove add line
+                    app.breadCrumbs.unpush(); // remove edit item
+                    app.breadCrumbs.unpush(); // remove view item
+                    app.breadCrumbs.push(function(){ // add view sub list
+                        app.homeView.listView.render(parentId);
+                    });
+                    app.homeView.listView.editView.render(parentId);
+                } else {
+                    throw new Error("New sub list not found for id " + parentId);
+                }
+            }
         });
         $('.item-find-link').click(function(){
             app.homeView.archiveView.render(list.id);
@@ -439,11 +455,11 @@ var ItemAddView = function(){
     this.renderListParent = function(listId){
         app.logEvent('render item add view for list');
         app.breadCrumbs.push(function(){
-            app.homeView.itemAddView.renderListParent(listId);
+            app.homeView.listView.itemAddView.renderListParent(listId);
         });
         var list = this.service.findList(listId);
         if(list == null){
-            console.log('List not found for id ' + listId);
+            throw new Error('List not found for id ' + listId);
         } else {
             this.renderListParentHeader(list);
             this.renderListParentContent(list);
@@ -452,15 +468,15 @@ var ItemAddView = function(){
     this.renderItemParent = function(listId,itemId){
         app.logEvent('render item add view for item');
         app.breadCrumbs.push(function(){
-            app.homeView.itemAddView.renderItemParent(listId,itemId);
+            app.homeView.listView.itemAddView.renderItemParent(listId,itemId);
         });
         var list = this.service.findList(listId);
         if(list == null){
-            console.log('List not found for id ' + listId);
+            throw new Error('List not found for id ' + listId);
         } else {
-            var item = this.service.findItem(itemId);
-            if(list == null){
-                console.log('Item not found for id ' + itemId);
+            var item = this.service.findItem(list,itemId);
+            if(item == null){
+                throw new Error('Item not found for id ' + itemId);
             } else {
                 this.renderItemParentHeader(item);
                 this.renderItemParentContent(list,item);
@@ -535,7 +551,7 @@ var RecentView = function(){
         });  
     }
     this.renderContent = function(list,recentItems){
-        console.log("Recent items found: "+ recentItems);
+        // console.log("Recent items found: "+ recentItems);
         var context = { 
             messages: app.messages,
             items: recentItems 

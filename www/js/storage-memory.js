@@ -66,6 +66,10 @@ var ShopRepository = function(){
          this.frequentItems[listId].push(new FrequentItem(item));
       }
    }
+ 
+   this.addOrIncrementFrequentItem = function(list,item){
+      this.addFrequentItem(list.id,item);
+   }
 
    this.findNotOnLists = function(){
       var notOnLists = {};
@@ -146,6 +150,10 @@ var ShopRepository = function(){
       }
    }
 
+   this.addRecentItem = function(list,item){
+      this.addRemoveRecentItem(list,item);
+   }
+
    this.addRemoveRecentItem = function(localList,localItem){
       var items = this.recentItems[localList.id].filter(function(element,i){
          return element.item.id !== localItem.id;
@@ -193,13 +201,11 @@ var ShopRepository = function(){
       }
    }
    
-   this.convertToSubList = function(list,item,subList){       
-      this.removeItem(list,item);t
+   this.deleteItem = function(list,item){
+      this.removeItem(list,item);
       this.items[item.id] = undefined;
-      this.lists[subList.id] = subList;
-      this.addSubList(list,subList);
    }
-   
+
    this.removeItem = function(list,item){
       var localList = this.findList(list.id);
       if(localList != null){
@@ -267,6 +273,5 @@ var ShopRepository = function(){
       });
       return searchLists.concat(searchItems);
    }
-
 }
 

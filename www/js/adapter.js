@@ -13,7 +13,7 @@ var ShopAdapter = function(){
    this.findDefaultList = function(){
       if(this.useRepository()){
          var id = this.repository.findDefaultListId();
-         console.log('Default id is ' + id);
+         // console.log('Default id is ' + id);
          return this.findList(id);
       } else {
          console.log('No repository nor api defined');
@@ -37,7 +37,7 @@ var ShopAdapter = function(){
    }
 
    this.findItem = function(list,itemId){
-      console.log('Looking for item id '+ itemId);
+      // console.log('Looking for item id '+ itemId);
       if(itemId === undefined){
          console.log('Item id is undefined');
          return null;
@@ -98,6 +98,24 @@ var ShopAdapter = function(){
       }
    }
    
+   this.addNewSubList = function(list,subList){
+      if(this.useRepository()){
+         this.repository.addNewSubList(list,subList);
+      } else {
+         console.log('No repository nor api defined');
+      // todo
+      }
+   }
+   
+   this.addSubList = function(list,subList){
+      if(this.useRepository()){
+         this.repository.addSubList(list,subList);
+      } else {
+         console.log('No repository nor api defined');
+      // todo
+      }
+   }
+   
    this.updateItem = function(list,item){
       if(this.useRepository()){
          this.repository.updateItem(list,item);
@@ -116,10 +134,9 @@ var ShopAdapter = function(){
       }
    }
    
-   this.convertToSubList = function(list,item,subList){ 
+   this.deleteItem = function(list,item){
       if(this.useRepository()){
-         this.repository.deleteItem(item);
-         this.repository.addList(subList);
+         this.repository.deleteItem(list,item);
       } else {
          console.log('No repository nor api defined');
       // todo
@@ -143,5 +160,23 @@ var ShopAdapter = function(){
       // todo
       }
    }   
+
+   this.addRecentItem = function(list,item){
+      if(this.useRepository()){
+         this.repository.addRecentItem(list,item);
+      } else {
+         console.log('No repository nor api defined');
+      // todo
+      }      
+   }
+ 
+   this.incrementFrequentItem = function(list,item){
+      if(this.useRepository()){
+         this.repository.addOrIncrementFrequentItem(list,item);
+      } else {
+         console.log('No repository nor api defined');
+      // todo
+      }
+   }
 
 }

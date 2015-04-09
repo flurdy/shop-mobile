@@ -55,7 +55,7 @@ var ShopService = function(){
       }
    }
    this.findItem = function(list,itemId){
-      console.log('Looking for item id '+ itemId);
+      // console.log('Looking for item id '+ itemId);
       if(this.itemCache.isCached(itemId)){
          return this.itemCache.findObject(itemId);
       } else {
@@ -136,48 +136,42 @@ var ShopService = function(){
       this.recentCache.invalidate(list.id);
       list.items.push(item);
       this.adapter.addItem(list,item);
-      this.listCache.cache(list.id,list);
+      this.adapter.addRecentItem(list,item);
+      this.adapter.incrementFrequentItem(list,item);
+      // this.listCache.cache(list.id,list);
    }
    this.createNewItem = function(inputs){
-      return this.factory.newItem(inputs);
+      return this.factory.inputToItem(inputs);
    }
    this.addNewItem = function(list,item){
       this.listCache.invalidate(list.id);
-      item.parent = list;
-      list.items.push(item);
       this.adapter.addNewItem(list,item); 
-      this.itemCache.cache(item.id,item);     
+      list.addItem(item);
+      // this.itemCache.cache(item.id,item);     
+      this.addItem(list,item);
    }
    this.removeItem = function(list,item){
+      console.log("Removing item \"" + item.title + "\" [" 
+                  + item.id + "] from list \"" + list.title
+                  + "\" [" + list.id + "]");
       this.listCache.invalidate(list.id);
-      var filteredItems = list.items.filter(function(element,i){
-         return element.id !== item.id;
-      });
-      list.items = filteredItems;
+      this.itemCache.invalidate(item.id);
       this.adapter.removeItem(list,item);
-      this.listCache.cache(list.id,list);
+      list.removeItem(item);
    }
    this.removeSubList = function(list,subList){
+      console.log("Removing list \"" + subList.title + "\" [" 
+                  + subList.id + "] from list \"" + list.title
+                  + "\" [" + list.id + "]");
       this.listCache.invalidate(list.id);
-      var filteredItems = list.items.filter(function(element,i){
-         return element.id !== subList.id;
-      });
-      list.items = filteredItems;
       this.adapter.removeSubList(list,subList);
+      list.removeItem(subList);
       this.listCache.cache(list.id,list);
    }
    this.updateItem = function(list,item){
+      this.listCache.invalidate(list.id);
       this.itemCache.invalidate(item.id);
       this.adapter.updateItem(list,item);
-      list.items = $.map(list.items,function(listItem,i){
-         if(listItem.id == item.id){
-            return item;
-         } else {
-            return listItem;
-         }
-       });
-      this.itemCache.cache(item.id,item);
-      this.listCache.cache(list.id,list);
    }
    this.updateSubList = function(list,subList){
       this.listCache.invalidate(list.id);
@@ -195,9 +189,10 @@ var ShopService = function(){
    }
    this.convertToSubList = function(list,item){
       this.itemCache.invalidate(item.id);
-      var subList = new ShoppingList(item.id,item.title.item.description);
-      sublist.parent = list;
-      this.adapter.convertToSubList(list,item,subList);
+      this.listCache.invalidate(list.id);
+      var subList = this.factory.cloneList(item);
+      this.adapter.deleteItem(list,item);
+      this.adapter.addNewSubList(list,subList);
       return subList;
    }
    this.sync = function(){
