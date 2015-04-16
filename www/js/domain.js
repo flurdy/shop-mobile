@@ -20,6 +20,15 @@ var ShoppingItem = function(id){ // ,title,description,quantity,lastSynced,paren
    this.logString   = function(){
       return "\"" + this.title + "\" [" + this.id + "]";
    }
+   this.detach      = function(){
+      if(this.parent){
+         this.parentId = this.parent.id;
+      }
+      this.parent   = null;
+      return this;
+   }
+   this.isList      = false;
+   this.isItem      = true;
 }
 
 var ShoppingList = function(id) { // ,title,description,quantity,lastSynced,items){
@@ -46,7 +55,7 @@ var ShoppingList = function(id) { // ,title,description,quantity,lastSynced,item
       this.parentId = list.id;
    }
    this.hasParent = function(){
-      return this.parentId !== undefined && this.parentId !== null;
+      return this.parentId;
    }
    this.isOnList    = function(){
       return this.parent && this.parent.hasItem(this.id);
@@ -98,6 +107,14 @@ var ShoppingList = function(id) { // ,title,description,quantity,lastSynced,item
          this.itemIds.splice($.inArray(item.id,this.itemIds), 1);
       }
    }
+   this.detach      = function(){
+      if(this.parent){
+         this.parentId = this.parent.id;
+      }
+      this.parent   = null;
+      this.items    = [];
+      return this;
+   }
    this.logString   = function(){
       return "\"" + this.title + "\" [" + this.id + "]";
    }
@@ -118,7 +135,7 @@ var ShopFactory = function(){
       item.quantity    = quantity;
       return item;
    }
-   this.cloneItem = function(sourceItem){ //id,title,description,quantity,parent){
+   this.cloneItem = function(sourceItem){ 
       var item         = new ShoppingItem(sourceItem.id);
       item.title       = sourceItem.title;
       item.description = sourceItem.description;
@@ -160,6 +177,22 @@ var ShopFactory = function(){
       list.itemIds     = sourceList.itemIds;
       return list;
    }
+   this.cloneFrequent = function(source,item){
+      if(!item){
+         item = this.cloneItem(source.item);
+      }
+      var frequentItem       = new FrequentItem(item);
+      frequentItem.frequency = source.frequency;
+      return frequentItem;
+   }
+   this.cloneRecent = function(source,item){
+      if(!item){
+         item = this.cloneItem(source.item);
+      }
+      var recentItem       = new RecentItem(item);
+      recentItem.lastAdded = source.lastAdded;
+      return recentItem;
+   }
 }
 
 var BreadCrumbs = function(){
@@ -180,19 +213,28 @@ var BreadCrumbs = function(){
       this.crumbs.pop();
       this.crumbs.pop()();
    }  
+   this.doublePop = function(){
+      this.crumbs.pop();
+      this.crumbs.pop();
+      this.crumbs.pop()();
+   }  
 }
 
 var RecentItem = function(itemOrList){
    this.lastAdded = new Date();
-   this.item = itemOrList;
-   this.addAgain = function(){
+   this.item      = itemOrList.detach();
+   this.itemId    = itemOrList.id;
+   this.type      = itemOrList.type;
+   this.touch     = function(){
       this.lastAdded = new Date();
    }
 }
 
 var FrequentItem = function(itemOrList){
-   this.frequency = 0;
-   this.item = itemOrList;
+   this.frequency = 1;
+   this.item      = itemOrList.detach();
+   this.itemId    = itemOrList.id;
+   this.type      = itemOrList.type;
    this.increment = function(){
       this.frequency = this.frequency + 1;
    }

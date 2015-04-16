@@ -43,3 +43,4 @@ www/bower_components/uuid/LICENSE.md
 www/bower_components/uuid/rng-browser.js
 www/bower_components/uuid/rng.js
 platforms
+android.json

@@ -100,10 +100,19 @@
             {{#if description}}
                 <div class="card">
                     <div class="content-padded">
-                         {{description}}
+                         <p>{{description}}</p>
                      </div>
                 </div>
             {{/if}}
+            {{#unless isOnList}}
+                {{#if hasParent}}
+                    <div class="card">     
+                        <div class="content-padded">                         
+                            <a class="btn btn-positive btn-block item-add-link" href="#item-add">add item</a>
+                        </div>
+                    </div>
+               {{/if}}
+            {{/unless}}
         </script>
 
 
@@ -138,11 +147,11 @@
                 </ul>
             </div>
             {{#unless isOnList}}
-            <div class="card">     
-                <div class="content-padded">                         
-                    <a class="btn btn-positive btn-block item-add-link" href="#item-add">add item</a>
+                <div class="card">     
+                    <div class="content-padded">                         
+                        <a class="btn btn-positive btn-block item-add-link" href="#item-add">add item</a>
+                    </div>
                 </div>
-            </div>
             {{/unless}}
         </script>
 
@@ -274,7 +283,9 @@
         <script id="item-add-content-template" type="text/template">
             <div class="content-padded">
 
+                <!--
                 <a class="btn btn-primary btn-inverted btn-block item-find-link" href="#item-find">find item</a>
+                -->
 
                 <form action="#" class="item-add-form">
                     <ul class="table-view">
@@ -368,10 +379,12 @@
                 <ul class="table-view">
                     {{#each items}}
                         <li class="table-view-cell">
-                            <a href="#item-find.html" class="item-link" data-ignore="push" data-itemid="{{id}}">
+                            <a href="#item-find.html" class="item-link" 
+                                data-ignore="push" data-itemid="{{id}}" data-itemtype="{{type}}">
                                 <strong>{{title}}</strong>   
                             </a>
-                            <a class="btn btn-positive item-add-link" href="#recent.html" data-ignore="push" data-itemid="{{id}}">
+                            <a class="btn btn-positive item-add-link" href="#recent.html" 
+                                data-ignore="push" data-itemid="{{id}}" data-itemtype="{{type}}">
                                 add
                             </a>
                         </li>

@@ -9,6 +9,8 @@ var app = {
         noneFound: "None found"
     },
 
+    initializeOnLoad: true,
+
     repository: new ShopRepository(),
 
     adapter: new ShopAdapter(),
@@ -21,7 +23,7 @@ var app = {
 
     initialize: function() {
         this.bindEvents();   
-        this.repository.initialize(lists,items);
+        this.repository.initialize(this.initializeOnLoad,lists,items);
         this.adapter.initialize(this.repository);
         this.service.initialize(this.adapter);     
         this.homeView.initialize(this.service);

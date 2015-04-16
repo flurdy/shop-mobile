@@ -1,8 +1,6 @@
 
 var ShopRepository = function(){
 
-   this.initializeOnEveryLoad = true;
-
    this.factory = new ShopFactory();
 
    this.keys = {
@@ -22,37 +20,21 @@ var ShopRepository = function(){
       }
    }
 
-   this.initialize = function(stubLists,stubItems){
+   this.initialize = function(initializeOnEveryLoad,stubLists,stubItems){
 
-      if(this.initializeOnEveryLoad){
+      if(initializeOnEveryLoad){
          localStorage.clear();
       }
 
-      this.initializeStoredArray(this.keys.listKeys);
-      this.initializeStoredArray(this.keys.itemKeys);
+      this.storeListsAndItems(stubLists,stubItems);
+      // this.storeItems(stubItems)
+      // this.storeLists(stubLists)
 
-      this.storeItems(stubItems)
-      this.storeLists(stubLists)
-
-      var notOnLists = this.findNotOnLists();
-      for(var key in notOnLists){
-         this.addRecentItems(key,notOnLists[key])
-         this.addFrequentItems(key,notOnLists[key])
-      }
-   }
-
-   this.initializeStoredArray = function(objectName){
-      if(!this.getStoredObject(objectName) || this.initializeOnEveryLoad){
-         var object = JSON.stringify([]);
-         this.storeObject(objectName,object)
-      }
-   }
-
-   this.initializeStoredObject = function(objectName){
-      if(!this.getStoredObject(objectName) || this.initializeOnEveryLoad){
-         var object = JSON.stringify({});
-         this.storeObject(objectName,object)
-      }
+      // var notOnLists = this.findNotOnLists();
+      // for(var key in notOnLists){
+      //    this.addRecentItems(key,notOnLists[key])
+      //    this.addFrequentItems(key,notOnLists[key])
+      // }
    }
 
    this.getStoredObject = function(objectName){
@@ -108,6 +90,26 @@ var ShopRepository = function(){
 
    this.storeListKeys = function(listKeys){
       this.storeObject(this.keys.listKeys,listKeys);
+   }
+
+   this.storeListsAndItems = function(listsToStore,itemsToStore){
+      this.storeLists(listsToStore);
+      this.storeItems(itemsToStore);   
+      for(var i = 0, lenI = listsToStore.length; i < lenI; i++){
+         var items = [];
+         for(var j = 0, lenJ = itemsToStore.length; j < lenJ; j++){
+            if(itemsToStore[j].parentId == listsToStore[i].id){
+               items.push(itemsToStore[j]);
+            }
+         }
+         for(var k = 0, lenK = listsToStore.length; k < lenK; k++){       
+            if(listsToStore[k].parentId == listsToStore[i].id){
+               items.push(listsToStore[k]);
+            }
+         }
+         this.addRecentItems(  listsToStore[i].id,items)
+         this.addFrequentItems(listsToStore[i].id,items)  
+      }
    }
 
    this.storeLists = function(listsToStore){
@@ -201,6 +203,15 @@ var ShopRepository = function(){
          }      
       }
       return false;
+   }   
+
+   this.existsInItemSubArray = function(itemArray,id){
+      for(var i = 0, len = itemArray.length; i < len; i++){  
+         if(itemArray[i].itemId == id){
+            return true;
+         }      
+      }
+      return false;
    }    
 
    this.findInArray = function(itemArray,id){
@@ -212,65 +223,141 @@ var ShopRepository = function(){
       return null;
    }
 
-   this.findRecentKeys = function(listId){
-      var recentKeys = this.getStoredObject(this.keys.recentKeys(listId));
-      if(!recentKeys){
-         recentKeys = [];
-      } 
-      return recentKeys;
+   this.findInSubArray = function(itemArray,id){
+      for(var i = 0, len = itemArray.length; i < len; i++){  
+         if(itemArray[i].itemId == id){
+            return itemArray[i];
+         }
+      }
+      return null;
+   }
+   
+   this.findRecentItems = function(list){
+      var recentItems = this.getStoredObject(this.keys.recentKeys(list.id));
+      if(!recentItems){
+         recentItems = [];
+      }
+      return recentItems;
+   }
+
+   this.storeRecentItems = function(list,recentItems){
+      var shallowRecentItems = $.map(recentItems,function(element,i){
+         if(element.item){
+            element.itemId = element.item.id;
+            element.item = null;
+         }
+         return element;
+      });
+      this.storeObject(this.keys.recentKeys(list.id),shallowRecentItems);      
    }
 
    this.addRecentItems = function(listId,items){
-      var recentKeys = this.findRecentKeys(listId);
-      for(var itemIndex in recentKeys){
-         this.addRemoveRecentItemWithKeys(recentKeys,items[itemIndex]);
+      var localList = this.findList(listId);
+      if(localList != null){
+         var recentItems = this.findRecentItems(listId);
+         for(var i = 0, len = items.length; i < len; i++){
+            this.addRemoveRecentItemWithKeys(recentItems,items[i]);
+         }
+         this.storeRecentItems(localList,recentItems);
       }
-      this.storeObject(this.keys.recentKeys(listId),recentKeys);
    }
+   
+   // this.removeRecentItemFromArray = function(recentItems,recentItem){
+   //    return recentItems.filter(function(element,i){
+   //       return element.item.id !== recentItem.id;
+   //    });
+   // }
 
-   this.addRemoveRecentItemWithKeys = function(recentKeys,item){
-      if( this.existsInItemArray(recentKeys,item.id)){
-         var recentItem = this.findInArray(recentKeys,item.id);
-         recentItem.addAgain();
+   this.addRemoveRecentItemWithKeys = function(recentItems,item){
+      if( this.existsInItemSubArray(recentItems,item.id)){
+         var oldRecentItem = this.findInSubArray(recentItems,item.id);
+         if(oldRecentItem){
+            var newRecentItem = this.factory.cloneRecent(oldRecentItem,item);
+            newRecentItem.touch();
+            recentItems = $.map(recentItems,function(element,id){
+               if(element.itemId == oldRecentItem.itemId){
+                  return newRecentItem;
+               } else {
+                  element;
+               }
+            });
+         } else {
+            console.log("Item not found to clone: " + item.id);
+         }
       } else {
-         recentKeys.push(new RecentItem(item));
+         var recentItem = (item.type == "ShoppingList") 
+            ? new RecentItem(this.factory.cloneList(item))
+            : new RecentItem(this.factory.cloneItem(item));
+         recentItems.push(recentItem);
       }
    }
 
    this.addRemoveRecentItem = function(list,item){
+      var recentItems = this.findRecentItems(list);
+      this.addRemoveRecentItemWithKeys(recentItems,item);
+      this.storeRecentItems(list,recentItems);
+   }
+
+   this.addRecentItem = function(list,item){
       var localList = this.findList(list.id);
       if(localList != null){
          var localItem = this.findItem(item.id);
          if(localItem != null){
-            var recentKeys = this.findRecentKeys(list.id);
-            this.addRemoveRecentItemWithKeys(recentKeys,localItem.id);
-            this.storeObject(this.keys.recentKeys(list.id),recentKeys);
+            this.addRemoveRecentItem(localList,localItem);
          }
       }
    }
 
-   this.findFrequentKeys = function (listId){
-      var frequentKeys = this.getStoredObject(this.keys.frequentKeys(listId));
-      if(!frequentKeys){
-         frequentKeys = [];
+   this.findFrequentItems = function (list){
+      var frequentItems = this.getStoredObject(this.keys.frequentKeys(list.id));
+      if(!frequentItems){
+         frequentItems = [];
       } 
-      return frequentKeys;
+      return frequentItems;
    }
 
+   this.storeFrequentItems = function(list,frequentItems){
+      var shallowFrequentItems = $.map(frequentItems,function(element,i){
+         if(element.item){
+            element.itemId = element.item.id;
+            element.item = null;
+         }
+         return element;
+      });
+      this.storeObject(this.keys.frequentKeys(list.id),shallowFrequentItems);      
+   }
+   
    this.addFrequentItems = function(listId,items){
-      var frequentKeys = this.findFrequentKeys();
-      for(var itemIndex in items){
-         this.addOrIncrementFrequentItemFromKeys(frequentKeys,items[itemIndex])
+      var localList = this.findList(listId);
+      if(localList != null){
+         var frequentItems = this.findFrequentItems(localList);
+         for(var i = 0, len = items.length; i < len; i++){
+            this.addOrIncrementFrequentItemFromKeys(frequentItems,items[i])
+         }
+         this.storeFrequentItems(localList,frequentItems);
       }
-      this.storeObject(this.keys.frequentKeys(listId),frequentKeys);
+   }
+   
+   this.removeFrequentItemFromArray = function(frequentItems,frequentItem){
+      return frequentItems.filter(function(element,i){
+         return element.itemId !== frequentItem.id;
+      });
    }
 
-   this.addOrIncrementFrequentItemFromKeys = function(frequentKeys,item){
-      if( this.existsInArray(frequentKeys,item.id)){
-         var frequentItem = this.findInArray(frequentKeys,item.id);
-         frequentItem.increment();
+   this.addOrIncrementFrequentItemFromKeys = function(frequentItems,item){
+      if( this.existsInItemSubArray(frequentItems,item.id)){
+         var oldFrequentItem = this.findInSubArray(frequentItems,item.id);
+         if(oldFrequentItem){
+            var newFrequentItem = this.factory.cloneFrequent(oldFrequentItem,item);
+            newFrequentItem.increment();
+            frequentItems = this.removeFrequentItemFromArray(frequentItems,oldFrequentItem);
+            frequentItems.push(newFrequentItem);
+         }
       } else {
-         frequentKeys.push(new FrequentItem(item));
+         var frequentItem = (item.type == "ShoppingList") 
+            ? new FrequentItem(this.factory.cloneList(item))
+            : new FrequentItem(this.factory.cloneItem(item));
+         frequentItems.push(frequentItem);
       }
    }
  
@@ -278,41 +365,39 @@ var ShopRepository = function(){
       var localList = this.findList(list.id);
       if(localList != null){
          var localItem = this.findItem(item.id);
-         var localItem = this.findItem(item.id);
          if(localItem != null){
-            var frequentKeys = this.findFrequentKeys(list.id);
-            this.addOrIncrementFrequentItemFromKeys(frequentKeys,item.id)
-            this.storeObject(this.keys.frequentKeys(list.id),frequentKeys);
+            var frequentItems = this.findFrequentItems(list);
+            this.addOrIncrementFrequentItemFromKeys(frequentItems,item)
+            this.storeFrequentItems(list,frequentItems);
          }
       }
    }
 
-   this.findNotOnLists = function(){
-      var notOnLists = {};
-      var listKeys = this.getStoredObject(this.keys.listKeys);
-      var itemKeys = this.getStoredObject(this.keys.itemKeys);
-      for(var key in listKeys){
-         var orphaned = [];
-         for( var subKey in listKeys){
-            var subList = this.findList(subKey);
-            if(subList && subList.parentId == key){
-              if(!subList.isOnList()){
-                  orphaned.push(subList);
-              }
-            }
-         }
-         for(var itemKey in itemKeys){
-            var item = this.findItem(itemKey);
-            if(item && item.parentId == key){
-              if(!item.isOnList()){
-               orphaned.push(item);
-              }
-           }
-         }
-         notOnLists[key] = orphaned;
-      }
-      return notOnLists;
-   }
+   // this.findNotOnLists = function(){
+   //    var notOnLists = {};
+   //    var listKeys = this.getStoredObject(this.keys.listKeys);
+   //    var itemKeys = this.getStoredObject(this.keys.itemKeys);
+   //    for(var i = 0, len = listKeys.length; i < len; i++){
+   //       var list = this.findList(listKeys[i]);
+   //       if(list){
+   //          var orphaned = [];
+   //          for(var j = 0, len = listKeys.length; j < len; j++){
+   //             var subList = this.findList(listKeys[i]);
+   //             if(subList && subList.parentId == list.id && !list.hasItemId(subList.id)){
+   //                orphaned.push(subList);
+   //             }
+   //          }
+   //          for(var h = 0, len = itemKeys.length; h < len; h++){
+   //             var item = this.findItem(itemKeys[h]);
+   //             if(item && item.parentId == list.id && !list.hasItemId(item.id)){
+   //                orphaned.push(item);
+   //             }
+   //          }
+   //          notOnLists[list.id] = orphaned;
+   //       }
+   //    }
+   //    return notOnLists;
+   // }
 
    this.findIsParent = function(items,parent){
       return items.filter(function(el,i){
@@ -490,7 +575,7 @@ var ShopRepository = function(){
    }
    
    this.removeSubList = function(list,subList){
-      console.log("Remove sublist " + item.logString());
+      console.log("Remove sublist " + subList.logString());
       var localList = this.findList(list.id);
       if(localList != null){
          var localSubList = this.findList(subList.id);
@@ -501,14 +586,6 @@ var ShopRepository = function(){
             return localList;
          }
       }
-   }
-   
-   this.findRecentItems = function(list){
-      return this.getStoredObject(this.keys.recentKeys(list.id));
-   }
-   
-   this.findFrequentItems = function(list){
-      return this.getStoredObject(this.keys.frequentKeys(list.id));
    }
 
    this.objectToArray = function(object){
@@ -570,16 +647,6 @@ var ShopRepository = function(){
       return searchLists.concat(searchItems);
    }
 
-
-   this.addRecentItem = function(list,item){
-      var localList = this.findList(list.id);
-      if(localList != null){
-         var localItem = this.findItem(item.id);
-         if(localItem != null){
-            this.addRemoveRecentItem(localList,localItem);
-         }
-      }
-   }
 
 }
 

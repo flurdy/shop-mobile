@@ -170,7 +170,7 @@ var ShopAdapter = function(){
       }      
    }
  
-   this.incrementFrequentItem = function(list,item){
+   this.addOrIncrementFrequentItem = function(list,item){
       if(this.useRepository()){
          this.repository.addOrIncrementFrequentItem(list,item);
       } else {
