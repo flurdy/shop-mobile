@@ -2,13 +2,19 @@ var RenderHelper = function(){
     this.header;
     this.content;
     this.selector;
-    this.initialize = function(header,content,selector){
+    this.initialize = function(header,content,selector,partials){
         this.header = this.compile(header);
         if(content !== undefined){
             this.content = this.compile(content);
         }
         if(selector !== undefined){
             this.selector = this.compile(selector);
+        }
+        if(partials !== undefined){
+            for( partial in partials){        
+                Handlebars.registerPartial( 
+                    partials[partial], $(this.partials[partials[partial]]).html());
+            }
         }
     };
     this.compile = function(templateName){
@@ -28,6 +34,9 @@ var RenderHelper = function(){
         optionsContent:    "#options-content-template",
         itemFindContent:   "#item-find-template",
         searchContent:     "#search-content-template"
+    };
+    this.partials = {
+        parentPath:       "#parentPath-partial",
     };
     this.renderHeader = function(context){
         $('#header').html(this.header(context));
@@ -51,7 +60,7 @@ var HomeView = function(){
         this.listView.initialize(this.service);
         this.optionsView.initialize(service);
         this.archiveView.initialize(service);
-        this.currentList = this.service.findDefaultList();
+        this.currentList = this.service.findDefaultList();   
     }
     this.renderFooter = function(list){
         $('.index-link').click(function(){
@@ -551,7 +560,9 @@ var RecentView = function(){
         this.service = service;
         this.renderHelper.initialize(
             this.renderHelper.templates.subHeader,
-            this.renderHelper.templates.itemFindContent
+            this.renderHelper.templates.itemFindContent,
+            undefined,
+            ["parentPath"]
         );
         return this;
     }    
@@ -613,7 +624,9 @@ var FrequentView = function(list){
         this.service = service;
         this.renderHelper.initialize(
             this.renderHelper.templates.subHeader,
-            this.renderHelper.templates.itemFindContent
+            this.renderHelper.templates.itemFindContent,
+            undefined,
+            ["parentPath"]
         );
         return this;
     }    
@@ -676,7 +689,8 @@ var SearchView = function(){
         this.renderHelper.initialize(
             this.renderHelper.templates.subHeader,
             this.renderHelper.templates.searchContent,
-            this.renderHelper.templates.itemFindContent
+            this.renderHelper.templates.itemFindContent,
+            ["parentPath"]
         );
         return this;
     }    
@@ -700,12 +714,34 @@ var SearchView = function(){
             app.homeView.archiveView.searchView.render(list.id,inputs.searchterm);
         });
         $('.item-link').click(function(){
-            app.homeView.listView.itemView.render(list.id, $(this).data("itemid"));
+            var type   = $(this).data("itemtype"); 
+            var itemId = $(this).data("itemid");    
+            if(type == "ShoppingList"){
+                app.homeView.listView.render(itemId);   
+            } else {
+                app.homeView.listView.itemView.render(list.id, itemId); 
+            }   
         });  
-        $('.item-add-link').click(function(){
-            var item = app.service.findItem(list, $(this).data("itemid"));   
-            app.service.addItem(list,item);
-            $(this).parent().remove();
+        $('.item-add-link').click(function(){ 
+            var type   = $(this).data("itemtype"); 
+            var itemId = $(this).data("itemid"); 
+            if(type == "ShoppingList"){
+                var subList = app.service.findList(itemId);   
+                if(subList){
+                    if(subList.parent){
+                        app.service.addItem(subList.parent,subList); 
+                    } else {
+                        app.service.addItem(list,subList); 
+                    }
+                }
+            } else {
+                var item = app.service.findItem(list, itemId);   
+                if(item){
+                    app.service.addItem(list,item);
+                }
+            }   
+            // $(this).parent().remove();
+            app.breadCrumbs.peek();
         }); 
     }
     this.render = function(listId,searchTerm){

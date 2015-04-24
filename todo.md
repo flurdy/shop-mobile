@@ -1,16 +1,24 @@
 TODO
 ===
 
-Next
+Recent
 ---
 
 * Local storage
+* Local storage search
+* Search add sub list items
 
-* Feature toggles
+
+Next
+---
+
+* Move add item to archive page 
 
 
 Important
 ----
+
+* Feature toggles
 
 * Register flow
 

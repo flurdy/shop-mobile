@@ -4,12 +4,15 @@ var ShopRepository = function(){
    this.factory = new ShopFactory();
 
    this.keys = {
-      listKeys : "listKeys",
-      itemKeys : "itemKeys",
-      lists    : function(listId){
+      listKeys     : "listKeys",
+      listItemKeys : function(listId){
+         return "list.items." + listId;
+      },
+      itemKeys     : "itemKeys",
+      lists        : function(listId){
          return "list." + listId;
       },
-      items    : function(itemId){
+      items        : function(itemId){
          return "item." + itemId;
       },
       recentKeys   : function(listId){
@@ -21,20 +24,10 @@ var ShopRepository = function(){
    }
 
    this.initialize = function(initializeOnEveryLoad,stubLists,stubItems){
-
       if(initializeOnEveryLoad){
          localStorage.clear();
+         this.storeListsAndItems(stubLists,stubItems);
       }
-
-      this.storeListsAndItems(stubLists,stubItems);
-      // this.storeItems(stubItems)
-      // this.storeLists(stubLists)
-
-      // var notOnLists = this.findNotOnLists();
-      // for(var key in notOnLists){
-      //    this.addRecentItems(key,notOnLists[key])
-      //    this.addFrequentItems(key,notOnLists[key])
-      // }
    }
 
    this.getStoredObject = function(objectName){
@@ -128,6 +121,9 @@ var ShopRepository = function(){
       }
       list.items = null;
       this.storeObject(this.keys.lists(list.id),list);
+      if(list.parentId){
+         this.addItemToListItemKeys(list.parentId,list.id);
+      }
    }
 
    this.updateStoredList = function(list) {
@@ -149,10 +145,21 @@ var ShopRepository = function(){
          item.parent = null;
       }
       this.storeObject(this.keys.items(item.id),item);
+      if(item.parentId){
+         this.addItemToListItemKeys(item.parentId,item.id);
+      }
    }
 
    this.updateStoredItem = function(item) {
       this.storeItem(item);
+   }
+
+   this.findStoredListItemKeys = function(listId){
+      var listItemKeys = this.getStoredObject(this.keys.listItemKeys(listId));
+      if(!listItemKeys){
+         listItemKeys = [];
+      }
+      return listItemKeys;
    }
 
    this.findStoredItemKeys = function(){
@@ -167,6 +174,18 @@ var ShopRepository = function(){
       this.storeObject(this.keys.itemKeys,itemKeys);
    }
 
+   this.storeListItemKeys = function(listId,itemKeys){
+      this.storeObject(this.keys.listItemKeys(listId),itemKeys);
+   }
+
+   this.addItemToListItemKeys = function(listId,itemId){
+      var listItemKeys = this.findStoredListItemKeys(listId);
+      if($.inArray(itemId, listItemKeys)){
+         listItemKeys.push(itemId);
+      }
+      this.storeListItemKeys(listId,listItemKeys);
+   }
+
    this.deleteStoredItem = function(item){
       if(item.isOnList()){
          item.parent.removeItem(this);
@@ -177,6 +196,9 @@ var ShopRepository = function(){
       var itemKeys = this.findStoredItemKeys();      
       itemKeys.splice($.inArray(item.id,itemKeys), 1);
       this.storeItemKeys(itemKeys);
+      var listItemKeys = this.findStoredListItemKeys(item.parentId);      
+      listItemKeys.splice($.inArray(item.id,listItemKeys), 1);
+      this.storeListItemKeys(listItemKeys);
    }
 
    this.isItemId = function(itemId){
@@ -261,12 +283,6 @@ var ShopRepository = function(){
          this.storeRecentItems(localList,recentItems);
       }
    }
-   
-   // this.removeRecentItemFromArray = function(recentItems,recentItem){
-   //    return recentItems.filter(function(element,i){
-   //       return element.item.id !== recentItem.id;
-   //    });
-   // }
 
    this.addRemoveRecentItemWithKeys = function(recentItems,item){
       if( this.existsInItemSubArray(recentItems,item.id)){
@@ -373,32 +389,6 @@ var ShopRepository = function(){
       }
    }
 
-   // this.findNotOnLists = function(){
-   //    var notOnLists = {};
-   //    var listKeys = this.getStoredObject(this.keys.listKeys);
-   //    var itemKeys = this.getStoredObject(this.keys.itemKeys);
-   //    for(var i = 0, len = listKeys.length; i < len; i++){
-   //       var list = this.findList(listKeys[i]);
-   //       if(list){
-   //          var orphaned = [];
-   //          for(var j = 0, len = listKeys.length; j < len; j++){
-   //             var subList = this.findList(listKeys[i]);
-   //             if(subList && subList.parentId == list.id && !list.hasItemId(subList.id)){
-   //                orphaned.push(subList);
-   //             }
-   //          }
-   //          for(var h = 0, len = itemKeys.length; h < len; h++){
-   //             var item = this.findItem(itemKeys[h]);
-   //             if(item && item.parentId == list.id && !list.hasItemId(item.id)){
-   //                orphaned.push(item);
-   //             }
-   //          }
-   //          notOnLists[list.id] = orphaned;
-   //       }
-   //    }
-   //    return notOnLists;
-   // }
-
    this.findIsParent = function(items,parent){
       return items.filter(function(el,i){
          return el.parent === parent || el.parentId === parent.id;
@@ -464,11 +454,13 @@ var ShopRepository = function(){
       // console.log("Looking for item " + this.keys.items(itemId));
       var item = this.findRawItem(itemId);
       if(item){
-         if(!list && !item.parent && item.parentId){
-           list = this.findList(item.parentId);               
-         }
-         if(!item.parent && list){
-            item.setAsParent(list);
+         if(!item.parent){
+            if(!list || list.id != item.parentId){
+              list = this.findList(item.parentId);               
+            }
+            if(list){
+               item.setAsParent(list);
+            }
          }
          return item;
       }
@@ -484,10 +476,13 @@ var ShopRepository = function(){
    }
 
    this.addNewItem = function(list,item){
+      this.storeItem(item);
       var itemKeys = this.findStoredItemKeys();
       itemKeys.push( item.id );
-      this.storeItem(item);
       this.storeItemKeys(itemKeys);
+      var listItemKeys = this.findStoredListItemKeys(list.id);
+      listItemKeys.push( item.id );
+      this.storeListItemKeys(list.id,itemKeys);
       this.addItem(list,item);
    }
 
@@ -511,6 +506,9 @@ var ShopRepository = function(){
          listKeys.push( subList.id );
          this.storeList(subList);
          this.storeListKeys(listKeys);
+         var listItemKeys = this.findStoredListItemKeys(list.id);
+         listItemKeys.push( subList.id );
+         this.storeListItemKeys(list.id,itemKeys);
          this.addSubList(localList,subList);
       }
    }
@@ -596,55 +594,96 @@ var ShopRepository = function(){
       return array;
    }
 
-   this.findAllLists = function(){
-      var listIds = this.getStoredObject(this.keys.listKeys);
-      return $.map(listIds,function(id,i){
-         return this.findList(id);
-      });
+   // this.findAllLists = function(){
+   //    var listKeys = this.findStoredListKeys();
+   //    var self = this;
+   //    // var listIds = this.getStoredObject(this.keys.listKeys);
+   //    return $.map(listKeys,function(id,i){
+   //       return self.findList(id);
+   //    });
+   // }
+
+   this.itemOrListHasSearchTerm = function(item,searchTerm){
+      if(item.title.toLowerCase().indexOf(searchTerm) > -1){
+         return true;
+      } else if(item.description && item.description.toLowerCase().indexOf(searchTerm) > -1){
+         return true;
+      }
+      return false;
    }
    
-   this.searchForLists = function(lists,searchTerm){
-      return this.objectToArray(lists).filter(function(element,i){
-         if(element.parent && element.parent.id == list.id){
-            if(element.title.toLowerCase().indexOf(searchTerm) > -1){
-               return true;
-            } else if(element.description && element.description.toLowerCase().indexOf(searchTerm) > -1){
-               return true;
+   // this.searchListsNotOnList = function(lists,searchTerm){
+   //    var self = this;
+   //    return lists.filter(function(element,i){
+   //       if(self.itemOrListHasSearchTerm(element,searchTerm)){
+   //          if(!element.parent && element.parentId){
+   //             element.parent = this.findList(element.parentId);
+   //          }
+   //          if(element.parent){
+   //             return !element.parent.hasItemId(element.id);
+   //          }
+   //       } 
+   //       return false;
+   //    });
+   // }
+
+   this.findItemsNotOnList = function(list){
+      var listItemKeys = this.findStoredListItemKeys(list.id);
+      var items = [];
+      for(itemKey in listItemKeys){
+         if(!list.hasItemId( listItemKeys[itemKey])){
+            var item = this.findItem(listItemKeys[itemKey],list);
+            if(item){
+               items.push(item);
+            } else {
+               var subList = this.findList(listItemKeys[itemKey]);
+               if(subList){
+                  items.push(subList);
+               }
             }
+         }
+      }
+      return items;
+   }
+   
+   this.searchListItemsNotOnList = function(list,searchTerm){
+      var items = this.findItemsNotOnList(list);
+      var self = this;
+      return items.filter(function(element,i){
+         if(element.parentId && element.parentId == list.id){
+            return self.itemOrListHasSearchTerm(element,searchTerm);
          }
          return false;
       });
    }
 
-   this.findListItems = function(){
-      var items = $.map(list.itemIds,function(id,i){
-         return this.findItem(id);
-      });
+   this.isListKey = function(listId){
+      var listKeys = this.findStoredListKeys();
+      return $.inArray(listId,listKeys);
    }
-   
-   this.searchForListItems = function(list,searchTerm){
-      var items = this.findListItems(list);
-      return this.objectToArray(items).filter(function(element,i){
-         if(element.parent && element.parent.id == list.id){
-            if(element.title.toLowerCase().indexOf(searchTerm) > -1){
-               return true;
-            } else if(element.description && element.description.toLowerCase().indexOf(searchTerm) > -1){
-               return true;
+
+   this.findSubLists = function(list){
+      var listItemKeys = this.findStoredListItemKeys(list.id);
+      var subLists = [];
+      for(itemKey in listItemKeys){
+         if(this.isListKey(listItemKeys[itemKey])){
+            var subList = this.findList(listItemKeys[itemKey]);
+            if(subList){
+               subLists.push(subList);
             }
          }
-         return false;
-      });
+      }
+      return subLists;
    }
 
    this.searchForItems = function(list,searchTerm){
-      var lists = this.findAllLists();
-      var searchLists = this.searchForLists(lists,searchTerm);
-      var searchItems = [];
-      for(list in lists){
-         var items = this.searchForListItems(list,searchTerm);
-         searchItems.concat(items);
+      var itemsWithSearchTerm = this.searchListItemsNotOnList(list,searchTerm);  
+      var subLists = this.findSubLists(list);
+      for(subList in subLists){
+         var subItems = this.searchForItems(subLists[subList],searchTerm); 
+         itemsWithSearchTerm = itemsWithSearchTerm.concat(subItems);
       }
-      return searchLists.concat(searchItems);
+      return itemsWithSearchTerm;
    }
 
 

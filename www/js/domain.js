@@ -11,7 +11,7 @@ var ShoppingItem = function(id){ // ,title,description,quantity,lastSynced,paren
    this.parent      = null; // parent;
    this.parentId    = null; // null; // (parent) ? parent.id : null;
    this.isOnList    = function(){
-      return this.parent && this.parent.hasItem(this.id);
+      return this.parent && (this.parent.hasItem(this.id) || this.parent.hasItemId(this.id) )
    }
    this.setAsParent = function(list){
       this.parent   = list;
@@ -58,7 +58,7 @@ var ShoppingList = function(id) { // ,title,description,quantity,lastSynced,item
       return this.parentId;
    }
    this.isOnList    = function(){
-      return this.parent && this.parent.hasItem(this.id);
+      return this.parent && (this.parent.hasItem(this.id) || this.parent.hasItemId(this.id) )
    }
    this.hasItem     = function(itemId){
       for(var i=0;i<this.items.length;i++) {
@@ -107,6 +107,11 @@ var ShoppingList = function(id) { // ,title,description,quantity,lastSynced,item
          this.itemIds.splice($.inArray(item.id,this.itemIds), 1);
       }
    }
+   this.removeAllItems = function(){
+      for(var i=0;i<this.itemIds.length;i++) {
+         this.removeItem(this.itemIds[i]);
+      }
+   }
    this.detach      = function(){
       if(this.parent){
          this.parentId = this.parent.id;
@@ -115,6 +120,8 @@ var ShoppingList = function(id) { // ,title,description,quantity,lastSynced,item
       this.items    = [];
       return this;
    }
+   this.isList      = true;
+   this.isItem      = false;
    this.logString   = function(){
       return "\"" + this.title + "\" [" + this.id + "]";
    }

@@ -151,25 +151,22 @@ var ShopService = function(){
       if( this.searchCache[list.id].isCached(lowerCaseSearchTerm) ){
          return this.searchCache[list.id].findObject(lowerCaseSearchTerm);
       } else {
-         var items = this.adapter.searchForItems(list,lowerCaseSearchTerm);
-         var hydrated = $.map(items,function(mapItem,i){
-            return app.service.findItem(list,mapItem.id);
-         });
-         var notOnListItems = hydrated.filter(function(element,i){
-               return !element.isOnList() || element.quantity < 1;
-            });
-         this.searchCache[list.id].cache(lowerCaseSearchTerm,notOnListItems);
-         return notOnListItems;
+         return this.adapter.searchForItems(list,lowerCaseSearchTerm);
       }
    }
    this.addItem = function(list,item){
       console.log("Adding item " + item.logString() + " to list " + list.logString());      
       if(item.isList){
-         this.listCache.invalidate(list.id);
+         this.listCache.invalidate(item.id);
       } else {
          this.itemCache.invalidate(item.id);
       }
       this.listCache.invalidate(list.id);
+      if(list.hasParent() && !list.isOnList()){
+         list.removeAllItems();
+         this.updateSubList(list.parent,list);
+         this.addItem(list.parent,list);
+      }
       if(item.quantity<1){
          item.quantity = 1;
          this.updateItem(list,item);
@@ -182,46 +179,15 @@ var ShopService = function(){
       }
       this.addRecentItem(list,item);
       this.incrementFrequentItem(list,item);
-      // this.listCache.cache(list.id,list);
    }
    this.addRecentItem = function(list,item){
       this.recentCache.invalidate(list.id);
       this.adapter.addRecentItem(list,item);
-      // var recentItems = this.findRecentItems(list);
-      // var recentItem  = this.findRecentItem(list,item);
-      // if(recentItem){
-      //    recentItem.touch();
-      // } else {
-      //    recentItem = new RecentItem(this.factory.cloneItem(item));
-      //    recentItems.push(recentItem);
-      //    var recentItems = recentItems.sort(function(a,b){
-      //       return a.title > b.title;
-      //    });
-      // }     
-      // this.recentCache.cache(list.id,recentItems);
    }
-   // this.findRecentItem = function(list,item){
-
-   // }
    this.incrementFrequentItem = function(list,item){
       this.frequentCache.invalidate(list.id);
       this.adapter.addOrIncrementFrequentItem(list,item);
-      // var frequentItem  = this.findFrequentItem(list,item);
-      // if(frequentItem){
-      //    frequentItem.increment();
-      // } else {
-      //    var frequentItems = this.findFrequentItems(list);
-      //    frequentItem = new FrequentItem(this.factory.cloneItem(item));
-      //    frequentItems.push(frequentItem);
-      //    var frequentItems = frequentItems.sort(function(a,b){
-      //       return a.title > b.title;
-      //    });
-      //    this.frequentCache.cache(list.id,frequentItems);
-      // }     
    }
-   // this.findFrequentItem = function(list,item){
-
-   // }
    this.createNewItem = function(inputs){
       return this.factory.inputToItem(inputs);
    }

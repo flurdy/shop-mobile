@@ -373,6 +373,18 @@
         </script>
 
 
+        <script id="parentPath-partial" type="text/template">
+          {{#with parent}}
+              {{#if parent}}
+                 {{#if parent.parent}}
+                    {{> parentPath}}   
+                    /                  
+                 {{/if}} 
+                 {{title}} 
+              {{/if}} 
+          {{/with}} 
+        </script>
+
 
         <script id="item-find-template" type="text/template">
             <div class="card">
@@ -382,6 +394,11 @@
                             <a href="#item-find.html" class="item-link" 
                                 data-ignore="push" data-itemid="{{id}}" data-itemtype="{{type}}">
                                 <strong>{{title}}</strong>   
+                                {{#if parent}}
+                                    {{#if parent.parent}}
+                                        ( {{> parentPath}} ) 
+                                    {{/if}}
+                                {{/if}}
                             </a>
                             <a class="btn btn-positive item-add-link" href="#recent.html" 
                                 data-ignore="push" data-itemid="{{id}}" data-itemtype="{{type}}">
