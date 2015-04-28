@@ -77,7 +77,7 @@ var HomeView = function(){
         });
     }
     this.render = function(){
-        app.logEvent('render home view');
+        // app.logEvent('render home view');
         if(this.currentList){
             this.renderFooter(this.currentList);
             this.listView.render(this.currentList.id);
@@ -158,7 +158,7 @@ var ListView = function(){
         }
     }
     this.render = function(listId){
-        app.logEvent('render list view');
+        // app.logEvent('render list view');
         var list = this.service.findList(listId);
         if(list){
             // console.log('list id ' + list.id);
@@ -222,7 +222,7 @@ var ItemView = function(){
         });
     }
     this.render = function(listId,itemId){
-        app.logEvent('render item view');
+        // app.logEvent('render item view');
         app.breadCrumbs.push(function(){
             app.homeView.listView.itemView.render(listId,itemId);
         });
@@ -292,9 +292,6 @@ var ListEditView = function(){
             $(this).parent().remove();
 
         });
-        $('.item-add-link').click(function(){
-            app.homeView.listView.itemAddView.renderListParent(list.id);
-        });   
         $('.item-find-link').click(function(){
             app.homeView.archiveView.render(list.id);
         });   
@@ -328,7 +325,7 @@ var ListEditView = function(){
         });
     }
     this.render = function(listId){
-        app.logEvent('render list edit view');
+        // app.logEvent('render list edit view');
         // console.log('list id ' + listId);        
         app.breadCrumbs.push(function(){
             app.homeView.listView.editView.render(listId);
@@ -395,7 +392,7 @@ var ItemEditView = function(){
         });   
     }
     this.render = function(listId,itemId){
-        app.logEvent('render item edit view');     
+        // app.logEvent('render item edit view');     
         app.breadCrumbs.push(function(){
             app.homeView.listView.itemView.editView.render(listId,itemId);
         });
@@ -473,7 +470,7 @@ var ItemAddView = function(){
         // });  
     }
     this.renderListParent = function(listId){
-        app.logEvent('render item add view for list');
+        // app.logEvent('render item add view for list');
         app.breadCrumbs.push(function(){
             app.homeView.listView.itemAddView.renderListParent(listId);
         });
@@ -486,7 +483,7 @@ var ItemAddView = function(){
         }
     }
     this.renderItemParent = function(listId,itemId){
-        app.logEvent('render item add view for item');
+        // app.logEvent('render item add view for item');
         app.breadCrumbs.push(function(){
             app.homeView.listView.itemAddView.renderItemParent(listId,itemId);
         });
@@ -541,9 +538,12 @@ var ArchiveView = function(){
             var inputs = app.homeView.inputsToMap($(this));
             app.homeView.archiveView.searchView.render(list.id,inputs.searchterm);
         });
+        $('.item-add-link').click(function(){
+            app.homeView.listView.itemAddView.renderListParent(list.id);
+        });   
     }
     this.render = function(listId){
-        app.logEvent('render archive view');
+        // app.logEvent('render archive view');
         app.breadCrumbs.push(function(){
             app.homeView.archiveView.render(listId);
         });

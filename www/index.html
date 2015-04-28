@@ -204,9 +204,8 @@
                     {{#if hasParent}}
                         <button class="btn btn-positive btn-block item-update-link" href="#update">update list</button>
                     {{/if}}
-                    <a class="btn btn-primary btn-block item-find-link" href="#item-find">find item</a>
+                    <a class="btn btn-primary btn-block item-find-link" href="#item-find">find / add item</a>
                
-                    <a class="btn btn-primary btn-block item-add-link" href="#item-add">add new item</a>
                     <a class="btn btn-negative btn-block item-purchased-remove-link" href="#remove-purchased">remove all purchased</a>
 
                     {{#if hasParent}}
@@ -325,12 +324,14 @@
         <script id="archive-content-template" type="text/template">
             <div class="content-padded">
                 
-                <a class="btn btn-block recent-link" href="#recent.html">recent items</a>
+                <a class="btn btn-block btn-primary item-add-link" href="#item-add">add brand new item</a>
                 
-                <a class="btn btn-block frequent-link" href="#frequent.html">frequent items</a>
+                <a class="btn btn-block btn-primary recent-link" href="#recent.html">find recent item</a>
+                
+                <a class="btn btn-block btn-primary frequent-link" href="#frequent.html">find frequent item</a>
 
                 <form action="#search.html" class="search-form">
-                    <input type="search" name="searchterm" placeholder="search"/>
+                    <input type="search" name="searchterm" placeholder="enter search term "/>
                 </form>
             </div>    
         </script>

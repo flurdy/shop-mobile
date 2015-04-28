@@ -7,12 +7,13 @@ Recent
 * Local storage
 * Local storage search
 * Search add sub list items
+* Move add item to archive page 
+* Remove sub items if sub list is removed
 
 
 Next
 ---
 
-* Move add item to archive page 
 
 
 Important
@@ -35,6 +36,8 @@ Important
 Probably
 ---
 
+* Restrict sublist to just one level
+
 * Sync strategy
 
 * Cache time invalidation
@@ -56,6 +59,10 @@ Maybe
 * More than 1 list
 
 * Move item (for now remove and re-add)
+
+* In list edit, suggest popular item for that list
+
+* Tag item as important
 
 
 Possibly

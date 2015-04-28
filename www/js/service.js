@@ -218,7 +218,19 @@ var ShopService = function(){
       this.listCache.invalidate(subList.id);
       this.adapter.removeSubList(list,subList);
       list.removeItem(subList);
-      // this.listCache.cache(list.id,list);
+      this.removeListItems(subList);
+   }
+   this.removeListItems = function(list){
+      var items = list.items.filter(function(item,i){
+         return item.isOnList();
+      });
+      for(var i = 0; i < items.length; i++){
+         if(items[i].isItem){
+            this.removeItem(list,items[i]);
+         } else if(items[i].isList){
+            this.removeSubList(list,items[i]);
+         }
+      }
    }
    this.updateItem = function(list,item){
       this.listCache.invalidate(list.id);
