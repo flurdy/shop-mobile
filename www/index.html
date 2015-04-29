@@ -204,9 +204,12 @@
                     {{#if hasParent}}
                         <button class="btn btn-positive btn-block item-update-link" href="#update">update list</button>
                     {{/if}}
+                    
                     <a class="btn btn-primary btn-block item-find-link" href="#item-find">find / add item</a>
                
-                    <a class="btn btn-negative btn-block item-purchased-remove-link" href="#remove-purchased">remove all purchased</a>
+                    {{#if hasItemsInBasket}}
+                        <a class="btn btn-negative btn-block item-purchased-remove-link" href="#remove-purchased">remove all purchased</a>
+                    {{/if}}
 
                     {{#if hasParent}}
                         <a class="btn btn-negative btn-block list-remove-link" href="#confirmRemove">remove list</a>
@@ -247,14 +250,12 @@
                                 <option>2</option>
                                 <option>3</option>
                                 <option>4</option>
-                                <option>5</option>
                                 <option>6</option>
-                                <option>7</option>
                                 <option>8</option>
-                                <option>9</option>
                                 <option>10</option>
-                                <option>11</option>
                                 <option>12</option>
+                                <option>16</option>
+                                <option>24</option>
                             </select>
 
                         </li>
@@ -264,7 +265,7 @@
                 <div class="card">
                     <div class="content-padded">
                         <button class="btn btn-positive btn-block item-link" href="#item.html" data-itemid="{{id}}">update item</button>
-
+                        
                         <a class="btn btn-negative btn-block item-remove-link" href="#confirmRemove" data-itemid="{{id}}">remove from list</a>
 
                         <a class="btn btn-primary btn-block item-add-link" href="#item-add.html">add sub item</a>
@@ -357,10 +358,10 @@
             <div class="card">
                 <ul class="table-view">
                     <li class="table-view-cell">
-                        <p><a href="http://github.com/flurdy/shoppinglist" data-ignore="push">Project page</a></p>
+                        <p><a href="http://github.com/flurdy/shop-mobile" data-ignore="push">Project page</a></p>
                     </li>
                     <li class="table-view-cell">
-                        <p><a href="http://github.com/flurdy/shoppinglist/blob/master/FAQ.md" data-ignore="push">Project FAQ</a></p>
+                        <p><a href="http://github.com/flurdy/shop-mobile/blob/master/FAQ.md" data-ignore="push">Project FAQ</a></p>
                     </li>
                     <li class="table-view-cell">
                         <p>Application version: <em>0.1&alpha;</em></p>

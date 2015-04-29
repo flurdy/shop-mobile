@@ -5,9 +5,13 @@ Recent
 ---
 
 * Local storage
+
 * Local storage search
+
 * Search add sub list items
+
 * Move add item to archive page 
+
 * Remove sub items if sub list is removed
 
 
@@ -27,16 +31,16 @@ Important
 
 * Server API storage
 
-* Last update timestamp per list
-** Last update timestamp per item
-
 * Revision numbers
 
 
 Probably
 ---
 
-* Restrict sublist to just one level
+* Last update timestamp per list
+** Last update timestamp per item
+
+* Move item (for now remove and re-add)
 
 * Sync strategy
 
@@ -48,6 +52,8 @@ Probably
 Maybe
 ---
 
+* Restrict sublist to just one level
+
 * Check offline/online status, accept fragility
 
 * Sync 
@@ -56,13 +62,11 @@ Maybe
 
 * Share list via email and SMS
 
-* More than 1 list
-
-* Move item (for now remove and re-add)
+* More than 1 top list
 
 * In list edit, suggest popular item for that list
 
-* Tag item as important
+* Star item as important
 
 
 Possibly

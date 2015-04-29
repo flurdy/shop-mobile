@@ -162,23 +162,30 @@ var ShopService = function(){
          this.itemCache.invalidate(item.id);
       }
       this.listCache.invalidate(list.id);
-      if(list.hasParent() && !list.isOnList()){
-         list.removeAllItems();
-         this.updateSubList(list.parent,list);
-         this.addItem(list.parent,list);
-      }
       if(item.quantity<1){
          item.quantity = 1;
          this.updateItem(list,item);
       }
-      list.addItem(item);
+      if(item.isList){
+         item.removeAllItems();
+         this.updateSubList(list,item);
+      }
+      list.addItem(item);      
       if(item.isItem){
          this.adapter.addItem(list,item);
       } else {
          this.adapter.addSubList(list,item);
       }
+      this.addParentItemIfNotOnList(list);
       this.addRecentItem(list,item);
       this.incrementFrequentItem(list,item);
+   }
+   this.addParentItemIfNotOnList = function(parentList){
+      if(parentList.hasParent() && !parentList.isOnList()){
+         // parentList.removeAllItems();
+         // this.updateSubList(parentList.parent,parentList);
+         this.addItem(parentList.parent,parentList);
+      }
    }
    this.addRecentItem = function(list,item){
       this.recentCache.invalidate(list.id);
@@ -205,20 +212,30 @@ var ShopService = function(){
       this.itemCache.invalidate(item.id);
       this.recentCache.invalidate(list.id);
       this.frequentCache.invalidate(list.id);
-      this.adapter.removeItem(list,item);
       list.removeItem(item);
+      this.adapter.removeItem(list,item);
+      if(item.parent.hasParent()){
+         this.updateSubList(item.parent.parent,item.parent)
+      }
    }
    this.removeSubList = function(list,subList){
       console.log("Removing list \"" + subList.title + "\" [" 
                   + subList.id + "] from list \"" + list.title
                   + "\" [" + list.id + "]");
+      this.invalidateAncestors(list);
       this.listCache.invalidate(list.id);
       this.recentCache.invalidate(list.id);
       this.frequentCache.invalidate(list.id);
       this.listCache.invalidate(subList.id);
       this.adapter.removeSubList(list,subList);
       list.removeItem(subList);
-      this.removeListItems(subList);
+      this.removeListItems(subList);      
+   }
+   this.invalidateAncestors = function(list){      
+      this.listCache.invalidate(list.id);
+      if(list.hasParent()){         
+         this.invalidateAncestors(list.parent);
+      }
    }
    this.removeListItems = function(list){
       var items = list.items.filter(function(item,i){

@@ -120,6 +120,16 @@ var ShoppingList = function(id) { // ,title,description,quantity,lastSynced,item
       this.items    = [];
       return this;
    }
+   this.hasItemsInBasket = function(){      
+      for(var i=0;i<this.items.length;i++) {
+         if(this.items[i].isList && this.items[i].hasItemsInBasket() ){
+            return true;
+         } else if(this.items[i].inBasket){
+            return true;
+         }
+      }
+      return false;
+   }
    this.isList      = true;
    this.isItem      = false;
    this.logString   = function(){

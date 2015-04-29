@@ -190,7 +190,7 @@ var ShopRepository = function(){
       if(item.isOnList()){
          item.parent.removeItem(this);
          item.parent   = null
-         item.parentId = null;
+         // item.parentId = null;
       }
       this.removeStoredObject(this.keys.items(item.id));
       var itemKeys = this.findStoredItemKeys();      
@@ -506,9 +506,9 @@ var ShopRepository = function(){
          listKeys.push( subList.id );
          this.storeList(subList);
          this.storeListKeys(listKeys);
-         var listItemKeys = this.findStoredListItemKeys(list.id);
-         listItemKeys.push( subList.id );
-         this.storeListItemKeys(list.id,itemKeys);
+         // var listItemKeys = this.findStoredListItemKeys(list.id);
+         // listItemKeys.push( subList.id );
+         // this.storeListItemKeys(list.id,itemKeys);
          this.addSubList(localList,subList);
       }
    }

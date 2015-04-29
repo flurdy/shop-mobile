@@ -1,11 +1,10 @@
 
-Shop Mobile
-======
+# Shop Mobile
 
 The mobile app for the Shop project.
 
 
-It is a cross platform app based on Cordova and Ratchet for both IOS and Android.
+A cross platform app based on Cordova and Ratchet for both IOS and Android.
 
 Registering is optional.
 
@@ -15,15 +14,14 @@ Can share the list with family and friends if registered.
 
 
 
-Install
----
+## Install
 
 Follow http://flurdy.com/docs/android/cordova_vagrant_android.html to install Cordova
 
 
 
-Live site: http://shop.flurdy.com/
+## Source
 
-Source: https://github.com/flurdy/shop-mobile
+* https://github.com/flurdy/shop-mobile
 
 License: MIT

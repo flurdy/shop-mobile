@@ -267,7 +267,8 @@ var ListEditView = function(){
             description: list.description,
             hasParent:   list.hasParent(),
             items:       list.items,
-            parent:      list.parent 
+            parent:      list.parent,
+            hasItemsInBasket: list.hasItemsInBasket()
         };
         this.renderHelper.renderContent( context );
         $('.item-edit-link').click(function(){
