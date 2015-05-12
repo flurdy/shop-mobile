@@ -100,8 +100,8 @@ var ShopRepository = function(){
                items.push(listsToStore[k]);
             }
          }
-         this.addRecentItems(  listsToStore[i].id,items)
-         this.addFrequentItems(listsToStore[i].id,items)  
+        this.addRecentItems(  listsToStore[i].id,items)
+        this.addFrequentItems(listsToStore[i].id,items)  
       }
    }
 
@@ -494,6 +494,8 @@ var ShopRepository = function(){
             localList.addItem(localItem);
             this.updateStoredItem(localItem);
             this.updateStoredList(localList);
+            this.addRecentItem(localList,localItem);
+            this.addOrIncrementFrequentItem(localList,localItem);
          }
       }
    }
@@ -509,7 +511,7 @@ var ShopRepository = function(){
          // var listItemKeys = this.findStoredListItemKeys(list.id);
          // listItemKeys.push( subList.id );
          // this.storeListItemKeys(list.id,itemKeys);
-         this.addSubList(localList,subList);
+         this.addSubList(localList,subList);            
       }
    }
 
@@ -521,6 +523,8 @@ var ShopRepository = function(){
             localList.addItem(localSubList);
             this.updateStoredList(localSubList);
             this.updateStoredList(localList);
+            this.addRecentItem(localList,localSubList);
+            this.addOrIncrementFrequentItem(localList,localSubList);
          }
       }
    }
@@ -567,6 +571,8 @@ var ShopRepository = function(){
             localList.removeItem(localItem);
             this.updateStoredItem(localItem);
             this.updateStoredList(localList);
+            this.addRecentItem(localList,localItem);
+            this.addOrIncrementFrequentItem(localList,localItem);
             return localList;
          }
       }
@@ -581,6 +587,8 @@ var ShopRepository = function(){
             localList.removeItem(localSubList);
             this.updateStoredList(localSubList);
             this.updateStoredList(localList);
+            this.addRecentItem(localList,localSubList);
+            this.addOrIncrementFrequentItem(localList,localSubList);
             return localList;
          }
       }
