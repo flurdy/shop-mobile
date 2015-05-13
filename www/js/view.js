@@ -290,7 +290,8 @@ var ListEditView = function(){
                 var item = app.service.findItem(list,itemId);
                 app.service.removeItem(list,item);                
             }
-            $(this).parent().remove();
+            app.breadCrumbs.peek();
+            // $(this).parent().remove();
 
         });
         $('.item-find-link').click(function(){

@@ -168,7 +168,7 @@ var ShopService = function(){
       }
       if(item.isList){
          item.removeAllItems();
-         this.updateSubList(list,item);
+         this.updateSubList(item,list);
       }
       list.addItem(item);      
       if(item.isItem){
@@ -215,7 +215,7 @@ var ShopService = function(){
       list.removeItem(item);
       this.adapter.removeItem(list,item);
       if(item.parent.hasParent()){
-         this.updateSubList(item.parent.parent,item.parent)
+         this.updateSubList(item.parent)
       }
    }
    this.removeSubList = function(list,subList){
@@ -243,9 +243,15 @@ var ShopService = function(){
       });
       for(var i = 0; i < items.length; i++){
          if(items[i].isItem){
-            this.removeItem(list,items[i]);
+            var item = this.findItem(list,items[i].id);
+            if(item){
+               this.removeItem(list,item);
+            }
          } else if(items[i].isList){
-            this.removeSubList(list,items[i]);
+            var subList = this.findItem(list,items[i].id);
+            if(subList){
+               this.removeSubList(list,subList);
+            }
          }
       }
    }
@@ -256,12 +262,19 @@ var ShopService = function(){
       this.frequentCache.invalidate(list.id);
       this.adapter.updateItem(list,item);
    }
-   this.updateSubList = function(list,subList){
-      this.listCache.invalidate(list.id);
+   this.updateSubList = function(subList,parentList){      
+      if(subList.hasParent()){
+         if(parentList === undefined){         
+            parentList = this.findList(subList.parentId);
+         }
+         this.listCache.invalidate(subList.parentId);
+         this.recentCache.invalidate(subList.parentId);
+         this.frequentCache.invalidate(subList.parentId);
+      }
       this.listCache.invalidate(subList.id);
-      this.recentCache.invalidate(list.id);
-      this.frequentCache.invalidate(list.id);
-      this.adapter.updateSubList(list,subList);
+      this.recentCache.invalidate(subList.id);
+      this.frequentCache.invalidate(subList.id);
+      this.adapter.updateSubList(parentList,subList);
    }
    this.convertToSubList = function(list,item){
       this.itemCache.invalidate(item.id);

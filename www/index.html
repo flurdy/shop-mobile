@@ -78,24 +78,30 @@
                 </div>
             {{/if}}
             <div class="card">
-                <ul class="table-view" id="items">
-                    {{#each items}}
-                        <li class="table-view-cell">
-                            <a class="navigate-right item-link" href="#item"
-                                 data-ignore="push" 
-                                 data-itemid="{{id}}" 
-                                 data-itemtype="{{type}}" >      
-                                <span>
-                                    <strong>{{title}}</strong>
-                                    <span class="badge-quantity-{{quantity}} badge badge-inverted">x {{quantity}}</span>
-                                </span>
-                                {{#if items}}
-                                    <span class="badge">{{items.length}}</span>
-                                {{/if}}
-                            </a>
-                        </li>
-                    {{/each}}
-                </ul>
+                {{#if items}}
+                    <ul class="table-view" id="items">
+                        {{#each items}}
+                            <li class="table-view-cell">
+                                <a class="navigate-right item-link" href="#item"
+                                     data-ignore="push" 
+                                     data-itemid="{{id}}" 
+                                     data-itemtype="{{type}}" >      
+                                    <span>
+                                        <strong>{{title}}</strong>
+                                        <span class="badge-quantity-{{quantity}} badge badge-inverted">x {{quantity}}</span>
+                                    </span>
+                                    {{#if items}}
+                                        <span class="badge">{{items.length}}</span>
+                                    {{/if}}
+                                </a>
+                            </li>
+                        {{/each}}
+                    </ul>
+                {{else}}
+                    <div class="content-padded">
+                         <p>No items currently on this list</p>
+                     </div>                
+                {{/if}}
             </div>
             {{#if description}}
                 <div class="card">
@@ -158,26 +164,32 @@
 
         <script id="list-edit-content-template" type="text/template">
             <div class="card">
-                <ul class="table-view">
-                    {{#each items}}
-                    <li class="table-view-cell">
-                        <a href="#edit" class="item-edit-link"
-                                data-transition="slide-in" 
-                                data-itemid="{{id}}"
-                                data-itemtype="{{type}}" >
-                            <span>
-                                <strong>{{title}}</strong>
-                                <span class="badge badge-inverted">x {{quantity}}</span>
-                            </span>
-                        </a>
-                        <a class="btn btn-negative item-remove-link" href="#remove" 
-                                data-itemid="{{id}}"
-                                data-itemtype="{{type}}">
-                            remove
-                        </a>
-                    </li>
-                    {{/each}}
-                </ul>            
+                {{#if items}}
+                    <ul class="table-view">
+                        {{#each items}}
+                        <li class="table-view-cell">
+                            <a href="#edit" class="item-edit-link"
+                                    data-transition="slide-in" 
+                                    data-itemid="{{id}}"
+                                    data-itemtype="{{type}}" >
+                                <span>
+                                    <strong>{{title}}</strong>
+                                    <span class="badge badge-inverted">x {{quantity}}</span>
+                                </span>
+                            </a>
+                            <a class="btn btn-negative item-remove-link" href="#remove" 
+                                    data-itemid="{{id}}"
+                                    data-itemtype="{{type}}">
+                                remove
+                            </a>
+                        </li>
+                        {{/each}}
+                    </ul>    
+                {{else}}
+                    <div class="content-padded">
+                         <p>No items currently on this list</p>
+                    </div>
+                {{/if}}       
             </div>
 
             {{#if hasParent}}
@@ -333,7 +345,7 @@
         <script id="archive-content-template" type="text/template">
             <div class="content-padded">
                 
-                <a class="btn btn-block btn-primary item-add-link" href="#item-add">add brand new item</a>
+                <a class="btn btn-block btn-primary item-add-link" href="#item-add">add new item</a>
                 
                 <a class="btn btn-block btn-primary recent-link" href="#recent.html">find recent item</a>
                 

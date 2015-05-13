@@ -48,6 +48,8 @@ Probably
 
 * Move navigation and edit buttons to bottom bar for one handed use
 
+* i18n
+
 
 Maybe
 ---

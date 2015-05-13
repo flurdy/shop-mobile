@@ -61,12 +61,15 @@ var ShoppingList = function(id) { // ,title,description,quantity,lastSynced,item
       return this.parent && (this.parent.hasItem(this.id) || this.parent.hasItemId(this.id) )
    }
    this.hasItem     = function(itemId){
+      if(!this.items){
+         this.items = [];
+      }
       for(var i=0;i<this.items.length;i++) {
          if(this.items[i].id === itemId){
             return true;
          }
       }
-    return false;
+      return false;
    }
    this.hasItemId    = function(itemId){
       if(!this.itemIds){
