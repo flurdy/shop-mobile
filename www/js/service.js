@@ -141,6 +141,13 @@ var ShopService = function(){
       });     
       return extractItems;
    }
+   this.resetSearchCache = function(listId){
+      if( this.searchCache[listId] ){
+         this.searchCache[listId].invalidateAll();
+      } else{
+         this.searchCache[listId] = new ShopCache();
+      }
+   }
    this.searchForItems = function(list,searchTerm){
       console.log("Searching list: " + list.id);
       console.log("Searching for: " + searchTerm);
@@ -162,6 +169,7 @@ var ShopService = function(){
          this.itemCache.invalidate(item.id);
       }
       this.listCache.invalidate(list.id);
+      this.resetSearchCache(list.id);
       if(item.quantity<1){
          item.quantity = 1;
          this.updateItem(list,item);
@@ -200,6 +208,7 @@ var ShopService = function(){
    }
    this.addNewItem = function(list,item){
       this.listCache.invalidate(list.id);
+      this.resetSearchCache(list.id);
       this.adapter.addNewItem(list,item); 
       list.addItem(item);    
       this.addItem(list,item);
@@ -208,35 +217,38 @@ var ShopService = function(){
       console.log("Removing item \"" + item.title + "\" [" 
                   + item.id + "] from list \"" + list.title
                   + "\" [" + list.id + "]");
-      this.listCache.invalidate(list.id);
+      this.invalidateAncestors(list);
       this.itemCache.invalidate(item.id);
-      this.recentCache.invalidate(list.id);
-      this.frequentCache.invalidate(list.id);
       list.removeItem(item);
       this.adapter.removeItem(list,item);
       if(item.parent.hasParent()){
          this.updateSubList(item.parent)
       }
    }
+
    this.removeSubList = function(list,subList){
       console.log("Removing list \"" + subList.title + "\" [" 
                   + subList.id + "] from list \"" + list.title
                   + "\" [" + list.id + "]");
-      this.invalidateAncestors(list);
-      this.listCache.invalidate(list.id);
-      this.recentCache.invalidate(list.id);
-      this.frequentCache.invalidate(list.id);
-      this.listCache.invalidate(subList.id);
+      this.invalidateAncestors(subList);
       this.adapter.removeSubList(list,subList);
       list.removeItem(subList);
       this.removeListItems(subList);      
    }
+
    this.invalidateAncestors = function(list){      
       this.listCache.invalidate(list.id);
-      if(list.hasParent()){         
-         this.invalidateAncestors(list.parent);
+      this.resetSearchCache(list.id);
+      this.recentCache.invalidate(list.id);
+      this.frequentCache.invalidate(list.id);
+      if(list.hasParent()){      
+         var parent = list.parent || this.findList(list.parentId);   
+         if(parent){
+            this.invalidateAncestors(parent);
+         }
       }
    }
+
    this.removeListItems = function(list){
       var items = list.items.filter(function(item,i){
          return item.isOnList();
@@ -248,13 +260,14 @@ var ShopService = function(){
                this.removeItem(list,item);
             }
          } else if(items[i].isList){
-            var subList = this.findItem(list,items[i].id);
+            var subList = this.findList(items[i].id);
             if(subList){
                this.removeSubList(list,subList);
             }
          }
       }
    }
+
    this.updateItem = function(list,item){
       this.listCache.invalidate(list.id);
       this.itemCache.invalidate(item.id);
@@ -281,7 +294,7 @@ var ShopService = function(){
       this.listCache.invalidate(list.id);
       this.recentCache.invalidate(list.id);
       this.frequentCache.invalidate(list.id);
-      var subList = this.factory.cloneList(item);
+      var subList = this.factory.cloneAsList(item);
       this.adapter.deleteItem(list,item);
       this.adapter.addNewSubList(list,subList);
       return subList;

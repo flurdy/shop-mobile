@@ -190,8 +190,6 @@ var ItemView = function(){
         return this;
     }    
     this.renderHeader = function(list,item){
-        // console.log('list id ' + list.id);
-        // console.log('item id ' + item.id);
         this.renderHelper.renderHeader( app.messages );
         $('.parent-link').click(function(){               
             app.breadCrumbs.pop();
@@ -222,7 +220,6 @@ var ItemView = function(){
         });
     }
     this.render = function(listId,itemId){
-        // app.logEvent('render item view');
         app.breadCrumbs.push(function(){
             app.homeView.listView.itemView.render(listId,itemId);
         });
@@ -230,12 +227,10 @@ var ItemView = function(){
         if(list == null){
             throw new Error('List not found for id ' + listId);
         } else {
-            // console.log('list id ' + list.id);
             var item = this.service.findItem(list,itemId);
             if(item==null){
                 throw new Error('Item not found for id ' + itemId);
             } else {
-                // console.log('item id ' + item.id);
                 this.renderHeader(list,item);
                 this.renderContent(list,item);
             }
@@ -363,7 +358,12 @@ var ItemEditView = function(){
     this.renderContent = function(list,item){
         this.renderHelper.renderContent( item );  
         $('.item-add-link').click(function(){
-            app.homeView.listView.itemAddView.renderItemParent(list.id,item.id);
+            app.service.convertToSubList(list,item);
+            app.breadCrumbs.replace(function(){
+                app.homeView.listView.render(item.id);
+            });
+            app.homeView.archiveView.render(item.id);
+            // app.homeView.listView.itemAddView.renderItemParent(list.id,item.id);        
         });     
         $( ".item-update-form" ).submit(function( event ) {
             event.preventDefault();
@@ -521,7 +521,7 @@ var ArchiveView = function(){
         this.frequentView.initialize(service);
         return this;
     }    
-    this.renderHeader = function(list){
+    this.renderHeader = function(){
         this.renderHelper.renderHeader( app.messages );
         $('.parent-link').click(function(){
             app.breadCrumbs.pop();
@@ -550,8 +550,10 @@ var ArchiveView = function(){
             app.homeView.archiveView.render(listId);
         });
         var list = this.service.findList(listId);
-        this.renderHeader(list);
-        this.renderContent(list);
+        if(list){
+            this.renderHeader();
+            this.renderContent(list);
+        }
     }
 }
 

@@ -1,16 +1,24 @@
 
-# Shop Mobile
+# Shop 
 
-The mobile app for the Shop project.
+## Shop Mobile
+
+### Shopping list shared across devices and people
 
 
-A cross platform app based on Cordova and Ratchet for both IOS and Android.
+* Project page https://github.com/flurdy/shop-mobile
 
-Registering is optional.
+* Parent project https://github.com/flurdy/shoppinglist
 
-Can access list from multiple the devices if registered.
+* Creator http://flurdy.com http://twitter.com/flurdy
 
-Can share the list with family and friends if registered.
+* Todo [todo.md](todo.md)
+
+* Registering is optional.
+
+* Can access list from multiple the devices if registered.
+
+* Can share the list with family and friends if registered.
 
 
 

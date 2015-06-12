@@ -10,7 +10,7 @@ Recent
 
 * Search add sub list items
 
-* Move add item to archive page 
+* Move add item to archive page
 
 * Remove sub items if sub list is removed
 
@@ -18,12 +18,27 @@ Recent
 Next
 ---
 
+* APK and TestFlight versions
+
+* Android and IOS CSS logic
+
+
+Bugs 
+---
+
+* In basket toggles unresponsive
+
+* breadcrumb when: search - add - view list - back
+
+* add as sub item to go to search first
+
+* ghost orange squares on android device
+
+* view link (eg github link) has no go back on IOS
 
 
 Important
 ----
-
-* Feature toggles
 
 * Register flow
 
@@ -36,6 +51,8 @@ Important
 
 Probably
 ---
+
+* Feature toggles
 
 * Last update timestamp per list
 ** Last update timestamp per item
@@ -58,7 +75,7 @@ Maybe
 
 * Check offline/online status, accept fragility
 
-* Sync 
+* Sync
 ** Write queues in both directions
 ** Change log
 
@@ -74,7 +91,7 @@ Maybe
 Possibly
 ---
 
-* Upgrade flow 
+* Upgrade flow
 ** App store integration
 
 * Identity merge
@@ -96,16 +113,11 @@ Probably not
 * Global popular list
 
 * Import list
-   
+
 
 Definitely not
 -----
 
 * Cluttered UI
 
-
-Bugs
----
-
-* Firefox toggles
 

@@ -155,18 +155,6 @@ var ShopFactory = function(){
       item.quantity    = quantity;
       return item;
    }
-   this.cloneItem = function(sourceItem){ 
-      var item         = new ShoppingItem(sourceItem.id);
-      item.title       = sourceItem.title;
-      item.description = sourceItem.description;
-      item.quantity    = sourceItem.quantity;
-      if(sourceItem.parent){
-         item.setAsParent(sourceItem.parent);
-      } else {
-         item.parentId = sourceItem.parentId;
-      }
-      return item;
-   }
    this.inputToItem = function(inputs){
       return this.newItem(inputs.title,inputs.description,1);
    }
@@ -184,17 +172,30 @@ var ShopFactory = function(){
       return list;
 
    }
-   this.cloneList = function(sourceList){ 
-      var list         = new ShoppingList(sourceList.id);
-      list.title       = sourceList.title;
-      list.description = sourceList.description;
-      list.quantity    = sourceList.quantity;
-      if(sourceList.parent){
-         list.setAsParent(sourceList.parent);
-      } else if(sourceList.parentId){
-         list.parentId = sourceList.parentId;
+   this.cloneObject = function(source,target){ 
+      target.title       = source.title;
+      target.description = source.description;
+      target.quantity    = source.quantity;
+      if(source.parent){
+         target.setAsParent(source.parent);
+      } else if(source.parentId){
+         target.parentId = source.parentId;
       } 
-      list.itemIds     = sourceList.itemIds;
+      return target;
+   }
+   this.cloneItem = function(source){ 
+      var item         = new ShoppingItem(source.id);
+      this.cloneObject(source,item);
+      return item;
+   }
+   this.cloneAsList = function(source){ 
+      var list         = new ShoppingList(source.id);
+      this.cloneObject(source,list);
+      return list;
+   }
+   this.cloneList = function(source){ 
+      var list         = this.cloneAsList(source)
+      list.itemIds     = source.itemIds;
       return list;
    }
    this.cloneFrequent = function(source,item){
@@ -222,6 +223,11 @@ var BreadCrumbs = function(){
    }  
    this.push = function(view){
       this.crumbs.push(view);
+   }
+   this.replace = function(view){
+      this.crumbs.pop();
+      this.crumbs.pop();
+      this.push(view);
    }
    this.unpush = function(view){
       this.crumbs.pop();

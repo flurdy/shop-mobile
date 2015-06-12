@@ -1,4 +1,9 @@
 
+#header.bar { padding-top: 10px; height: 56px; }
+
+.bar-nav ~ .content {
+    padding-top: 54px;
+}
 
 .bar-tab ul { padding-left: 0; }
 

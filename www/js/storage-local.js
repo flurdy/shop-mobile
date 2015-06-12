@@ -198,7 +198,7 @@ var ShopRepository = function(){
       this.storeItemKeys(itemKeys);
       var listItemKeys = this.findStoredListItemKeys(item.parentId);      
       listItemKeys.splice($.inArray(item.id,listItemKeys), 1);
-      this.storeListItemKeys(listItemKeys);
+      this.storeListItemKeys(item.parentId,listItemKeys);
    }
 
    this.isItemId = function(itemId){
@@ -329,6 +329,10 @@ var ShopRepository = function(){
       if(!frequentItems){
          frequentItems = [];
       } 
+      var subLists = this.findSubLists(list);
+      for(var i = 0, len = subLists.length; i < len; i++){
+         frequentItems = frequentItems.concat( this.findFrequentItems(subLists[i]) );
+      }
       return frequentItems;
    }
 
@@ -602,15 +606,6 @@ var ShopRepository = function(){
       return array;
    }
 
-   // this.findAllLists = function(){
-   //    var listKeys = this.findStoredListKeys();
-   //    var self = this;
-   //    // var listIds = this.getStoredObject(this.keys.listKeys);
-   //    return $.map(listKeys,function(id,i){
-   //       return self.findList(id);
-   //    });
-   // }
-
    this.itemOrListHasSearchTerm = function(item,searchTerm){
       if(item.title.toLowerCase().indexOf(searchTerm) > -1){
          return true;
@@ -620,21 +615,6 @@ var ShopRepository = function(){
       return false;
    }
    
-   // this.searchListsNotOnList = function(lists,searchTerm){
-   //    var self = this;
-   //    return lists.filter(function(element,i){
-   //       if(self.itemOrListHasSearchTerm(element,searchTerm)){
-   //          if(!element.parent && element.parentId){
-   //             element.parent = this.findList(element.parentId);
-   //          }
-   //          if(element.parent){
-   //             return !element.parent.hasItemId(element.id);
-   //          }
-   //       } 
-   //       return false;
-   //    });
-   // }
-
    this.findItemsNotOnList = function(list){
       var listItemKeys = this.findStoredListItemKeys(list.id);
       var items = [];
