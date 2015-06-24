@@ -14,31 +14,31 @@ Recent
 
 * Remove sub items if sub list is removed
 
+* Bug: recent items lack recent removals
+
+* Bug: frequent items duplicity
+
 
 Next
 ---
 
-* APK and TestFlight versions
-
 * Android and IOS CSS logic
 
+* Bug: search items duplicity
 
-Bugs 
+* Bug: frequent items if on sublist is empty
+
+
+Triage bugs 
 ---
-
-* In basket toggles unresponsive
-
-* breadcrumb when: search - add - view list - back
-
-* add as sub item to go to search first
-
-* ghost orange squares on android device
-
-* view link (eg github link) has no go back on IOS
 
 
 Important
 ----
+
+* APK and TestFlight versions
+
+* Bug: In basket toggles unresponsive
 
 * Register flow
 
@@ -47,6 +47,8 @@ Important
 * Server API storage
 
 * Revision numbers
+
+* Precompile Handlebar templates
 
 
 Probably
@@ -66,6 +68,8 @@ Probably
 * Move navigation and edit buttons to bottom bar for one handed use
 
 * i18n
+
+* Bug: breadcrumb when: search - add - view list - back
 
 
 Maybe
@@ -113,6 +117,8 @@ Probably not
 * Global popular list
 
 * Import list
+
+* Ghost orange squares on android device
 
 
 Definitely not

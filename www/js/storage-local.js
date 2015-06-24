@@ -88,22 +88,26 @@ var ShopRepository = function(){
    this.storeListsAndItems = function(listsToStore,itemsToStore){
       this.storeLists(listsToStore);
       this.storeItems(itemsToStore);   
-      for(var i = 0, lenI = listsToStore.length; i < lenI; i++){
-         var items = [];
-         for(var j = 0, lenJ = itemsToStore.length; j < lenJ; j++){
-            if(itemsToStore[j].parentId == listsToStore[i].id){
-               items.push(itemsToStore[j]);
-            }
-         }
-         for(var k = 0, lenK = listsToStore.length; k < lenK; k++){       
-            if(listsToStore[k].parentId == listsToStore[i].id){
-               items.push(listsToStore[k]);
-            }
-         }
-        this.addRecentItems(  listsToStore[i].id,items)
-        this.addFrequentItems(listsToStore[i].id,items)  
-      }
+      // this.storeItemsAsPartOfLists(listsToStore,itemsToStore);
    }
+
+   // this.storeItemsAsPartOfLists = function(listsToStore,itemToStore){
+   //    for(var i = 0, lenI = listsToStore.length; i < lenI; i++){
+   //       var items = [];
+   //       for(var j = 0, lenJ = itemsToStore.length; j < lenJ; j++){
+   //          if(itemsToStore[j].parentId == listsToStore[i].id){
+   //             items.push(itemsToStore[j]);
+   //          }
+   //       }
+   //       for(var k = 0, lenK = listsToStore.length; k < lenK; k++){       
+   //          if(listsToStore[k].parentId == listsToStore[i].id){
+   //             items.push(listsToStore[k]);
+   //          }
+   //       }
+   //      this.addRecentItems(  listsToStore[i].id,items)
+   //      this.addFrequentItems(listsToStore[i].id,items)  
+   //    }
+   // }
 
    this.storeLists = function(listsToStore){
       var listKeys = this.findStoredListKeys();
@@ -123,6 +127,8 @@ var ShopRepository = function(){
       this.storeObject(this.keys.lists(list.id),list);
       if(list.parentId){
          this.addItemToListItemKeys(list.parentId,list.id);
+         this.addRecentItem( list.parentId, list)
+         this.addOrIncrementFrequentItem( list.parentId, list) 
       }
    }
 
@@ -147,6 +153,8 @@ var ShopRepository = function(){
       this.storeObject(this.keys.items(item.id),item);
       if(item.parentId){
          this.addItemToListItemKeys(item.parentId,item.id);
+         this.addRecentItem( item.parentId, item)
+         this.addOrIncrementFrequentItem( item.parentId, item) 
       }
    }
 

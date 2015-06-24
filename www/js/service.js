@@ -131,6 +131,7 @@ var ShopService = function(){
          return sortedItems;
       }
    }
+   
    this.filterFrequentItems = function(list){
       var frequentItems = this.findFrequentItems(list);
       var notOnListItems = frequentItems.filter(function(element,i){
@@ -141,6 +142,7 @@ var ShopService = function(){
       });     
       return extractItems;
    }
+
    this.resetSearchCache = function(listId){
       if( this.searchCache[listId] ){
          this.searchCache[listId].invalidateAll();
