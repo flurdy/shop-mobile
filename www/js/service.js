@@ -1,12 +1,13 @@
 
 var ShopCache = function(){
    this.cache = {};
-   this.isCached = function(id){ 
-      return this.cache[id] !== null && 
-             this.cache[id] !== undefined; 
+   this.isCached = function(id){  
+      return false;
+      // return this.cache[id] !== null && 
+      //        this.cache[id] !== undefined; 
    }
    this.cache = function(id,object){ 
-      this.cache[id] = object; 
+      // this.cache[id] = object; 
    }
    this.invalidate = function(id){
       if(this.isCached(id)){ 
@@ -17,10 +18,12 @@ var ShopCache = function(){
       this.cache = {};
    }
    this.findObject = function(id){ 
-      return this.cache[id];
+      return undefined;
+      // return this.cache[id];
    }
    this.isEmpty = function(){
-      return this.cache.length==0;
+      return true;
+      // return this.cache.length==0;
    }
 }
 
