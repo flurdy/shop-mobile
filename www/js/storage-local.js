@@ -188,10 +188,10 @@ var ShopRepository = function(){
 
    this.addItemToListItemKeys = function(listId,itemId){
       var listItemKeys = this.findStoredListItemKeys(listId);
-      if($.inArray(itemId, listItemKeys)){
+      if( ! this.existsInArray(listItemKeys, itemId) ){
          listItemKeys.push(itemId);
+         this.storeListItemKeys(listId,listItemKeys);
       }
-      this.storeListItemKeys(listId,listItemKeys);
    }
 
    this.deleteStoredItem = function(item){
@@ -202,9 +202,17 @@ var ShopRepository = function(){
       }
       this.removeStoredObject(this.keys.items(item.id));
       var itemKeys = this.findStoredItemKeys();      
+      
+      // check -1 based conditional
+
       itemKeys.splice($.inArray(item.id,itemKeys), 1);
+
+
       this.storeItemKeys(itemKeys);
-      var listItemKeys = this.findStoredListItemKeys(item.parentId);      
+      var listItemKeys = this.findStoredListItemKeys(item.parentId);     
+      
+      // check -1 based conditional
+
       listItemKeys.splice($.inArray(item.id,listItemKeys), 1);
       this.storeListItemKeys(item.parentId,listItemKeys);
    }
@@ -339,7 +347,11 @@ var ShopRepository = function(){
       } 
       var subLists = this.findSubLists(list);
       for(var i = 0, len = subLists.length; i < len; i++){
-         frequentItems = frequentItems.concat( this.findFrequentItems(subLists[i]) );
+         var subFrequent  = this.findFrequentItems(subLists[i]);
+         var newFrequents = subFrequent.filter(function(element,i){
+            return ! app.service.adapter.repository.existsInItemSubArray(frequentItems,element.itemId);
+         });
+         frequentItems = frequentItems.concat( newFrequents );
       }
       return frequentItems;
    }
@@ -655,7 +667,7 @@ var ShopRepository = function(){
 
    this.isListKey = function(listId){
       var listKeys = this.findStoredListKeys();
-      return $.inArray(listId,listKeys);
+      return this.existsInArray(listKeys, listId);
    }
 
    this.findSubLists = function(list){

@@ -16,7 +16,7 @@ Recent
 
 * Bug: recent items lack recent removals
 
-* Bug: frequent items duplicity
+* Bug: search items duplicity
 
 
 Next
@@ -24,7 +24,7 @@ Next
 
 * Android and IOS CSS logic
 
-* Bug: search items duplicity
+* Bug: frequent items duplicity
 
 * Bug: frequent items if on sublist is empty
 
@@ -53,6 +53,8 @@ Important
 
 Probably
 ---
+
+* Rip out caches until proven needed
 
 * Feature toggles
 

@@ -275,6 +275,7 @@ var ShopService = function(){
       this.itemCache.invalidate(item.id);
       this.recentCache.invalidate(list.id);
       this.frequentCache.invalidate(list.id);
+      this.resetSearchCache(list.id);
       this.adapter.updateItem(list,item);
    }
    this.updateSubList = function(subList,parentList){      
@@ -289,6 +290,7 @@ var ShopService = function(){
       this.listCache.invalidate(subList.id);
       this.recentCache.invalidate(subList.id);
       this.frequentCache.invalidate(subList.id);
+      this.resetSearchCache(subList.id);
       this.adapter.updateSubList(parentList,subList);
    }
    this.convertToSubList = function(list,item){
@@ -296,6 +298,7 @@ var ShopService = function(){
       this.listCache.invalidate(list.id);
       this.recentCache.invalidate(list.id);
       this.frequentCache.invalidate(list.id);
+      this.resetSearchCache(list.id);
       var subList = this.factory.cloneAsList(item);
       this.adapter.deleteItem(list,item);
       this.adapter.addNewSubList(list,subList);
