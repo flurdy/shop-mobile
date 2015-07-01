@@ -192,6 +192,7 @@ var ShopFactory = function(){
    this.cloneItem = function(source){ 
       var item         = new ShoppingItem(source.id);
       this.cloneObject(source,item);
+      item.inBasket    = source.inBasket;
       return item;
    }
    this.cloneAsList = function(source){ 
