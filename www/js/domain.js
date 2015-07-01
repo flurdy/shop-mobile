@@ -90,7 +90,7 @@ var ShoppingList = function(id) { // ,title,description,quantity,lastSynced,item
    }
    this.orderedItems = function() {
       return this.items.sort(function(a,b){
-         return a.title > b.title;
+         return a.title.toLowerCase().localeCompare(b.title.toLowerCase());
       });
    }
    this.addItem = function(item){
