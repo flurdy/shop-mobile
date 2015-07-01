@@ -27,6 +27,9 @@ var ShoppingItem = function(id){ // ,title,description,quantity,lastSynced,paren
       this.parent   = null;
       return this;
    }
+   this.isParent    = function(list){
+      return this.parentId == list.id;
+   }
    this.isList      = false;
    this.isItem      = true;
 }
@@ -53,6 +56,9 @@ var ShoppingList = function(id) { // ,title,description,quantity,lastSynced,item
    this.setAsParent = function(list){
       this.parent   = list;
       this.parentId = list.id;
+   }
+   this.isParent    = function(list){
+      return this.parentId == list.id;
    }
    this.hasParent = function(){
       return this.parentId;

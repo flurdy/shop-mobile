@@ -685,11 +685,15 @@ var ShopRepository = function(){
    }
 
    this.searchForItems = function(list,searchTerm){
+      var self = this;
       var itemsWithSearchTerm = this.searchListItemsNotOnList(list,searchTerm);  
       var subLists = this.findSubLists(list);
       for(subList in subLists){
          var subItems = this.searchForItems(subLists[subList],searchTerm); 
-         itemsWithSearchTerm = itemsWithSearchTerm.concat(subItems);
+         var newItems = subItems.filter(function(element,i){
+            return ! self.existsInItemArray(itemsWithSearchTerm,element.id);
+         });
+         itemsWithSearchTerm = itemsWithSearchTerm.concat(newItems);
       }
       return itemsWithSearchTerm;
    }

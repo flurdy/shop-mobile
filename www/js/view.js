@@ -732,11 +732,7 @@ var SearchView = function(){
             if(type == "ShoppingList"){
                 var subList = app.service.findList(itemId);   
                 if(subList){
-                    if(subList.parent){
-                        app.service.addItem(subList.parent,subList); 
-                    } else {
-                        app.service.addItem(list,subList); 
-                    }
+                    app.service.addItem(list,subList); 
                 }
             } else {
                 var item = app.service.findItem(list, itemId);   

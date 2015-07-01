@@ -83,23 +83,27 @@ var ShopService = function(){
       }
    }
    this.findRecentItems = function(list){
-      if(this.recentCache.isCached(list.id)){
-         return this.recentCache.findObject(list.id);
+      if( list.hasParent() ){
+         return this.findRecentItems(list.parent);
       } else {
-         var items = this.adapter.findRecentItems(list);
-         var hydrated = $.map(items,function(mapItem,i){
-            if(mapItem.type == "ShoppingList"){
-               mapItem.item = app.service.findList(mapItem.itemId);
-            } else {
-               mapItem.item = app.service.findItem(list,mapItem.itemId);
-            }
-            return mapItem;
-         });
-         var sortedItems = hydrated.sort(function(a,b){
-            return !b || !b.item || a.item.title > b.item.title;
-         });
-         this.recentCache.cache(list.id,sortedItems);
-         return sortedItems;
+         if(this.recentCache.isCached(list.id)){
+            return this.recentCache.findObject(list.id);
+         } else {
+            var items = this.adapter.findRecentItems(list);
+            var hydrated = $.map(items,function(mapItem,i){
+               if(mapItem.type == "ShoppingList"){
+                  mapItem.item = app.service.findList(mapItem.itemId);
+               } else {
+                  mapItem.item = app.service.findItem(list,mapItem.itemId);
+               }
+               return mapItem;
+            });
+            var sortedItems = hydrated.sort(function(a,b){
+               return !b || !b.item || a.item.title > b.item.title;
+            });
+            this.recentCache.cache(list.id,sortedItems);
+            return sortedItems;
+         }
       }
    }
    this.filterRecentItems = function(list){
@@ -173,8 +177,11 @@ var ShopService = function(){
       } else {
          this.itemCache.invalidate(item.id);
       }
-      this.listCache.invalidate(list.id);
-      this.resetSearchCache(list.id);
+      this.invalidateAncestors(item.parent);
+      this.invalidateAncestors(list);
+      if(!item.isParent(list)){
+         item.setAsParent(list);
+      }
       if(item.quantity<1){
          item.quantity = 1;
          this.updateItem(list,item);

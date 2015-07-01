@@ -18,15 +18,19 @@ Recent
 
 * Bug: search items duplicity
 
+* Bug: frequent items duplicity
+
+* Rip out caches until proven needed
+
 
 Next
 ---
 
-* Android and IOS CSS logic
-
-* Bug: frequent items duplicity
-
 * Bug: frequent items if on sublist is empty
+
+* Precompile Handlebar templates
+
+* Bug: In basket toggles unresponsive
 
 
 Triage bugs 
@@ -36,9 +40,9 @@ Triage bugs
 Important
 ----
 
-* APK and TestFlight versions
+* Android and IOS CSS logic
 
-* Bug: In basket toggles unresponsive
+* APK and TestFlight versions
 
 * Register flow
 
@@ -46,15 +50,12 @@ Important
 
 * Server API storage
 
-* Revision numbers
-
-* Precompile Handlebar templates
 
 
 Probably
 ---
 
-* Rip out caches until proven needed
+* Revision numbers on lists
 
 * Feature toggles
 
@@ -92,6 +93,8 @@ Maybe
 * In list edit, suggest popular item for that list
 
 * Star item as important
+
+* Merge item and list object and only decorate differences
 
 
 Possibly
